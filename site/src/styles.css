@@ -320,3 +320,11 @@ ul.chips, .quest-card ul, .stage ul { list-style: none; padding-left: 0; }
 .about { padding-bottom: 0; }
 .giant { margin: clamp(48px, 8vw, 96px) 0 0; font-family: var(--font-display); font-weight: 300; font-size: clamp(7rem, 31vw, 27rem); line-height: 1; padding-top: 0.06em; letter-spacing: -0.06em; text-align: center; color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, 0.85); user-select: none; overflow: hidden; }
 .giant-note { margin: -0.4em auto 0; position: relative; padding: 0 var(--gutter) 32px; text-align: center; color: var(--text-2); max-width: none; }
+
+/* Photo-free variant: inked panels and the mascot instead of photographs */
+.plate { margin: 0; position: relative; }
+.plate.mpanel { transform: rotate(2deg); }
+.plate .paper { border-bottom: 0; }
+.arch--art { display: grid; place-items: center; }
+.arch-frame { position: relative; z-index: 1; width: 100%; aspect-ratio: 2 / 3; display: grid; place-items: center; padding: 14%; background: var(--surface); border: 4px solid #fff; border-radius: 999px 999px 24px 24px; box-shadow: 12px 12px 0 var(--brand-accent); overflow: hidden; }
+.arch-frame .mascot { width: 100%; }

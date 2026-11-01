@@ -1,6 +1,7 @@
 import { LANGS, copy } from "./content.mjs";
 import { mascot, spot, sparkle, burst, study } from "./art.mjs";
 import { seeds } from "./seeds.mjs";
+import { invite, withInvite } from "./invite.mjs";
 
 export const PAGES = ["home", "terms", "privacy"];
 
@@ -30,7 +31,11 @@ const CSP =
  * cfg: { appUrl, creovaUrl, siteUrl? }  siteUrl is optional; without it no canonical or hreflang is emitted.
  */
 export function renderPage(lang, cfg, page = "home") {
-  const c = copy[lang];
+  const open = cfg.demoAccess === "open";
+  const c = open ? copy[lang] : withInvite(copy[lang], lang);
+  const photos = cfg.photos !== "off";
+  // where every call to action goes: the demo itself, or a request for an invitation
+  const ctaUrl = open ? cfg.appUrl : `mailto:${cfg.inviteEmail}?subject=${encodeURIComponent(invite[lang].subject)}`;
   const here = pathFor(lang, page);
   const toHome = rel(here, pathFor(lang, "home"));
   const isHome = page === "home";
@@ -52,7 +57,7 @@ export function renderPage(lang, cfg, page = "home") {
       : `<li><a href="${rel(here, pathFor(l, page))}" lang="${l}" hreflang="${l}" aria-label="${escapeHtml(copy[l].langName)}">${l.toUpperCase()}</a></li>`,
   ).join("");
 
-  const main = isHome ? homeMain(c, cfg, here, lang) : legalMain(c, doc, cfg, toHome);
+  const main = isHome ? homeMain(c, cfg, here, lang, ctaUrl, photos) : legalMain(c, doc, cfg, toHome);
 
   return `<!DOCTYPE html>
 <html lang="${c.htmlLang}">
@@ -93,7 +98,7 @@ export function renderPage(lang, cfg, page = "home") {
           <nav aria-label="${escapeHtml(c.footer.language)}">
             <ul class="pill">${langLinks}</ul>
           </nav>
-          <a class="btn btn-primary btn-small" href="${escapeHtml(cfg.appUrl)}" rel="noopener">${escapeHtml(c.cta)}</a>
+          <a class="btn btn-primary btn-small" href="${escapeHtml(ctaUrl)}" rel="noopener">${escapeHtml(c.cta)}</a>
         </div>
         <nav class="main-nav" aria-label="${escapeHtml(c.navLabel)}">
           <ul class="nav">
@@ -134,8 +139,8 @@ const h1Html = (c) => {
 const spark = (cls, size, fill) =>
   `<svg class="spark ${cls}" viewBox="-14 -14 28 28" width="${size}" height="${size}" aria-hidden="true" focusable="false">${sparkle(0, 0, 1, fill)}</svg>`;
 
-function homeMain(c, cfg, here, lang) {
-  const app = escapeHtml(cfg.appUrl);
+function homeMain(c, cfg, here, lang, ctaUrl, photos) {
+  const app = escapeHtml(ctaUrl);
   const url = (name) => rel(here, `/img/${name}`);
   const img = (name, alt, w, h, eager = false) =>
     `<img src="${url(name)}" alt="${escapeHtml(alt)}" width="${w}" height="${h}"${eager ? "" : ' loading="lazy"'} decoding="async" />`;
@@ -269,11 +274,15 @@ function homeMain(c, cfg, here, lang) {
               ${list(c.creators.list)}
             </div>
           </div>
-          <figure class="polaroid polaroid--a">
+          ${
+            photos
+              ? `<figure class="polaroid polaroid--a">
             <span class="tape" aria-hidden="true"></span>
             ${img("creators-laptop.jpg", c.photos.creators, 960, 639)}
             <div class="figure-mascot">${bubble(c.bubbles.creators)}${mascot("read", 2)}</div>
-          </figure>
+          </figure>`
+              : `<figure class="mpanel mpanel--creator plate"><div class="paper"><div class="tone" aria-hidden="true"></div>${spot("create")}</div><div class="figure-mascot">${bubble(c.bubbles.creators)}${mascot("read", 2)}</div></figure>`
+          }
         </div>
       </section>
 
@@ -286,11 +295,15 @@ function homeMain(c, cfg, here, lang) {
             <p>${escapeHtml(c.viewers.p)}</p>
             <ul class="chips">${c.viewers.list.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
           </div>
-          <figure class="polaroid polaroid--b">
+          ${
+            photos
+              ? `<figure class="polaroid polaroid--b">
             <span class="tape" aria-hidden="true"></span>
             ${img("viewers-chess.jpg", c.photos.viewers, 960, 639)}
             <div class="figure-mascot figure-mascot--left">${bubble(c.bubbles.viewers)}${mascot("wow", 3)}</div>
-          </figure>
+          </figure>`
+              : `<figure class="mpanel mpanel--story plate"><div class="paper"><div class="tone" aria-hidden="true"></div>${spot("lang")}</div><div class="figure-mascot figure-mascot--left">${bubble(c.bubbles.viewers)}${mascot("wow", 3)}</div></figure>`
+          }
         </div>
       </section>
 
@@ -330,10 +343,14 @@ function homeMain(c, cfg, here, lang) {
 
       <section class="band band--black closer" aria-labelledby="closer-title">
         <div class="wrap closer-grid">
-          <figure class="arch">
+          ${
+            photos
+              ? `<figure class="arch">
             ${img("hero-portrait.jpg", c.photos.hero, 533, 800)}
             <span class="arch-burst" aria-hidden="true">${burst("burst", "#c084fc")}</span>
-          </figure>
+          </figure>`
+              : `<figure class="arch arch--art" aria-hidden="true"><div class="arch-frame">${mascot("hello", 5)}</div><span class="arch-burst">${burst("burst", "#c084fc")}</span></figure>`
+          }
           <div class="closer-copy">
             <div class="figure-mascot figure-mascot--inline">${bubble(c.bubbles.closer)}${mascot("joy", 4)}</div>
             <h2 id="closer-title">${escapeHtml(c.closer.h2)}</h2>
@@ -348,7 +365,7 @@ function homeMain(c, cfg, here, lang) {
           <h2 id="about-title">${escapeHtml(c.about.h2)}</h2>
           <p class="lead">${escapeHtml(c.about.p)}</p>
           <p class="actions"><a class="btn btn-ghost" href="${escapeHtml(cfg.creovaUrl)}" rel="noopener">${escapeHtml(c.about.link)}</a></p>
-          <p class="note">${escapeHtml(c.photos.credit)}</p>
+          ${photos ? `<p class="note">${escapeHtml(c.photos.credit)}</p>` : ""}
         </div>
         <div class="giant" aria-hidden="true">SEEN</div>
         <p class="wrap mono giant-note">${escapeHtml(c.footer.status)}</p>

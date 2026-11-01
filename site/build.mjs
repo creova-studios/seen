@@ -3,6 +3,7 @@
 //               sitemap or CNAME (for example for a local preview).
 //   APP_URL     where "Try the demo app" points. Defaults to the current production demo.
 //   CREOVA_URL  where the links back to CREOVA point.
+//   DEMO_ACCESS invite (default) or open. INVITE_EMAIL where invite requests go. PHOTOS=off builds without photographs.
 import { mkdirSync, rmSync, writeFileSync, copyFileSync, cpSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -16,6 +17,11 @@ export const config = {
   siteUrl: process.env.SITE_URL ?? "https://seen.creova.one",
   appUrl: process.env.APP_URL || "https://seen-sigma-eight.vercel.app",
   creovaUrl: process.env.CREOVA_URL || "https://creova.one",
+  // "invite" (default): calls to action ask for an invitation; "open": they go straight to appUrl
+  demoAccess: process.env.DEMO_ACCESS === "open" ? "open" : "invite",
+  inviteEmail: process.env.INVITE_EMAIL || "support@creova.one",
+  // "off": build without the three photographs (illustrations instead), for when release forms are not in hand
+  photos: process.env.PHOTOS === "off" ? "off" : "on",
 };
 
 export function build(cfg = config, outDir = dist) {
@@ -35,7 +41,8 @@ export function build(cfg = config, outDir = dist) {
   copyFileSync(join(root, "src", "site.js"), join(outDir, "site.js"));
   cpSync(join(root, "src", "fonts"), join(outDir, "fonts"), { recursive: true });
   cpSync(join(root, "src", "icons"), join(outDir, "icons"), { recursive: true });
-  cpSync(join(root, "src", "img"), join(outDir, "img"), { recursive: true });
+  const photoFiles = ["hero-portrait.jpg", "creators-laptop.jpg", "viewers-chess.jpg"];
+  cpSync(join(root, "src", "img"), join(outDir, "img"), { recursive: true, filter: (src) => cfg.photos !== "off" || !photoFiles.some((f) => src.endsWith(f)) });
 
   const site = cfg.siteUrl.replace(/\/$/, "");
   // GitHub Pages: keep the custom domain across deploys and skip Jekyll processing.

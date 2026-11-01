@@ -7,8 +7,9 @@ import { join, dirname, resolve } from "node:path";
 import { LANGS, copy } from "../src/content.mjs";
 import { PAGES, pathFor } from "../src/render.mjs";
 import { build } from "../build.mjs";
+import { invite, withInvite } from "../src/invite.mjs";
 
-const cfg = { siteUrl: "https://example.test", appUrl: "https://app.example.test", creovaUrl: "https://creova.one" };
+const cfg = { siteUrl: "https://example.test", appUrl: "https://app.example.test", creovaUrl: "https://creova.one", inviteEmail: "invite@example.test" };
 
 /** Flatten an object to "a.b.0.c" -> value. */
 function flatten(o, prefix = "", out = {}) {
@@ -61,7 +62,9 @@ for (const lang of LANGS) {
       }
       // the link back to creova.one is on every page; the demo link is on the home page
       assert.ok(html.includes(`href="${cfg.creovaUrl}"`), "links back to creova.one");
-      if (page === "home") assert.ok(html.includes(`href="${cfg.appUrl}"`), "links to the app");
+      // default mode is invite-only: calls to action ask for an invitation and the demo URL is not on the page
+      assert.ok(html.includes(`href="mailto:invite@example.test?subject=`), "asks for an invite");
+      assert.ok(!html.includes(cfg.appUrl), "the demo URL is not published in invite mode");
       // footer links to terms and privacy on every page
       assert.ok(html.includes("terms/"), "footer links to terms");
       assert.ok(html.includes("privacy/"), "footer links to privacy");
@@ -230,6 +233,40 @@ test("nothing internal is published: no source paths, repos or roadmap detail", 
     const c = copy[lang];
     const marketing = JSON.stringify({ hero: c.hero, what: c.what, creators: c.creators, viewers: c.viewers, beta: c.beta, showcase: c.showcase, closer: c.closer });
     assert.ok(!roadmap.test(marketing), `${lang}: marketing copy names unreleased mechanics`);
+  }
+});
+
+test("invite wording exists in every language and is translated", () => {
+  const keys = Object.keys(invite.en).sort();
+  for (const lang of LANGS) {
+    assert.deepEqual(Object.keys(invite[lang]).sort(), keys, `${lang}: same invite keys`);
+    const c = withInvite(copy[lang], lang);
+    assert.notEqual(c.cta, copy[lang].cta, `${lang}: invite changes the call to action`);
+    assert.ok(!/demo (app )?is open|démo est ouverte|demo está abierta/i.test(JSON.stringify(c.beta.today) + JSON.stringify(c.faq.items[0])), `${lang}: no "demo is open" claim in invite mode`);
+    if (lang !== "en") for (const k of ["cta", "status0", "makeOpen", "closerP"]) assert.notEqual(invite[lang][k], invite.en[k], `${lang}.${k} translated`);
+  }
+});
+
+test("open mode links straight to the demo; the privacy notice covers invite emails", () => {
+  const dir = build({ ...cfg, demoAccess: "open" }, mkdtempSync(join(tmpdir(), "seen-site-open-")));
+  for (const lang of LANGS) {
+    const html = readFileSync(join(dir, pathFor(lang, "home"), "index.html"), "utf8");
+    assert.ok(html.includes(`href="${cfg.appUrl}"`), `${lang}: demo link in open mode`);
+    assert.ok(!html.includes("mailto:"), `${lang}: no mailto in open mode`);
+    assert.ok(/invit/i.test(JSON.stringify(copy[lang].legal.privacy)), `${lang}: privacy notice mentions invitation emails`);
+  }
+});
+
+test("PHOTOS=off builds without the three photographs and keeps every link and alt valid", () => {
+  const dir = build({ ...cfg, photos: "off" }, mkdtempSync(join(tmpdir(), "seen-site-nophoto-")));
+  for (const f of ["hero-portrait.jpg", "creators-laptop.jpg", "viewers-chess.jpg"]) assert.ok(!existsSync(join(dir, "img", f)), `${f} not shipped`);
+  assert.ok(existsSync(join(dir, "img", "app-home.jpg")), "app screens still shipped");
+  for (const lang of LANGS) {
+    const html = readFileSync(join(dir, pathFor(lang, "home"), "index.html"), "utf8");
+    assert.ok(!/hero-portrait|creators-laptop|viewers-chess/.test(html), `${lang}: no photo references`);
+    assert.ok(!html.includes(copy[lang].photos.credit), `${lang}: no photo credit line`);
+    for (const [tag] of html.matchAll(/<img [^>]*>/g)) assert.match(tag, /\salt="/, "images keep alt text");
+    for (const [, src] of html.matchAll(/<img [^>]*src="([^"]+)"/g)) assert.ok(existsSync(resolve(dirname(join(dir, pathFor(lang, "home"), "index.html")), src)), `${lang}: ${src} exists`);
   }
 });
 

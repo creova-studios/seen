@@ -19,6 +19,9 @@ Node 18 or newer. Nothing to install.
 | `SITE_URL` | `https://seen.creova.one` | The website's public URL: drives canonical, hreflang, `sitemap.xml` and the `CNAME` file. Set it to an empty string for a local preview without them |
 | `APP_URL` | `https://seen-sigma-eight.vercel.app` | Where "Try the demo app" goes. Change to the app's own domain when it has one |
 | `CREOVA_URL` | `https://creova.one` | Where the links back to CREOVA go |
+| `DEMO_ACCESS` | `invite` | `invite`: every call to action asks for an invitation (a `mailto:` link) and the demo URL is not on the page. `open`: calls to action go straight to `APP_URL`. Keep `invite` while the demo is invite-only |
+| `INVITE_EMAIL` | `support@creova.one` | Where invite requests go; this mailbox is already published on creova.one. The site collects nothing itself |
+| `PHOTOS` | `on` | `off` builds without the three photographs (inked panels and the mascot instead). Use it until release forms are confirmed: see `docs/product/PHOTO_RELEASES.md` |
 
 ## Hosting: GitHub Pages at seen.creova.one, DNS on Cloudflare
 
