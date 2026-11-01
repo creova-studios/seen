@@ -15,6 +15,8 @@
 | `VITE_TELEMETRY_ENDPOINT` | web | no | Optional URL for `sendBeacon` telemetry |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Edge Function | **service-role key is secret** | Set only in Supabase function secrets, never in Vercel/web |
 | `FRONTEND_URL` | Edge Function | no | Allowed origin for CSRF checks |
+| `DEMO_INVITE_CODES` | Vercel middleware (server only) | **yes** | Invite codes for the public demo, comma or newline separated. Unset = gate off. Production only; mark Sensitive; never `VITE_`. See `docs/security/DEMO_INVITE_GATE.md` |
+| `INVITE_EMAIL`, `INVITE_SITE_URL` | Vercel middleware | no | Optional: where the gate page sends "ask for an invite" (default `support@creova.one`) and its "About SEEN" link (default `https://seen.creova.one`) |
 
 `VITE_*` values are compiled into the public bundle — never put a secret in one.
 Supabase project id + anon key currently live in `utils/supabase/info.tsx` (public by design); move to `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` when the adapter is wired so staging and production can differ.

@@ -27,3 +27,13 @@ Keys matching `email|name|password|card|cvc|token|phone|address|query|text` are 
 1. Point `VITE_TELEMETRY_ENDPOINT` at a small Supabase Edge Function that writes to an `events` table (13-month retention), or a privacy-first vendor.
 2. Add Web Vitals (LCP, INP, CLS) via `web-vitals` → same sink.
 3. When the backend lands: Edge Function error logging with request ids echoed to the client, auth failure counters, p50/p95 latency per contract method.
+
+## Telemetry endpoint check
+
+The website's privacy notice says the demo app sends nothing to CREOVA, which holds only while `VITE_TELEMETRY_ENDPOINT` is unset in the production build. Verify after every production deploy:
+
+```bash
+node scripts/check-live-telemetry.mjs [https://seen-sigma-eight.vercel.app]   # exit 0 = unset, 1 = set or unreadable
+```
+
+It reads the deployed JavaScript: Vite inlines `VITE_*` values at build time, so a set endpoint shows up as a string value. **Verified unset on production on 2026-10-29**: the bundle compiles `import.meta.env` to an empty object, and a recorded browser session across seven screens plus an error page made 19 requests, all `GET`, only to the app, Google Fonts and Unsplash. If you ever set the endpoint, update the website privacy notice first (`site/src/legal.mjs`).
