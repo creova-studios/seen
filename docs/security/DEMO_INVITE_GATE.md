@@ -4,7 +4,7 @@
 
 ## Why a server-side gate
 
-The demo is a static single-page app. Anything checked in the browser (a code in the JavaScript, a prompt on the first screen) can be read or skipped by anyone who downloads the bundle, so it would not protect the product. This gate runs in **Vercel Routing Middleware** (`middleware.ts` at the repository root, logic in `src/gate/inviteGate.ts`), before any file is served. Without an invite a visitor gets a short "by invitation" page and nothing else: no HTML, no scripts, no styles.
+The demo is a static single-page app. Anything checked in the browser (a code in the JavaScript, a prompt on the first screen) can be read or skipped by anyone who downloads the bundle, so it would not protect the product. This gate runs in **Vercel Routing Middleware** (`middleware.ts` at the repository root, logic in `src/gate/inviteGate.ts`; no extra package: the pass-through response is two lines, because `@vercel/functions` pulls in a vulnerable `zod` and fails the dependency audit), before any file is served. Without an invite a visitor gets a short "by invitation" page and nothing else: no HTML, no scripts, no styles.
 
 ## What it does
 

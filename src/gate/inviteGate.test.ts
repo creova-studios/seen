@@ -1,7 +1,7 @@
 import { webcrypto } from "node:crypto";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import middleware from "../../middleware";
-import { COOKIE_NAME, MIN_CODE_LENGTH, decide, gatePageHtml, isOpenPath, parseCodes, pickLang, readCookie, safeEqual, sha256Hex } from "./inviteGate";
+import { COOKIE_NAME, MIN_CODE_LENGTH, continueResponse, decide, gatePageHtml, isOpenPath, parseCodes, pickLang, readCookie, safeEqual, sha256Hex } from "./inviteGate";
 
 // The shared test setup runs in jsdom; the gate runs on the server, which has Node's Web Crypto.
 beforeAll(() => { vi.stubGlobal("crypto", webcrypto); });
@@ -87,6 +87,12 @@ describe("decide", () => {
 });
 
 describe("helpers", () => {
+  it("continueResponse is the pass-through signal Vercel expects", () => {
+    const r = continueResponse();
+    expect(r.status).toBe(200);
+    expect(r.headers.get("x-middleware-next")).toBe("1");
+    expect(r.body).toBeNull();
+  });
   it("safeEqual compares whole strings", () => {
     expect(safeEqual("abc", "abc")).toBe(true);
     expect(safeEqual("abc", "abd")).toBe(false);
@@ -120,6 +126,7 @@ describe("middleware (end to end, the real exported function)", () => {
     delete process.env.DEMO_INVITE_CODES;
     const res = await middleware(new Request(`${base}/`));
     expect(res.status).not.toBe(403);
+    expect(res.headers.get("x-middleware-next")).toBe("1");
     expect(res.headers.get("set-cookie")).toBeNull();
   });
 
@@ -144,5 +151,6 @@ describe("middleware (end to end, the real exported function)", () => {
     const res = await middleware(new Request(`${base}/`, { headers: { cookie: `${COOKIE_NAME}=${await sha256Hex(CODE)}` } }));
     expect(res.status).not.toBe(403);
     expect(res.status).not.toBe(302);
+    expect(res.headers.get("x-middleware-next")).toBe("1");
   });
 });

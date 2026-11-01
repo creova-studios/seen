@@ -68,6 +68,15 @@ export function readCookie(header: string | null | undefined, name: string): str
   return null;
 }
 
+/**
+ * "Carry on to the app": the response Vercel Routing Middleware treats as pass-through (an empty body with
+ * `x-middleware-next: 1`). This is exactly what `next()` from @vercel/functions returns; it is inlined because that
+ * package depends on a vulnerable zod release and this is the only thing we used from it.
+ */
+export function continueResponse(): Response {
+  return new Response(null, { headers: { "x-middleware-next": "1" } });
+}
+
 export function isOpenPath(pathname: string): boolean {
   return OPEN_PATHS.some((re) => re.test(pathname));
 }
