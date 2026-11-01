@@ -74,11 +74,14 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
   { label, variant = "filled", badge, className, children, ...rest },
   ref,
 ) {
+  // The visible badge ("3", or "9+" past nine) must appear in the accessible name as its own word (WCAG 2.5.3,
+  // axe label-content-name-mismatch); "Notifications (3 unread)" glued the digit to a parenthesis and failed.
+  const shown = badge && badge > 9 ? "9+" : badge;
   return (
     <button
       ref={ref}
       type="button"
-      aria-label={badge ? `${label} (${badge} unread)` : label}
+      aria-label={badge ? `${label} ${shown} unread` : label}
       className={cx(
         "relative w-11 h-11 -m-1 rounded-full flex items-center justify-center transition-colors flex-shrink-0",
         "disabled:opacity-40",
@@ -99,7 +102,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
           aria-hidden
           className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-seen-accent text-black text-[10px] font-semibold flex items-center justify-center"
         >
-          {badge > 9 ? "9+" : badge}
+          {shown}
         </span>
       )}
     </button>
