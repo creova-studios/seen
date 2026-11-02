@@ -84,6 +84,7 @@ export function renderPage(lang, cfg, page = "home") {
     ${isHome ? `<script src="${rel(here, "/site.js")}" defer></script>` : ""}
   </head>
   <body>
+    <!--email_off-->
     <a class="skip" href="#main">${escapeHtml(c.skip)}</a>
     <div class="creova-bar">
       <div class="wrap bar-row">
@@ -126,6 +127,7 @@ ${main}
         <p class="note">${escapeHtml(c.footer.noTracking)}</p>
       </div>
     </footer>
+    <!--/email_off-->
   </body>
 </html>
 `;

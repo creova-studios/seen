@@ -37,6 +37,8 @@ One-time setup (owner actions; not done yet):
 
 To update the site later, run step 2 again. A workflow in the private repo can automate this with a deploy key; it is not set up.
 
+**If the DNS record is proxied (orange cloud), Cloudflare rewrites the pages on the way out.** It turns `mailto:` links into `/cdn-cgi/l/email-protection#…` (the page carries `<!--email_off-->` markers to stop that) and, when Web Analytics automatic setup is on, injects `static.cloudflareinsights.com/beacon.min.js`. The page's CSP (`script-src 'self'`) stops that beacon from running, but it is still in the HTML and it contradicts "no analytics". In Cloudflare, for this hostname: turn off **Web Analytics** automatic injection (Analytics & Logs, Web Analytics, remove the `seen` site/rule) and **Email Address Obfuscation** (Scrape Shield), or set the `seen` record to **DNS only (grey cloud)**, which also lets GitHub issue its own certificate.
+
 Limits to know: GitHub Pages cannot send custom headers, so the policy in each page's `<meta>` tags (CSP, referrer) is all there is; `frame-ancestors` and `X-Frame-Options` cannot be set, which matters little for a static page with no forms or login. The app should get its own one-level subdomain next to this one (for example `seenapp.creova.one`); a name two levels deep such as `app.seen.creova.one` is not covered by Cloudflare's free certificate if it is ever proxied. Firebase Hosting (Google Cloud) remains a fallback if headers become necessary; `site/` works on any static host.
 
 ## Look and assets

@@ -270,6 +270,19 @@ test("PHOTOS=off builds without the three photographs and keeps every link and a
   }
 });
 
+test("Cloudflare's email obfuscation is switched off for the page, so mailto links stay real links", () => {
+  // The site is served through Cloudflare, which otherwise rewrites mailto: links into /cdn-cgi/l/email-protection
+  // and injects a decoder script. The documented marker below tells it to leave the page alone.
+  for (const lang of LANGS) {
+    for (const page of PAGES) {
+      const html = read(lang, page);
+      const open = html.indexOf("<!--email_off-->"), close = html.indexOf("<!--/email_off-->");
+      assert.ok(open > 0 && close > open, `${lang}/${page}: email_off markers wrap the body`);
+      for (const m of html.matchAll(/href="mailto:/g)) assert.ok(m.index > open && m.index < close, `${lang}/${page}: every mailto link sits inside the marker`);
+    }
+  }
+});
+
 test("the site makes no third-party requests", () => {
   for (const lang of LANGS) {
     for (const page of PAGES) {
