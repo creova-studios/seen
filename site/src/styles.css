@@ -71,7 +71,8 @@ em { font-family: var(--font-accent); font-style: italic; font-weight: 400; lett
 /* Header */
 .site-header { position: sticky; top: 0; z-index: 10; background: rgba(0, 0, 0, 0.92); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
 .header-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; padding-top: 6px; padding-bottom: 6px; }
-.wordmark { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.35em; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; font-size: 1.1rem; }
+.wordmark { text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+.wordmark img { height: 30px; width: auto; display: block; }
 .header-tools { display: flex; align-items: center; gap: 10px; }
 .main-nav { order: 3; width: 100%; }
 @media (min-width: 900px) { .main-nav { order: 0; width: auto; } }

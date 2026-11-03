@@ -94,7 +94,7 @@ export function renderPage(lang, cfg, page = "home") {
     </div>
     <header class="site-header">
       <div class="wrap header-row">
-        <a class="wordmark" href="${toHome}" aria-label="SEEN">SEEN</a>
+        <a class="wordmark" href="${toHome}" aria-label="SEEN"><img src="${rel(here, "/img/seen-wordmark.png")}" alt="" width="122" height="30" /></a>
         <div class="header-tools">
           <nav aria-label="${escapeHtml(c.footer.language)}">
             <ul class="pill">${langLinks}</ul>

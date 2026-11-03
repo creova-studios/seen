@@ -294,3 +294,11 @@ test("the site makes no third-party requests", () => {
   }
   assert.ok(!/@import|url\(\s*["']?https?:/.test(readFileSync(join(out, "styles.css"), "utf8")));
 });
+
+test("the header carries the SEEN wordmark image, named by its link", () => {
+  for (const lang of LANGS) {
+    const html = read(lang, "home");
+    assert.match(html, /<a class="wordmark"[^>]*aria-label="SEEN"><img [^>]*seen-wordmark\.png"[^>]*alt=""/, `${lang}: wordmark image in header`);
+  }
+  assert.ok(existsSync(join(out, "img/seen-wordmark.png")));
+});
