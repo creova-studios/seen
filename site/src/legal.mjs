@@ -8,7 +8,7 @@ export const legal = {
   en: {
     back: "Back to SEEN",
     updatedLabel: "Last updated",
-    updated: "2026-10-26",
+    updated: "2026-10-28",
     contactH2: "Contact",
     contactP: "Questions about this page? Reach us through",
     privacy: {
@@ -16,12 +16,12 @@ export const legal = {
       description: "How the SEEN website handles information: no cookies, no analytics, no accounts.",
       sections: [
         { h2: "Who we are", p: "This website is run by CREOVA (\"we\"). SEEN is a CREOVA product. To contact us, see the Contact section at the end of this page." },
-        { h2: "What this website collects", p: "Nothing on purpose. The site has no accounts, forms, comments, cookies, analytics or advertising, and it loads no scripts, fonts or images from other companies." },
+        { h2: "What this website collects", p: "Nothing on purpose. The site has no accounts, forms, comments, cookies, analytics or advertising, and it loads no scripts, fonts or images from other companies. One small script from this site runs the \"Make a SEEN\" toy in your browser; what you choose is not stored or sent anywhere." },
         { h2: "What our hosting provider sees", p: "Like any website, our hosting provider receives your IP address and standard request details (such as the page you asked for, your browser type and the time) so it can deliver the page and keep the service secure. We do not use this information to identify you. The provider handles it under its own privacy terms." },
         { h2: "Links to other sites", p: "This site links to creova.one and to the SEEN demo app. They are separate sites with their own practices." },
         { h2: "The demo app", p: "The demo runs on sample stories and sample accounts. What you create in it stays in your browser's own storage on your device and is not sent to us. To display fonts and some story cover images, the demo loads them from Google Fonts and Unsplash, so those services can see your IP address. Clearing your browser's site data for the demo removes what it stored." },
         { h2: "Accounts in the beta", p: "When real accounts launch with the beta, the app will have its own privacy notice and terms, published before anyone can sign up. This notice covers the website only." },
-        { h2: "Your rights and questions", p: "Depending on where you live, you may have rights over your personal information. If you have questions about this notice or about your information, contact us (see Contact)." },
+        { h2: "Your rights and questions", p: "Depending on where you live, you may have rights over your personal information. If you have questions about this notice or about your information, contact us (see Contact). If you email us, for example to ask for an invite, we receive your email address and message and use them only to reply." },
         { h2: "Changes", p: "We will post changes here and update the date above." },
       ],
     },
@@ -44,7 +44,7 @@ export const legal = {
   fr: {
     back: "Retour à SEEN",
     updatedLabel: "Dernière mise à jour",
-    updated: "2026-10-26",
+    updated: "2026-10-28",
     contactH2: "Contact",
     contactP: "Une question sur cette page? Joignez-nous par l'intermédiaire de",
     privacy: {
@@ -52,12 +52,12 @@ export const legal = {
       description: "Comment le site SEEN traite les renseignements : aucun témoin (cookie), aucune analyse, aucun compte.",
       sections: [
         { h2: "Qui nous sommes", p: "Ce site est exploité par CREOVA (« nous »). SEEN est un produit de CREOVA. Pour nous joindre, consultez la section Contact à la fin de cette page." },
-        { h2: "Ce que ce site recueille", p: "Rien de façon intentionnelle. Le site n'a ni compte, ni formulaire, ni commentaire, ni témoin (cookie), ni outil d'analyse, ni publicité, et il ne charge aucun script, aucune police ni aucune image provenant d'autres entreprises." },
+        { h2: "Ce que ce site recueille", p: "Rien de façon intentionnelle. Le site n'a ni compte, ni formulaire, ni commentaire, ni témoin (cookie), ni outil d'analyse, ni publicité, et il ne charge aucun script, aucune police ni aucune image provenant d'autres entreprises. Un petit script de ce site fait fonctionner le jeu « Faites votre SEEN » dans votre navigateur; vos choix ne sont ni conservés ni transmis." },
         { h2: "Ce que voit notre hébergeur", p: "Comme tout site Web, notre hébergeur reçoit votre adresse IP et des renseignements courants sur la requête (comme la page demandée, le type de navigateur et l'heure) afin de livrer la page et de garder le service sécurisé. Nous n'utilisons pas ces renseignements pour vous identifier. L'hébergeur les traite selon ses propres conditions de confidentialité." },
         { h2: "Liens vers d'autres sites", p: "Ce site renvoie vers creova.one et vers la démo de l'app SEEN. Ce sont des sites distincts, dotés de leurs propres pratiques." },
         { h2: "La démo de l'app", p: "La démo fonctionne avec des histoires et des comptes d'exemple. Ce que vous y créez reste dans l'espace de stockage de votre navigateur, sur votre appareil, et ne nous est pas transmis. Pour afficher les polices et certaines images de couverture, la démo les charge depuis Google Fonts et Unsplash; ces services peuvent donc voir votre adresse IP. Effacer les données du site dans votre navigateur supprime ce que la démo y a enregistré." },
         { h2: "Les comptes de la bêta", p: "Quand de vrais comptes seront lancés avec la bêta, l'app aura son propre avis de confidentialité et ses propres conditions, publiés avant que quiconque puisse s'inscrire. Le présent avis ne couvre que le site Web." },
-        { h2: "Vos droits et vos questions", p: "Selon l'endroit où vous vivez, vous pouvez avoir des droits sur vos renseignements personnels. Pour toute question sur cet avis ou sur vos renseignements, écrivez-nous (voir Contact)." },
+        { h2: "Vos droits et vos questions", p: "Selon l'endroit où vous vivez, vous pouvez avoir des droits sur vos renseignements personnels. Pour toute question sur cet avis ou sur vos renseignements, écrivez-nous (voir Contact). Si vous nous écrivez, par exemple pour demander une invitation, nous recevons votre adresse courriel et votre message, et nous les utilisons seulement pour répondre." },
         { h2: "Modifications", p: "Nous publierons les changements ici et mettrons à jour la date ci-dessus." },
       ],
     },
@@ -80,7 +80,7 @@ export const legal = {
   es: {
     back: "Volver a SEEN",
     updatedLabel: "Última actualización",
-    updated: "2026-10-26",
+    updated: "2026-10-28",
     contactH2: "Contacto",
     contactP: "¿Preguntas sobre esta página? Contáctanos a través de",
     privacy: {
@@ -88,12 +88,12 @@ export const legal = {
       description: "Cómo trata el sitio de SEEN la información: sin cookies, sin analítica, sin cuentas.",
       sections: [
         { h2: "Quiénes somos", p: "Este sitio lo opera CREOVA («nosotros»). SEEN es un producto de CREOVA. Para contactarnos, consulta la sección Contacto al final de esta página." },
-        { h2: "Qué recopila este sitio", p: "Nada de forma intencionada. El sitio no tiene cuentas, formularios, comentarios, cookies, analítica ni publicidad, y no carga scripts, fuentes ni imágenes de otras empresas." },
+        { h2: "Qué recopila este sitio", p: "Nada de forma intencionada. El sitio no tiene cuentas, formularios, comentarios, cookies, analítica ni publicidad, y no carga scripts, fuentes ni imágenes de otras empresas. Un pequeño script de este sitio hace funcionar el juego «Haz tu SEEN» en tu navegador; lo que eliges no se guarda ni se envía a ningún sitio." },
         { h2: "Qué ve nuestro proveedor de alojamiento", p: "Como cualquier sitio web, nuestro proveedor de alojamiento recibe tu dirección IP y datos habituales de la solicitud (como la página pedida, el tipo de navegador y la hora) para entregar la página y mantener el servicio seguro. No usamos esa información para identificarte. El proveedor la trata según sus propias condiciones de privacidad." },
         { h2: "Enlaces a otros sitios", p: "Este sitio enlaza a creova.one y a la demo de la app de SEEN. Son sitios distintos, con sus propias prácticas." },
         { h2: "La demo de la app", p: "La demo funciona con historias y cuentas de ejemplo. Lo que creas en ella se queda en el almacenamiento de tu navegador, en tu dispositivo, y no se nos envía. Para mostrar las fuentes y algunas imágenes de portada, la demo las carga desde Google Fonts y Unsplash, por lo que esos servicios pueden ver tu dirección IP. Borrar los datos del sitio en tu navegador elimina lo que la demo guardó." },
         { h2: "Las cuentas de la beta", p: "Cuando se lancen cuentas reales con la beta, la app tendrá su propio aviso de privacidad y sus propios términos, publicados antes de que nadie pueda registrarse. Este aviso cubre solo el sitio web." },
-        { h2: "Tus derechos y preguntas", p: "Según dónde vivas, puedes tener derechos sobre tu información personal. Si tienes preguntas sobre este aviso o sobre tu información, escríbenos (ver Contacto)." },
+        { h2: "Tus derechos y preguntas", p: "Según dónde vivas, puedes tener derechos sobre tu información personal. Si tienes preguntas sobre este aviso o sobre tu información, escríbenos (ver Contacto). Si nos escribes, por ejemplo para pedir una invitación, recibimos tu correo y tu mensaje y los usamos solo para responderte." },
         { h2: "Cambios", p: "Publicaremos los cambios aquí y actualizaremos la fecha de arriba." },
       ],
     },

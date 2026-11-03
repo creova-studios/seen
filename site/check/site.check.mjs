@@ -7,8 +7,9 @@ import { join, dirname, resolve } from "node:path";
 import { LANGS, copy } from "../src/content.mjs";
 import { PAGES, pathFor } from "../src/render.mjs";
 import { build } from "../build.mjs";
+import { invite, withInvite } from "../src/invite.mjs";
 
-const cfg = { siteUrl: "https://example.test", appUrl: "https://app.example.test", creovaUrl: "https://creova.one" };
+const cfg = { siteUrl: "https://example.test", appUrl: "https://app.example.test", creovaUrl: "https://creova.one", inviteEmail: "invite@example.test" };
 
 /** Flatten an object to "a.b.0.c" -> value. */
 function flatten(o, prefix = "", out = {}) {
@@ -31,8 +32,8 @@ test("every language has exactly the same keys and no empty strings", () => {
 
 test("French and Spanish copy is translated, not copied from English", () => {
   const en = flatten(copy.en);
-  // "Contact" is the same word in French; the rest are codes or ISO dates.
-  const sameAllowed = new Set(["htmlLang", "langName", "legal.updated", "legal.contactH2"]);
+  // "Contact" and "Collections" are the same word in French; language names are written in their own language; the rest are codes or ISO dates.
+  const sameAllowed = new Set(["htmlLang", "langName", "legal.updated", "legal.contactH2", "marquee.2", "marquee.4", "marquee.5", "marquee.6", "make.langs.0", "make.langs.1", "make.langs.2", "make.forms.2"]);
   for (const lang of ["fr", "es"]) {
     for (const [k, v] of Object.entries(flatten(copy[lang]))) {
       if (sameAllowed.has(k)) continue;
@@ -61,7 +62,9 @@ for (const lang of LANGS) {
       }
       // the link back to creova.one is on every page; the demo link is on the home page
       assert.ok(html.includes(`href="${cfg.creovaUrl}"`), "links back to creova.one");
-      if (page === "home") assert.ok(html.includes(`href="${cfg.appUrl}"`), "links to the app");
+      // default mode is invite-only: calls to action ask for an invitation and the demo URL is not on the page
+      assert.ok(html.includes(`href="mailto:invite@example.test?subject=`), "asks for an invite");
+      assert.ok(!html.includes(cfg.appUrl), "the demo URL is not published in invite mode");
       // footer links to terms and privacy on every page
       assert.ok(html.includes("terms/"), "footer links to terms");
       assert.ok(html.includes("privacy/"), "footer links to privacy");
@@ -155,19 +158,147 @@ test("headline accent, photos, fonts and licence are in place", () => {
       assert.match(tag, /\salt="/, `img has alt: ${tag}`);
     }
   }
-  for (const f of ["fonts/fraunces-latin-wght-normal.woff2", "fonts/fraunces-latin-wght-italic.woff2", "fonts/inter-latin-wght-normal.woff2", "fonts/OFL.txt", "img/hero-portrait.jpg", "img/creators-laptop.jpg", "img/viewers-chess.jpg"]) {
+  for (const f of ["img/app-home.jpg", "img/app-explore.jpg", "img/app-creators.jpg", "fonts/instrument-serif-latin-400-normal.woff2", "fonts/instrument-serif-latin-400-italic.woff2", "fonts/OFL.txt", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "img/hero-portrait.jpg", "img/creators-laptop.jpg", "img/viewers-chess.jpg"]) {
     assert.ok(existsSync(join(out, f)), `${f} is in the build`);
   }
   const css = readFileSync(join(out, "styles.css"), "utf8");
   for (const [, u] of css.matchAll(/url\("([^"]+)"\)/g)) assert.ok(existsSync(join(out, u)), `css asset ${u} exists`);
 });
 
+test("Make a SEEN: 27 seeds in three languages, accessible controls, same-origin script, nothing stored", () => {
+  for (const lang of LANGS) {
+    const html = read(lang, "home");
+    assert.equal((html.match(/data-seed="/g) || []).length, 27, `${lang}: 27 seeds`);
+    for (const ol of LANGS) assert.equal((html.match(new RegExp(`data-seed="${ol}-`, "g")) || []).length, 9, `${lang}: 9 seeds in ${ol}`);
+    assert.equal((html.match(/<fieldset>/g) || []).length, 3, `${lang}: three fieldsets`);
+    assert.equal((html.match(/<legend/g) || []).length, 3, `${lang}: each fieldset has a legend`);
+    assert.equal((html.match(/type="radio"[^>]*checked/g) || []).length, 3, `${lang}: one default choice per group`);
+    assert.ok(html.includes('aria-live="polite"'), `${lang}: result is announced`);
+    assert.ok(html.includes('data-controls hidden'), `${lang}: controls appear only when the script runs`);
+    assert.ok(html.includes('<script src="site.js" defer></script>') || html.includes('<script src="../site.js" defer></script>'), `${lang}: script tag`);
+  }
+  const js = readFileSync(join(out, "site.js"), "utf8");
+  assert.ok(!/localStorage|sessionStorage|document\.cookie|XMLHttpRequest|fetch\(|sendBeacon|WebSocket|https?:\/\//.test(js), "the script stores nothing and calls nothing");
+  for (const lang of LANGS) assert.ok(read(lang, "privacy").includes("SEEN"), "privacy page present");
+});
+
+test("illustrations are decorative and the page has no text trapped in images", () => {
+  for (const lang of LANGS) {
+    const html = read(lang, "home");
+    const svgs = [...html.matchAll(/<svg [^>]*>/g)].map((m) => m[0]);
+    assert.ok(svgs.length >= 8, `${lang}: art is present`);
+    for (const tag of svgs) assert.ok(tag.includes('aria-hidden="true"'), `${lang}: decorative svg is hidden from assistive tech: ${tag.slice(0, 60)}`);
+    assert.ok(html.includes('class="marquee" aria-hidden="true"'), `${lang}: ticker is hidden from assistive tech`);
+    for (const k of ["shotHome", "shotExplore", "shotCreators"]) {
+      assert.ok(html.includes(`alt="${copy[lang].photos[k].replace(/"/g, "&quot;")}"`), `${lang}: ${k} alt text rendered`);
+    }
+    assert.equal((html.match(/class="bubble/g) || []).length, 4, `${lang}: four speech bubbles`);
+    assert.ok(!/<h[1-6][^>]*>\s*<\/h/.test(html), `${lang}: no empty headings`);
+  }
+  const css = readFileSync(join(out, "styles.css"), "utf8");
+  assert.ok(css.includes("prefers-reduced-motion: no-preference"), "animation is gated on reduced motion");
+  // every animation must sit inside an @media (prefers-reduced-motion: no-preference) block
+  let depth = 0, gatedAt = -1, ungated = [];
+  for (const m of css.matchAll(/@media[^{]*\{|\{|\}|animation\s*:[^;}]*/g)) {
+    const t = m[0];
+    if (t.startsWith("@media")) { depth++; if (/no-preference/.test(t) && gatedAt < 0) gatedAt = depth; }
+    else if (t === "{") depth++;
+    else if (t === "}") { if (depth === gatedAt) gatedAt = -1; depth--; }
+    else if (gatedAt < 0) ungated.push(t.trim());
+  }
+  assert.deepEqual(ungated, [], "animations outside the reduced-motion gate");
+});
+
+test("the website speaks the product's language: the tagline is the app's own, word for word", () => {
+  const src = readFileSync(new URL("../../src/app/i18n/strings.ts", import.meta.url), "utf8");
+  const get = (key) => {
+    const m = src.match(new RegExp(`"${key}":\\s*\\{\\s*en:\\s*"([^"]*)",\\s*fr:\\s*"([^"]*)",\\s*es:\\s*"([^"]*)"`));
+    assert.ok(m, `${key} found in the app's strings`);
+    return { en: m[1], fr: m[2], es: m[3] };
+  };
+  const a = get("onboard.tagline1"), b = get("onboard.tagline2");
+  for (const lang of LANGS) assert.equal(copy[lang].tagline, `${a[lang]} ${b[lang]}.`, `${lang}: tagline matches the app`);
+});
+
+test("nothing internal is published: no source paths, repos or roadmap detail", () => {
+  const files = ["styles.css", ...LANGS.flatMap((l) => PAGES.map((p) => join(pathFor(l, p).slice(1), "index.html")))];
+  const banned = [/creova-gif/i, /seen-tokens/i, /DESIGN\.md/, /strings\.ts/, /\bsrc\//, /\bdocs\//, /supabase/i, /\bRLS\b/, /TODO|FIXME/];
+  for (const f of files) {
+    const text = readFileSync(join(out, f), "utf8");
+    for (const re of banned) assert.ok(!re.test(text), `${f} contains ${re}`);
+  }
+  // roadmap mechanics stay out of the marketing copy (the app demo shows what exists; the site does not map what is next)
+  const roadmap = /guest|transcript|challenge a credit|application tracker|content notes|image descriptions|sin cuenta|sans compte|transcripci|transcription/i;
+  for (const lang of LANGS) {
+    const c = copy[lang];
+    const marketing = JSON.stringify({ hero: c.hero, what: c.what, creators: c.creators, viewers: c.viewers, beta: c.beta, showcase: c.showcase, closer: c.closer });
+    assert.ok(!roadmap.test(marketing), `${lang}: marketing copy names unreleased mechanics`);
+  }
+});
+
+test("invite wording exists in every language and is translated", () => {
+  const keys = Object.keys(invite.en).sort();
+  for (const lang of LANGS) {
+    assert.deepEqual(Object.keys(invite[lang]).sort(), keys, `${lang}: same invite keys`);
+    const c = withInvite(copy[lang], lang);
+    assert.notEqual(c.cta, copy[lang].cta, `${lang}: invite changes the call to action`);
+    assert.ok(!/demo (app )?is open|démo est ouverte|demo está abierta/i.test(JSON.stringify(c.beta.today) + JSON.stringify(c.faq.items[0])), `${lang}: no "demo is open" claim in invite mode`);
+    if (lang !== "en") for (const k of ["cta", "status0", "makeOpen", "closerP"]) assert.notEqual(invite[lang][k], invite.en[k], `${lang}.${k} translated`);
+  }
+});
+
+test("open mode links straight to the demo; the privacy notice covers invite emails", () => {
+  const dir = build({ ...cfg, demoAccess: "open" }, mkdtempSync(join(tmpdir(), "seen-site-open-")));
+  for (const lang of LANGS) {
+    const html = readFileSync(join(dir, pathFor(lang, "home"), "index.html"), "utf8");
+    assert.ok(html.includes(`href="${cfg.appUrl}"`), `${lang}: demo link in open mode`);
+    assert.ok(!html.includes("mailto:"), `${lang}: no mailto in open mode`);
+    assert.ok(/invit/i.test(JSON.stringify(copy[lang].legal.privacy)), `${lang}: privacy notice mentions invitation emails`);
+  }
+});
+
+test("PHOTOS=off builds without the three photographs and keeps every link and alt valid", () => {
+  const dir = build({ ...cfg, photos: "off" }, mkdtempSync(join(tmpdir(), "seen-site-nophoto-")));
+  for (const f of ["hero-portrait.jpg", "creators-laptop.jpg", "viewers-chess.jpg"]) assert.ok(!existsSync(join(dir, "img", f)), `${f} not shipped`);
+  assert.ok(existsSync(join(dir, "img", "app-home.jpg")), "app screens still shipped");
+  for (const lang of LANGS) {
+    const html = readFileSync(join(dir, pathFor(lang, "home"), "index.html"), "utf8");
+    assert.ok(!/hero-portrait|creators-laptop|viewers-chess/.test(html), `${lang}: no photo references`);
+    assert.ok(!html.includes(copy[lang].photos.credit), `${lang}: no photo credit line`);
+    for (const [tag] of html.matchAll(/<img [^>]*>/g)) assert.match(tag, /\salt="/, "images keep alt text");
+    for (const [, src] of html.matchAll(/<img [^>]*src="([^"]+)"/g)) assert.ok(existsSync(resolve(dirname(join(dir, pathFor(lang, "home"), "index.html")), src)), `${lang}: ${src} exists`);
+  }
+});
+
+test("Cloudflare's email obfuscation is switched off for the page, so mailto links stay real links", () => {
+  // The site is served through Cloudflare, which otherwise rewrites mailto: links into /cdn-cgi/l/email-protection
+  // and injects a decoder script. The documented marker below tells it to leave the page alone.
+  for (const lang of LANGS) {
+    for (const page of PAGES) {
+      const html = read(lang, page);
+      const open = html.indexOf("<!--email_off-->"), close = html.indexOf("<!--/email_off-->");
+      assert.ok(open > 0 && close > open, `${lang}/${page}: email_off markers wrap the body`);
+      for (const m of html.matchAll(/href="mailto:/g)) assert.ok(m.index > open && m.index < close, `${lang}/${page}: every mailto link sits inside the marker`);
+    }
+  }
+});
+
 test("the site makes no third-party requests", () => {
   for (const lang of LANGS) {
     for (const page of PAGES) {
       const html = read(lang, page);
-      assert.ok(!/<script|<iframe|<img[^>]+src="https?:/.test(html), "no scripts, iframes or remote images");
+      const scripts = [...html.matchAll(/<script[^>]*>/g)].map((m) => m[0]);
+      for (const tag of scripts) assert.match(tag, /^<script src="[^":]*site\.js" defer>$/, `only the same-origin toy script is allowed: ${tag}`);
+      assert.ok(!/<iframe|<img[^>]+src="https?:/.test(html), "no iframes or remote images");
     }
   }
   assert.ok(!/@import|url\(\s*["']?https?:/.test(readFileSync(join(out, "styles.css"), "utf8")));
+});
+
+test("the header carries the SEEN wordmark image, named by its link", () => {
+  for (const lang of LANGS) {
+    const html = read(lang, "home");
+    assert.match(html, /<a class="wordmark"[^>]*aria-label="SEEN"><img [^>]*seen-wordmark\.png"[^>]*alt=""/, `${lang}: wordmark image in header`);
+  }
+  assert.ok(existsSync(join(out, "img/seen-wordmark.png")));
 });
