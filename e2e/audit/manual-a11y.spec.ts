@@ -77,20 +77,27 @@ test.describe("keyboard-only journeys", () => {
     await tabTo(page, /close|back|index|chapters/i, 40);
     // Library > Saved
     await page.goto("/#/library");
+    // Library is a lazy-loaded screen: wait for it to render before tabbing, as a person would.
+    await expect(page.getByText(/saved stor(y|ies)$/i).first()).toBeVisible();
     await tabTo(page, /saved stor(y|ies)$/i);
     await page.keyboard.press("Enter");
     await expect(page.getByTestId("story-row").first()).toBeVisible();
     // Settings: Larger text switch with Space
     await page.goto("/#/settings");
+    await expect(page.getByText(/larger text/i).first()).toBeVisible();
     await tabTo(page, /larger text/i);
     await page.keyboard.press("Space");
     await expect(page.locator("html")).toHaveAttribute("data-text", "large");
     // Sign out with confirmation
     await page.goto("/#/profile");
+    await expect(page.getByRole("button", { name: /^sign out$/i })).toBeVisible();
     await tabTo(page, /^sign out$/i, 120);
     await page.keyboard.press("Enter");
     const dialog = page.getByRole("dialog", { name: /sign out\?/i });
     await expect(dialog).toBeVisible();
+    // A keyboard user presses Escape once focus is inside the dialog. Under parallel load Radix can still be moving
+    // focus in when the dialog first becomes visible, and an early Escape is lost: wait for focus to arrive.
+    await expect(dialog.locator(":focus").or(page.locator("[role=dialog]:focus"))).toHaveCount(1);
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
     await expect(page.getByRole("button", { name: /^sign out$/i })).toBeFocused();

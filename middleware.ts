@@ -3,8 +3,7 @@
  * docs/security/DEMO_INVITE_GATE.md). Runs on the server before any file is served.
  * Off unless the server-side environment variable DEMO_INVITE_CODES is set.
  */
-import { next } from "@vercel/functions";
-import { decide, gatePageHtml, parseCodes } from "./src/gate/inviteGate";
+import { continueResponse, decide, gatePageHtml, parseCodes } from "./src/gate/inviteGate";
 
 // Everything except the paths that stay open for share cards and the browser's own icon/manifest requests.
 export const config = {
@@ -20,7 +19,7 @@ export default async function middleware(request: Request): Promise<Response> {
     codes,
   });
 
-  if (decision.action === "allow") return next();
+  if (decision.action === "allow") return continueResponse();
 
   const common = { "cache-control": "no-store", "referrer-policy": "no-referrer" };
   if (decision.action === "set-cookie") {
