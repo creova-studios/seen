@@ -1,5 +1,7 @@
 # Test strategy
 
+> Current counts and the consolidation test gate: [`docs/architecture/SEEN_TEST_STRATEGY.md`](../architecture/SEEN_TEST_STRATEGY.md) (2026-10-05).
+
 | Layer | Tool | Location | Runs | Count today |
 |---|---|---|---|---|
 | Unit (rules, routes, permissions, telemetry sanitising, payments) | Vitest | `src/app/__tests__/*.test.ts` | `npm test`, CI | 38 tests total with component |

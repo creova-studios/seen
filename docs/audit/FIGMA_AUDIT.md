@@ -1,5 +1,7 @@
 # Figma audit — `seen.io` (file `8WMBpUhanDkUjodZYolyDT`)
 
+> **Superseded 2026-10-05.** The Figma file now contains ~300 screen frames on canvas `19 — PROTOTYPES`; this audit's "no screen frames" statement is out of date. Current analysis: [`03_FIGMA_TO_PRODUCT_GAP_ANALYSIS.md`](03_FIGMA_TO_PRODUCT_GAP_ANALYSIS.md).
+
 Inspected through the Figma MCP (`get_metadata`, `get_variable_defs`) on 2026-09-23.
 
 ## What the file contains

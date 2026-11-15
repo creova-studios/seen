@@ -1,5 +1,7 @@
 # Master feature matrix
 
+> Superseded by [`SEEN_CANONICAL_FEATURE_INVENTORY.md`](SEEN_CANONICAL_FEATURE_INVENTORY.md) and [`docs/audit/02_SEEN_VERSION_RECONCILIATION_MATRIX.md`](../audit/02_SEEN_VERSION_RECONCILIATION_MATRIX.md) (2026-10-05). Kept for history.
+
 The execution control plane. **Vercel** = production at `707b179`; **Figma** = component library; **Code** = this branch.
 Backend column: *Demo* = typed contract + local demo adapter (ADR-002); *None* = no server; *Edge fn* = endpoint existed in the legacy `supabase/functions/server`, now archived at `archive/supabase/functions/server` and not wired.
 
