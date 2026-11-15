@@ -40,3 +40,7 @@ export const usePublicStories = () => {
   useSyncExternalStore(subscribeCatalog, catalogVersion);
   return getPublicStories();
 };
+
+export { FUNDING_LISTINGS } from '@seen/services/data/fundingListings';
+export { formatAmount, formatStatus, isApplyable, opportunityStatus } from '@seen/services/funding';
+export type { FundingOpportunity } from '@seen/services/contracts';

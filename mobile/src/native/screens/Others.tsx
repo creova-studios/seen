@@ -45,6 +45,8 @@ export function Profile() {
       <View style={styles.chips}>
         {langs.map(([code, name]) => <Chip key={code} label={name} selected={lang === code} onPress={() => setLang(code)} />)}
       </View>
+      <Text style={styles.h2}>{t('native.funding.title', lang)}</Text>
+      <View style={{ marginHorizontal: gutter, marginTop: space.md, alignSelf: 'flex-start' }}><Button label={t('native.funding.row', lang)} variant="secondary" onPress={() => nav.navigate('Funding')} /></View>
       <Text style={styles.h2}>{t('native.account', lang)}</Text>
       {user ? (
         <>

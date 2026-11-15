@@ -20,9 +20,12 @@ interface Persisted {
   interests: string[];
   /** Accounts that have seen the one-time "Become a creator" intro. */
   creatorIntroSeen: string[];
+  /** Funding listings they track, and the checklist steps they ticked for each. */
+  fundingTracked: string[];
+  fundingSteps: Record<string, number[]>;
 }
 const KEY = 'seen.native.v1';
-const DEFAULT: Persisted = { lang: 'en', saved: [], following: [], chapter: {}, onboarded: false, guest: false, userId: null, interests: [], creatorIntroSeen: [] };
+const DEFAULT: Persisted = { lang: 'en', saved: [], following: [], chapter: {}, onboarded: false, guest: false, userId: null, interests: [], creatorIntroSeen: [], fundingTracked: [], fundingSteps: {} };
 
 const ACCOUNTS = 'seen.native.accounts.v1';
 const accountStore: AccountStore = {
@@ -40,6 +43,8 @@ interface AppState extends Persisted {
   enterGuest: () => void;
   setInterests: (topics: string[]) => void;
   markCreatorIntroSeen: (userId: string) => void;
+  toggleFundingTracked: (id: string) => void;
+  toggleFundingStep: (id: string, step: number) => void;
   setLang: (l: Language) => void;
   toggleSaved: (storyId: string) => void;
   isSaved: (storyId: string) => boolean;
@@ -102,6 +107,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       enterGuest: () => update(p => ({ ...p, onboarded: true, guest: true })),
       setInterests: interests => update(p => ({ ...p, interests })),
       markCreatorIntroSeen: id => update(p => (p.creatorIntroSeen.includes(id) ? p : { ...p, creatorIntroSeen: [...p.creatorIntroSeen, id] })),
+      toggleFundingTracked: id => update(p => ({ ...p, fundingTracked: p.fundingTracked.includes(id) ? p.fundingTracked.filter(x => x !== id) : [...p.fundingTracked, id] })),
+      toggleFundingStep: (id, step) =>
+        update(p => {
+          const done = p.fundingSteps[id] ?? [];
+          return { ...p, fundingSteps: { ...p.fundingSteps, [id]: done.includes(step) ? done.filter(x => x !== step) : [...done, step] } };
+        }),
       setLang: lang => update(p => ({ ...p, lang })),
       toggleSaved: id => update(p => ({ ...p, saved: p.saved.includes(id) ? p.saved.filter(x => x !== id) : [...p.saved, id] })),
       isSaved: id => data.saved.includes(id),

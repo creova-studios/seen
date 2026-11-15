@@ -12,6 +12,7 @@ import { AppStateProvider, useApp } from './storage';
 import { Explore } from './screens/Explore';
 import { ForYou } from './screens/ForYou';
 import { CreateFlow, CreateHub, CreateIntro } from './screens/Create';
+import { Funding, FundingDetail } from './screens/Funding';
 import { Library, Profile } from './screens/Others';
 import { Reader } from './screens/Reader';
 import { Story } from './screens/Story';
@@ -95,6 +96,8 @@ function Root() {
         <Stack.Screen name="Reader" component={Reader} options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="CreateIntro" component={CreateIntro} options={{ presentation: 'modal' }} />
         <Stack.Screen name="CreateHub" component={CreateHub} options={{ presentation: 'modal' }} />
+        <Stack.Screen name="Funding" component={Funding} />
+        <Stack.Screen name="FundingDetail" component={FundingDetail} />
         <Stack.Screen name="CreateFlow" component={CreateFlow} options={{ presentation: 'fullScreenModal' }} />
       </Stack.Navigator>
       </GuestProvider>
