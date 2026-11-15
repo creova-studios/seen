@@ -15,6 +15,7 @@ import { TRANSITIONS, VARIANTS, prefersReducedMotion, triggerHaptic } from "../.
 
 interface PreviewPublishStepProps {
   onPublish: (data: PublishData) => void;
+  onSubmitForReview?: (data: PublishData) => void;
   onBack: () => void;
   storyTitle: string;
   totalChapters: number;
@@ -26,6 +27,8 @@ export interface PublishData {
   institutionalCollection?: string;
   rightsConfirmed: boolean;
   guidelinesAccepted: boolean;
+  allowTranslation?: boolean;
+  allowAudioNarration?: boolean;
 }
 
 
@@ -49,6 +52,7 @@ const VISIBILITY_OPTIONS = [
 
 export function PreviewPublishStep({
   onPublish,
+  onSubmitForReview,
   onBack,
   storyTitle,
   totalChapters,
@@ -60,20 +64,33 @@ export function PreviewPublishStep({
   const [institutionalCollection, setInstitutionalCollection] = useState('');
   const [rightsConfirmed, setRightsConfirmed] = useState(false);
   const [guidelinesAccepted, setGuidelinesAccepted] = useState(false);
+  const [allowTranslation, setAllowTranslation] = useState(true);
+  const [allowAudioNarration, setAllowAudioNarration] = useState(false);
   const [showPublishConfirm, setShowPublishConfirm] = useState(false);
 
   const canPublish = rightsConfirmed && guidelinesAccepted && 
                      (visibility !== 'institutional' || institutionalCollection);
 
+  const buildPayload = (): PublishData => ({
+    visibility,
+    institutionalCollection: visibility === 'institutional' ? institutionalCollection : undefined,
+    rightsConfirmed,
+    guidelinesAccepted,
+    allowTranslation,
+    allowAudioNarration,
+  });
+
   const handlePublish = () => {
     if (canPublish) {
       triggerHaptic('heavy');
-      onPublish({
-        visibility,
-        institutionalCollection: visibility === 'institutional' ? institutionalCollection : undefined,
-        rightsConfirmed,
-        guidelinesAccepted,
-      });
+      onPublish(buildPayload());
+    }
+  };
+
+  const handleSubmitForReview = () => {
+    if (canPublish && onSubmitForReview) {
+      triggerHaptic('heavy');
+      onSubmitForReview(buildPayload());
     }
   };
 
@@ -270,6 +287,28 @@ export function PreviewPublishStep({
               </div>
             </div>
           </motion.button>
+
+          {/* Optional Rights Consents (Translation & Narration) */}
+          <div className="pt-2 grid grid-cols-1 gap-2">
+            <label className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white/70 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={allowTranslation}
+                onChange={e => setAllowTranslation(e.target.checked)}
+                className="rounded border-white/30 bg-black"
+              />
+              <span>Allow multilingual translation of this story (recommended)</span>
+            </label>
+            <label className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white/70 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={allowAudioNarration}
+                onChange={e => setAllowAudioNarration(e.target.checked)}
+                className="rounded border-white/30 bg-black"
+              />
+              <span>Allow audio narration adaptation with creator attribution</span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -337,21 +376,41 @@ export function PreviewPublishStep({
             <span>Back</span>
           </motion.button>
 
-          <motion.button
-            type="button"
-            onClick={() => setShowPublishConfirm(true)}
-            disabled={!canPublish}
-            whileHover={!reducedMotion && canPublish ? { scale: 1.02 } : undefined}
-            whileTap={!reducedMotion && canPublish ? { scale: 0.98 } : undefined}
-            className={`flex items-center gap-2 px-8 py-3 rounded-lg text-sm tracking-wide font-medium transition-all ${
-              canPublish
-                ? 'bg-white text-black hover:bg-white/90'
-                : 'bg-white/10 text-white/55 cursor-not-allowed'
-            }`}
-          >
-            <Sparkles className="w-4 h-4" strokeWidth={2} />
-            <span>Publish Story</span>
-          </motion.button>
+          <div className="flex items-center gap-3">
+            {onSubmitForReview && (
+              <motion.button
+                type="button"
+                onClick={handleSubmitForReview}
+                disabled={!canPublish}
+                whileHover={!reducedMotion && canPublish ? { scale: 1.02 } : undefined}
+                whileTap={!reducedMotion && canPublish ? { scale: 0.98 } : undefined}
+                className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm tracking-wide border transition-all ${
+                  canPublish
+                    ? 'border-white/30 bg-white/10 text-white hover:bg-white/20'
+                    : 'border-white/10 bg-white/5 text-white/45 cursor-not-allowed'
+                }`}
+              >
+                <Shield className="w-4 h-4" strokeWidth={2} />
+                <span>Submit for Review</span>
+              </motion.button>
+            )}
+
+            <motion.button
+              type="button"
+              onClick={() => setShowPublishConfirm(true)}
+              disabled={!canPublish}
+              whileHover={!reducedMotion && canPublish ? { scale: 1.02 } : undefined}
+              whileTap={!reducedMotion && canPublish ? { scale: 0.98 } : undefined}
+              className={`flex items-center gap-2 px-8 py-3 rounded-lg text-sm tracking-wide font-medium transition-all ${
+                canPublish
+                  ? 'bg-white text-black hover:bg-white/90'
+                  : 'bg-white/10 text-white/55 cursor-not-allowed'
+              }`}
+            >
+              <Sparkles className="w-4 h-4" strokeWidth={2} />
+              <span>Publish Story</span>
+            </motion.button>
+          </div>
         </div>
       </div>
     </div>

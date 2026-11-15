@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { getChaptersForStory, getStoryWorldById } from "../data/storyDatabase";
 import { api } from "../services";
 import { setLatency } from "../services/runtime";
 
@@ -141,15 +142,19 @@ describe("Artist Intake & Editorial Moderation Contract (Phase 3 & 5)", () => {
     expect(published.status).toBe("published");
     expect(published.publishedAt).toBeTruthy();
 
-    // Published story now appears in public list
+    // Published story now appears in public list and reader catalogue
     const publicStories = await api.intake.listPublishedStories();
     expect(publicStories.map(s => s.id)).toContain(draft.id);
+    const catalogStory = getStoryWorldById(draft.id);
+    expect(catalogStory?.title.en).toBe("The Harbor of Salt and Memory");
+    expect(getChaptersForStory(draft.id)).toHaveLength(1);
 
-    // 8. Creator withdraws story -> immediately removed from public list
+    // 8. Creator withdraws story -> immediately removed from public list and reader catalogue
     signInDemoUser("usr_creator", "creator@seen.demo", "Creator Demo", "creator");
     const withdrawn = await api.intake.withdrawStory(draft.id);
     expect(withdrawn.status).toBe("withdrawn");
     expect(await api.intake.listPublishedStories()).toHaveLength(0);
+    expect(getStoryWorldById(draft.id)).toBeUndefined();
 
     const reviews = await api.intake.listStoryReviews(draft.id);
     expect(reviews.length).toBeGreaterThanOrEqual(4);

@@ -1660,7 +1660,7 @@ export function getLocalizedText(text: MultilingualText, preferredLang: Language
 export function getStoryWorldById(id: string): StoryWorld | undefined {
   const curated = STORY_WORLDS.find(story => story.id === id);
   if (curated) return curated;
-  if (id.startsWith('user_')) {
+  if (id.startsWith('user_') || id.startsWith('db_')) {
     return getUserStoryWorldById(id);
   }
   return undefined;
@@ -1675,7 +1675,7 @@ export function getChaptersForStory(storyWorldId: string): Chapter[] {
   const story = getStoryWorldById(storyWorldId);
   if (!story) return [];
 
-  if (storyWorldId.startsWith('user_')) {
+  if (storyWorldId.startsWith('user_') || storyWorldId.startsWith('db_')) {
     return [...story.chapters].sort((a, b) => a.order - b.order);
   }
 
@@ -1699,7 +1699,7 @@ export function getChapterByIdDirect(chapterId: string): Chapter | undefined {
  * Get chapter by ID from story and chapter ID (backward compatible)
  */
 export function getChapterById(storyWorldId: string, chapterId: string): Chapter | undefined {
-  if (storyWorldId.startsWith('user_')) {
+  if (storyWorldId.startsWith('user_') || storyWorldId.startsWith('db_')) {
     const story = getStoryWorldById(storyWorldId);
     return story?.chapters.find(ch => ch.id === chapterId);
   }

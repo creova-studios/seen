@@ -25,10 +25,68 @@ interface DemoActor {
 
 const SESSION_KEY = "seenos_auth_session";
 const USERS_KEY = "seenos_users_db";
+const USER_STORIES_KEY = "seenos_user_stories";
 const INVITATIONS_KEY = "intake.invitations";
 const STORIES_KEY = "intake.stories";
 const RIGHTS_KEY = "intake.rightsGrants";
 const REVIEWS_KEY = "intake.storyReviews";
+
+function toMultilingualText(text: string, languages: string[]) {
+  const out = { en: "", fr: "", es: "" };
+  for (const lang of languages) {
+    if (lang === "en" || lang === "fr" || lang === "es") {
+      out[lang] = text;
+    }
+  }
+  if (!out.en) out.en = text;
+  return out;
+}
+
+function syncPublishedCatalogue(story: IntakeStoryRecord, creatorName?: string) {
+  try {
+    const raw = localStorage.getItem(USER_STORIES_KEY);
+    const map = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+    if (story.status === "published") {
+      const langs = story.languages.length ? story.languages : ["en"];
+      const chapters = story.chapters.map((ch, idx) => ({
+        id: ch.id || `${story.id}-ch${idx + 1}`,
+        order: ch.position || idx + 1,
+        title: toMultilingualText(ch.title, langs),
+        description: toMultilingualText("", langs),
+        text: toMultilingualText(ch.body, langs),
+        media: {},
+        estimatedDuration: Math.max(1, Math.round(ch.body.trim().split(/\s+/).length / 150)),
+        contextCards: [],
+      }));
+      const totalMinutes = chapters.reduce((acc, c) => acc + c.estimatedDuration, 0);
+      map[story.id] = {
+        id: story.id,
+        creatorId: story.authorId,
+        title: toMultilingualText(story.title, langs),
+        description: toMultilingualText(story.summary, langs),
+        creator: toMultilingualText(creatorName || "SEEN Artist", langs),
+        coverImage: story.coverUrl || "",
+        releaseDate: new Date(story.publishedAt || Date.now()).toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric",
+        }),
+        languagesAvailable: langs,
+        culturalThemes: story.themes,
+        totalDuration: `${totalMinutes} min`,
+        chapterCount: chapters.length,
+        chapters,
+        visibility: "public",
+        contentWarnings: story.contentWarnings.length ? story.contentWarnings : undefined,
+        new: true,
+      };
+    } else {
+      delete map[story.id];
+    }
+    localStorage.setItem(USER_STORIES_KEY, JSON.stringify(map));
+  } catch {
+    /* ignore storage sync errors */
+  }
+}
 
 function simpleHash(raw: string): string {
   const clean = raw.trim();
@@ -334,6 +392,7 @@ export const demoIntake: { intake: IntakeApi } = {
         const next = [...stories];
         next[idx] = updated;
         writeStore(STORIES_KEY, next);
+        syncPublishedCatalogue(updated);
         return updated;
       }),
 
@@ -373,6 +432,9 @@ export const demoIntake: { intake: IntakeApi } = {
         const next = [...stories];
         next[idx] = updated;
         writeStore(STORIES_KEY, next);
+        const grants = readStore<RightsGrant[]>(RIGHTS_KEY, []);
+        const attribution = grants.find(g => g.storyId === story.id)?.attributionName;
+        syncPublishedCatalogue(updated, attribution);
 
         const reviewEvent: StoryReviewEvent = {
           id: `rev_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
@@ -410,6 +472,7 @@ export const demoIntake: { intake: IntakeApi } = {
         const next = [...stories];
         next[idx] = updated;
         writeStore(STORIES_KEY, next);
+        syncPublishedCatalogue(updated);
         return updated;
       }),
 

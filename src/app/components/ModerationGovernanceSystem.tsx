@@ -1,9 +1,9 @@
 import { motion } from "motion/react";
 import { useState, useMemo, useEffect } from "react";
-import { ArrowLeft, Shield, CheckCircle, XCircle, Clock, User, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Shield, CheckCircle, XCircle, Clock, User, AlertTriangle, Ticket, BookOpen } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "sonner";
-import { api, type Report } from "../services";
+import { api, type Report, type IntakeStoryRecord, type ArtistInvitation, type EditorialDecisionStatus } from "../services";
 import { ReportsPanel } from "./ReportsPanel";
 import { translate } from "../i18n/strings";
 import { useStoryState } from "../contexts/StoryStateContext";
@@ -533,7 +533,7 @@ interface ModerationGovernanceSystemProps {
 }
 
 export function ModerationGovernanceSystem({ onBack }: ModerationGovernanceSystemProps) {
-  const [activeTab, setActiveTab] = useState<"queue" | "reports" | "audit" | "guidelines">("queue");
+  const [activeTab, setActiveTab] = useState<"queue" | "submissions" | "reports" | "audit" | "guidelines">("queue");
   const [refreshKey, setRefreshKey] = useState(0);
   const { state: authState } = useAuth();
   const lang = useStoryState().state.language;
@@ -545,11 +545,62 @@ export function ModerationGovernanceSystem({ onBack }: ModerationGovernanceSyste
   const queuedResponses = useMemo<QueuedResponse[]>(() => getModerationQueue(), [refreshKey]);
   const queuedActions = useMemo<ModerationActionRecord[]>(() => getModerationActions(), [refreshKey]);
   const [reports, setReports] = useState<Report[]>([]);
+  const [submissions, setSubmissions] = useState<IntakeStoryRecord[]>([]);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteToken, setInviteToken] = useState("");
+  const [createdInvites, setCreatedInvites] = useState<Array<ArtistInvitation & { rawToken: string }>>([]);
+  const [reviewNotesMap, setReviewNotesMap] = useState<Record<string, string>>({});
+
   useEffect(() => {
     let live = true;
     api.reports.list().then(r => live && setReports(r)).catch(() => live && toast.error("Couldn't load reports."));
+    api.intake
+      .listReviewQueue()
+      .then(list => live && setSubmissions(list))
+      .catch(() => {
+        if (live) setSubmissions([]);
+      });
     return () => { live = false; };
   }, [refreshKey]);
+
+  const handleCreateInvite = async () => {
+    const email = inviteEmail.trim();
+    if (!email) return;
+    const rawToken =
+      inviteToken.trim() ||
+      `seen-artist-${Math.random().toString(36).slice(2, 8)}-${Date.now().toString(36).slice(-4)}`;
+    try {
+      const invite = await api.intake.createInvitation({
+        rawToken,
+        invitedEmail: email,
+        grantedRole: "creator",
+        validDays: 14,
+      });
+      setCreatedInvites(prev => [{ ...invite, rawToken }, ...prev]);
+      setInviteEmail("");
+      setInviteToken("");
+      toast.success(`Invitation token generated for ${invite.invitedEmail}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not create artist invitation.");
+    }
+  };
+
+  const handleReviewSubmission = async (
+    storyId: string,
+    nextStatus: EditorialDecisionStatus,
+  ) => {
+    try {
+      await api.intake.reviewSubmission({
+        storyId,
+        nextStatus,
+        editorialNotes: reviewNotesMap[storyId]?.trim() || undefined,
+      });
+      setRefreshKey(k => k + 1);
+      toast.success(`Story status updated to ${nextStatus.replace("_", " ")}.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not update submission status.");
+    }
+  };
   const handleResolveReport = async (id: string, status: "action_taken" | "dismissed") => {
     try {
       await api.reports.resolve(id, status);
@@ -629,6 +680,16 @@ export function ModerationGovernanceSystem({ onBack }: ModerationGovernanceSyste
               Queue ({responses.length})
             </button>
             <button
+              onClick={() => setActiveTab("submissions")}
+              className={`flex-1 min-h-11 px-2 py-3 text-sm whitespace-nowrap transition-all ${
+                activeTab === "submissions"
+                  ? "text-white border-b-2 border-blue-400"
+                  : "text-white/55 hover:text-white/70"
+              }`}
+            >
+              Submissions ({submissions.length})
+            </button>
+            <button
               onClick={() => setActiveTab("reports")}
               className={`flex-1 min-h-11 px-2 py-3 text-sm whitespace-nowrap transition-all ${
                 activeTab === "reports"
@@ -673,6 +734,150 @@ export function ModerationGovernanceSystem({ onBack }: ModerationGovernanceSyste
             onFlag={handleFlag}
             userRole="moderator"
           />
+          </div>
+        )}
+        {activeTab === "submissions" && (
+          <div className="px-5 pt-5 space-y-6">
+            {/* Artist Invitations Generator */}
+            <div className="p-5 rounded-xl bg-white/5 border border-white/10 space-y-3">
+              <div className="flex items-center gap-2">
+                <Ticket className="w-5 h-5 text-blue-400" aria-hidden />
+                <h2 className="text-lg font-medium text-white">Invite Artist</h2>
+              </div>
+              <p className="text-xs text-white/60">
+                Generate a single-use artist invitation code to grant creator publishing access.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={e => setInviteEmail(e.target.value)}
+                  placeholder="artist@example.com"
+                  aria-label="Artist email"
+                  className="flex-1 min-h-11 px-3 rounded-lg bg-black/60 border border-white/15 text-sm text-white placeholder:text-white/40"
+                />
+                <input
+                  type="text"
+                  value={inviteToken}
+                  onChange={e => setInviteToken(e.target.value)}
+                  placeholder="Custom invite token (optional)"
+                  aria-label="Invitation token"
+                  className="flex-1 min-h-11 px-3 rounded-lg bg-black/60 border border-white/15 text-sm text-white placeholder:text-white/40"
+                />
+                <button
+                  type="button"
+                  onClick={handleCreateInvite}
+                  disabled={!inviteEmail.trim()}
+                  className="min-h-11 px-4 rounded-lg bg-white text-black text-sm font-medium disabled:opacity-40"
+                >
+                  Generate Invite
+                </button>
+              </div>
+              {createdInvites.length > 0 && (
+                <div className="space-y-2 pt-2">
+                  {createdInvites.map(inv => (
+                    <div
+                      key={inv.id}
+                      data-testid="generated-invite-row"
+                      className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-lg bg-black/50 border border-white/15 text-xs"
+                    >
+                      <span className="text-white/80">{inv.invitedEmail}</span>
+                      <code className="text-green-300 font-mono select-all">{inv.rawToken}</code>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Editorial Story Review Queue */}
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-2xl tracking-tight text-white mb-1">Artist Story Submissions</h2>
+                <p className="text-sm text-white/60">
+                  Review submitted artist stories, request revisions, or approve and publish to the SEEN catalogue.
+                </p>
+              </div>
+              {submissions.length === 0 ? (
+                <div className="p-8 rounded-xl bg-white/5 border border-white/10 text-center">
+                  <BookOpen className="w-8 h-8 text-white/40 mx-auto mb-3" aria-hidden />
+                  <p className="text-sm text-white/60">No artist story submissions waiting for review.</p>
+                </div>
+              ) : (
+                submissions.map(sub => (
+                  <div
+                    key={sub.id}
+                    data-testid="moderation-submission-card"
+                    className="p-5 rounded-xl bg-white/5 border border-white/10 space-y-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="text-base font-medium text-white">{sub.title}</h3>
+                        <p className="text-xs text-white/60 mt-0.5">
+                          {sub.chapters.length} chapter(s) · Languages: {sub.languages.map(l => l.toUpperCase()).join(", ")} · v{sub.version}
+                        </p>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full text-xs bg-blue-500/20 border border-blue-400/30 text-blue-200 uppercase">
+                        {sub.status.replace("_", " ")}
+                      </span>
+                    </div>
+                    <p className="text-sm text-white/80 leading-relaxed">{sub.summary}</p>
+                    {sub.chapters.length > 0 && (
+                      <div className="space-y-2 rounded-lg bg-black/40 border border-white/10 p-3">
+                        <p className="text-xs uppercase tracking-wider text-white/50">Chapters Preview</p>
+                        {sub.chapters.map(ch => (
+                          <div key={ch.position} className="text-xs text-white/80">
+                            <span className="font-medium text-white">Ch {ch.position}: {ch.title}</span> — {ch.body.slice(0, 140)}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div>
+                      <label className="block text-xs text-white/60 mb-1" htmlFor={`notes-${sub.id}`}>
+                        Editorial Review Notes
+                      </label>
+                      <textarea
+                        id={`notes-${sub.id}`}
+                        rows={2}
+                        value={reviewNotesMap[sub.id] ?? sub.reviewNotes ?? ""}
+                        onChange={e => setReviewNotesMap(prev => ({ ...prev, [sub.id]: e.target.value }))}
+                        placeholder="Add editorial notes or revision instructions for the artist..."
+                        className="w-full p-2.5 rounded-lg bg-black/60 border border-white/15 text-xs text-white placeholder:text-white/40"
+                      />
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleReviewSubmission(sub.id, "in_review")}
+                        className="min-h-10 px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-xs text-white hover:bg-white/15"
+                      >
+                        Mark In Review
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleReviewSubmission(sub.id, "changes_requested")}
+                        className="min-h-10 px-3 py-1.5 rounded-lg bg-amber-500/20 border border-amber-400/30 text-xs text-amber-200 hover:bg-amber-500/30"
+                      >
+                        Request Changes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleReviewSubmission(sub.id, "published")}
+                        className="min-h-10 px-3 py-1.5 rounded-lg bg-green-500/20 border border-green-400/30 text-xs text-green-200 hover:bg-green-500/30"
+                      >
+                        Approve & Publish
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleReviewSubmission(sub.id, "rejected")}
+                        className="min-h-10 px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-400/30 text-xs text-red-200 hover:bg-red-500/30"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         )}
         {activeTab === "reports" && <ReportsPanel reports={reports} onResolve={handleResolveReport} />}

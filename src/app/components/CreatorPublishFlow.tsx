@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { AnimatePresence } from "motion/react";
+import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
 import { useAppNav } from "../navigation/AppNav";
 import { canAccess } from "../navigation/routes";
 import { useT } from "../i18n/useT";
+import { api } from "../services";
 import { StoryIntentStep, type StoryIntentData } from "./creator-flow/StoryIntentStep";
 import { StoryStructureStep, type StoryStructureData } from "./creator-flow/StoryStructureStep";
 import { MediaChaptersStep, type MediaChaptersData } from "./creator-flow/MediaChaptersStep";
@@ -124,6 +126,40 @@ export function CreatorPublishFlow({ onClose, onViewStory, onGoToLibrary, onView
             totalChapters={mediaData.chapters.length}
             storyLanguages={intentData.languages}
             onBack={() => setStep("context")}
+            onSubmitForReview={publishData => {
+              void (async () => {
+                try {
+                  const saved = await api.intake.saveDraft({
+                    title: intentData.title,
+                    summary: intentData.description,
+                    languages: intentData.languages,
+                    themes: intentData.culturalThemes,
+                    intendedAudience: intentData.intendedAudience,
+                    contentWarnings: contextData.contentWarnings ?? [],
+                    chapters: mediaData.chapters.map((ch, idx) => ({
+                      position: idx + 1,
+                      title: ch.title,
+                      body: ch.text || ch.description || intentData.description,
+                    })),
+                  });
+                  await api.intake.recordRightsGrant({
+                    storyId: saved.id,
+                    confirmsOriginalWork: publishData.rightsConfirmed,
+                    grantsNonExclusiveLicense: publishData.rightsConfirmed,
+                    confirmsThirdPartyConsents: publishData.guidelinesAccepted,
+                    allowTranslation: publishData.allowTranslation ?? true,
+                    allowAudioNarration: publishData.allowAudioNarration ?? false,
+                    attributionName: creatorName,
+                  });
+                  await api.intake.submitForReview(saved.id);
+                  deleteDraft(draftId);
+                  toast.success("Story submitted for editorial review.");
+                  nav.go("creator-stories");
+                } catch (err) {
+                  toast.error(err instanceof Error ? err.message : "Could not submit story for review.");
+                }
+              })();
+            }}
             onPublish={publishData => {
               const story = publishStory(
                 creatorId,

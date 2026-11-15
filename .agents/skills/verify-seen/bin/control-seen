@@ -487,6 +487,7 @@ case "$SUBCMD" in
 
     run_browse goto "$URL" >/dev/null
     run_browse js "$SEED_JS" >/dev/null
+    run_browse reload >/dev/null
     run_browse goto "${URL}/#/for-you" >/dev/null
     echo "SEEDED run_id=${RUN_ID} role=${ROLE} lang=${LANG_CODE} intent=${INTENT} email=verify.${ROLE}@seen.local"
     ;;
