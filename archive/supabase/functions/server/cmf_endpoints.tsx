@@ -14,6 +14,8 @@
 
 import { Hono } from "npm:hono";
 import * as kv from "./kv_store.tsx";
+import { errInfo, log } from "./safe_log.ts";
+import { bearerToken } from "./auth_handlers.ts";
 import * as culturalMetrics from "./cultural_metrics.tsx";
 import * as governance from "./governance_moderation.tsx";
 import * as creatorRights from "./creator_rights_ip.tsx";
@@ -41,15 +43,15 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ snapshot });
     } catch (error: any) {
-      console.error("Error generating cultural impact snapshot:", error);
-      return c.json({ error: `Failed to generate snapshot: ${error.message}` }, 500);
+      log.error('cmf.generating_cultural_impact_snapshot_failed', errInfo(error));
+      return c.json({ error: "Failed to generate snapshot. Please try again." }, 500);
     }
   });
 
   app.post("/make-server-2bdc05e6/metrics/track-view", async (c: any) => {
     try {
       const { contentId, sessionId } = await c.req.json();
-      const accessToken = c.req.header('Authorization')?.split(' ')[1];
+      const accessToken = bearerToken(c);
       
       let userId;
       if (accessToken) {
@@ -61,8 +63,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ message: "View tracked" });
     } catch (error: any) {
-      console.error("Error tracking view:", error);
-      return c.json({ error: `Failed to track view: ${error.message}` }, 500);
+      log.error('cmf.tracking_view_failed', errInfo(error));
+      return c.json({ error: "Failed to track view. Please try again." }, 500);
     }
   });
 
@@ -74,8 +76,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ message: "Progress tracked" });
     } catch (error: any) {
-      console.error("Error tracking progress:", error);
-      return c.json({ error: `Failed to track progress: ${error.message}` }, 500);
+      log.error('cmf.tracking_progress_failed', errInfo(error));
+      return c.json({ error: "Failed to track progress. Please try again." }, 500);
     }
   });
 
@@ -85,7 +87,7 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
 
   app.post("/make-server-2bdc05e6/governance/report", async (c: any) => {
     try {
-      const accessToken = c.req.header('Authorization')?.split(' ')[1];
+      const accessToken = bearerToken(c);
       
       let reporterId = 'anonymous';
       if (accessToken) {
@@ -111,8 +113,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ flag, message: "Report submitted successfully" });
     } catch (error: any) {
-      console.error("Error reporting content:", error);
-      return c.json({ error: `Failed to report content: ${error.message}` }, 500);
+      log.error('cmf.reporting_content_failed', errInfo(error));
+      return c.json({ error: "Failed to report content. Please try again." }, 500);
     }
   });
 
@@ -125,8 +127,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ stats });
     } catch (error: any) {
-      console.error("Error getting moderation stats:", error);
-      return c.json({ error: `Failed to get stats: ${error.message}` }, 500);
+      log.error('cmf.getting_moderation_stats_failed', errInfo(error));
+      return c.json({ error: "Failed to get stats. Please try again." }, 500);
     }
   });
 
@@ -136,7 +138,7 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
 
   app.post("/make-server-2bdc05e6/ip/set-license", async (c: any) => {
     try {
-      const accessToken = c.req.header('Authorization')?.split(' ')[1];
+      const accessToken = bearerToken(c);
       
       if (!accessToken) {
         return c.json({ error: "Unauthorized" }, 401);
@@ -158,8 +160,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ license });
     } catch (error: any) {
-      console.error("Error setting license:", error);
-      return c.json({ error: `Failed to set license: ${error.message}` }, 500);
+      log.error('cmf.setting_license_failed', errInfo(error));
+      return c.json({ error: "Failed to set license. Please try again." }, 500);
     }
   });
 
@@ -172,14 +174,14 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ attribution, attributionText });
     } catch (error: any) {
-      console.error("Error getting attribution:", error);
-      return c.json({ error: `Failed to get attribution: ${error.message}` }, 500);
+      log.error('cmf.getting_attribution_failed', errInfo(error));
+      return c.json({ error: "Failed to get attribution. Please try again." }, 500);
     }
   });
 
   app.post("/make-server-2bdc05e6/ip/export", async (c: any) => {
     try {
-      const accessToken = c.req.header('Authorization')?.split(' ')[1];
+      const accessToken = bearerToken(c);
       
       let userId;
       if (accessToken) {
@@ -196,8 +198,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ exportData });
     } catch (error: any) {
-      console.error("Error requesting export:", error);
-      return c.json({ error: `Failed to request export: ${error.message}` }, 500);
+      log.error('cmf.requesting_export_failed', errInfo(error));
+      return c.json({ error: "Failed to request export. Please try again." }, 500);
     }
   });
 
@@ -207,7 +209,7 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
 
   app.post("/make-server-2bdc05e6/discovery/start", async (c: any) => {
     try {
-      const accessToken = c.req.header('Authorization')?.split(' ')[1];
+      const accessToken = bearerToken(c);
       
       let userId;
       if (accessToken) {
@@ -219,8 +221,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ session });
     } catch (error: any) {
-      console.error("Error starting discovery session:", error);
-      return c.json({ error: `Failed to start session: ${error.message}` }, 500);
+      log.error('cmf.starting_discovery_session_failed', errInfo(error));
+      return c.json({ error: "Failed to start session. Please try again." }, 500);
     }
   });
 
@@ -228,7 +230,7 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
     try {
       const sessionId = c.req.param('sessionId');
       const limit = parseInt(c.req.query('limit') || '10');
-      const accessToken = c.req.header('Authorization')?.split(' ')[1];
+      const accessToken = bearerToken(c);
       
       let userId;
       if (accessToken) {
@@ -240,8 +242,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ recommendations });
     } catch (error: any) {
-      console.error("Error getting recommendations:", error);
-      return c.json({ error: `Failed to get recommendations: ${error.message}` }, 500);
+      log.error('cmf.getting_recommendations_failed', errInfo(error));
+      return c.json({ error: "Failed to get recommendations. Please try again." }, 500);
     }
   });
 
@@ -253,8 +255,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ featured });
     } catch (error: any) {
-      console.error("Error getting featured content:", error);
-      return c.json({ error: `Failed to get featured content: ${error.message}` }, 500);
+      log.error('cmf.getting_featured_content_failed', errInfo(error));
+      return c.json({ error: "Failed to get featured content. Please try again." }, 500);
     }
   });
 
@@ -263,15 +265,17 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       const user = c.get('user');
       const curationData = await c.req.json();
       
+      // curatorId and curatorRole come from requireRole (server-controlled), never from the body.
       const curation = await ethicalDiscovery.curateContent({
         ...curationData,
         curatorId: user.id,
+        curatorRole: c.get('role'),
       });
       
       return c.json({ curation });
     } catch (error: any) {
-      console.error("Error curating content:", error);
-      return c.json({ error: `Failed to curate content: ${error.message}` }, 500);
+      log.error('cmf.curating_content_failed', errInfo(error));
+      return c.json({ error: "Failed to curate content. Please try again." }, 500);
     }
   });
 
@@ -281,7 +285,7 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
 
   app.post("/make-server-2bdc05e6/accessibility/captions", async (c: any) => {
     try {
-      const accessToken = c.req.header('Authorization')?.split(' ')[1];
+      const accessToken = bearerToken(c);
       
       if (!accessToken) {
         return c.json({ error: "Unauthorized" }, 401);
@@ -302,14 +306,14 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ captions });
     } catch (error: any) {
-      console.error("Error adding captions:", error);
-      return c.json({ error: `Failed to add captions: ${error.message}` }, 500);
+      log.error('cmf.adding_captions_failed', errInfo(error));
+      return c.json({ error: "Failed to add captions. Please try again." }, 500);
     }
   });
 
   app.post("/make-server-2bdc05e6/accessibility/transcript", async (c: any) => {
     try {
-      const accessToken = c.req.header('Authorization')?.split(' ')[1];
+      const accessToken = bearerToken(c);
       
       if (!accessToken) {
         return c.json({ error: "Unauthorized" }, 401);
@@ -330,8 +334,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ transcript });
     } catch (error: any) {
-      console.error("Error adding transcript:", error);
-      return c.json({ error: `Failed to add transcript: ${error.message}` }, 500);
+      log.error('cmf.adding_transcript_failed', errInfo(error));
+      return c.json({ error: "Failed to add transcript. Please try again." }, 500);
     }
   });
 
@@ -341,8 +345,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ report });
     } catch (error: any) {
-      console.error("Error getting accessibility compliance report:", error);
-      return c.json({ error: `Failed to get report: ${error.message}` }, 500);
+      log.error('cmf.getting_accessibility_compliance_report_failed', errInfo(error));
+      return c.json({ error: "Failed to get report. Please try again." }, 500);
     }
   });
 
@@ -370,8 +374,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ report });
     } catch (error: any) {
-      console.error("Error generating grant report:", error);
-      return c.json({ error: `Failed to generate report: ${error.message}` }, 500);
+      log.error('cmf.generating_grant_report_failed', errInfo(error));
+      return c.json({ error: "Failed to generate report. Please try again." }, 500);
     }
   });
 
@@ -387,8 +391,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ milestone });
     } catch (error: any) {
-      console.error("Error creating milestone:", error);
-      return c.json({ error: `Failed to create milestone: ${error.message}` }, 500);
+      log.error('cmf.creating_milestone_failed', errInfo(error));
+      return c.json({ error: "Failed to create milestone. Please try again." }, 500);
     }
   });
 
@@ -401,14 +405,14 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ milestones });
     } catch (error: any) {
-      console.error("Error getting milestones:", error);
-      return c.json({ error: `Failed to get milestones: ${error.message}` }, 500);
+      log.error('cmf.getting_milestones_failed', errInfo(error));
+      return c.json({ error: "Failed to get milestones. Please try again." }, 500);
     }
   });
 
   app.post("/make-server-2bdc05e6/grant/incident", async (c: any) => {
     try {
-      const accessToken = c.req.header('Authorization')?.split(' ')[1];
+      const accessToken = bearerToken(c);
       
       if (!accessToken) {
         return c.json({ error: "Unauthorized" }, 401);
@@ -429,8 +433,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ incident });
     } catch (error: any) {
-      console.error("Error reporting incident:", error);
-      return c.json({ error: `Failed to report incident: ${error.message}` }, 500);
+      log.error('cmf.reporting_incident_failed', errInfo(error));
+      return c.json({ error: "Failed to report incident. Please try again." }, 500);
     }
   });
 
@@ -444,8 +448,8 @@ export function registerCMFEndpoints(app: Hono, supabaseAdmin: any, requireRole:
       
       return c.json({ logs, total: logs.length });
     } catch (error: any) {
-      console.error("Error getting activity logs:", error);
-      return c.json({ error: `Failed to get logs: ${error.message}` }, 500);
+      log.error('cmf.getting_activity_logs_failed', errInfo(error));
+      return c.json({ error: "Failed to get logs. Please try again." }, 500);
     }
   });
 }

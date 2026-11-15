@@ -1,6 +1,5 @@
 import { Hono } from "npm:hono";
 import { cors } from "npm:hono/cors";
-import { logger } from "npm:hono/logger";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import * as kv from "./kv_store.tsx";
 import * as culturalMetrics from "./cultural_metrics.tsx";
@@ -10,6 +9,9 @@ import * as ethicalDiscovery from "./ethical_discovery.tsx";
 import * as accessibility from "./accessibility.tsx";
 import * as grantReadiness from "./grant_readiness.tsx";
 import { registerCMFEndpoints } from "./cmf_endpoints.tsx";
+import { createAuthHandlers, bearerToken } from "./auth_handlers.ts";
+import { resolveEffectiveRole, isRole } from "./auth_policy.ts";
+import { errInfo, log } from "./safe_log.ts";
 
 const app = new Hono();
 
@@ -141,14 +143,8 @@ const csrfProtection = async (c: any, next: any) => {
     
     // Allow if: valid origin OR valid referer OR internal Edge Function call
     if (!isValidOrigin && !isValidReferer && !isEdgeFunctionInternal) {
-      console.warn('CSRF protection triggered:', { 
-        origin, 
-        referer, 
-        host,
-        method, 
-        path: c.req.path,
-        allowedOrigins 
-      });
+      const reason = origin ? 'origin_not_allowed' : referer ? 'referer_not_allowed' : 'no_origin_or_referer';
+      log.warn('csrf.blocked', { method, path: c.req.path, reason });
       return c.json({ error: 'Invalid request origin' }, 403);
     }
   }
@@ -157,80 +153,16 @@ const csrfProtection = async (c: any, next: any) => {
 };
 
 /**
- * ROLE VALIDATION MIDDLEWARE
- * Enforces server-side role-based access control
+ * AUTH HANDLERS AND ROLE VALIDATION MIDDLEWARE (see auth_handlers.ts)
+ * requireRole enforces the server-controlled role: app_metadata.role, else viewer
+ * (or creator from the KV profile). user_metadata is never read for roles.
  */
-const requireRole = (allowedRoles: string[]) => {
-  return async (c: any, next: any) => {
-    const accessToken = c.req.header('Authorization')?.split(' ')[1];
-    
-    if (!accessToken) {
-      return c.json({ error: 'Unauthorized: No access token provided' }, 401);
-    }
-    
-    // Get user from token
-    const { data: { user }, error } = await supabaseAdmin.auth.getUser(accessToken);
-    
-    if (error || !user) {
-      return c.json({ error: 'Unauthorized: Invalid or expired token' }, 401);
-    }
-    
-    // Get user profile to check role
-    const profile = await kv.get(`user_profile:${user.id}`);
-    
-    if (!profile) {
-      return c.json({ error: 'Unauthorized: Profile not found' }, 401);
-    }
-    
-    const userRole = profile.role || 'viewer';
-    
-    // Check if user has required role
-    if (!allowedRoles.includes(userRole)) {
-      console.warn('Role validation failed:', { 
-        userId: user.id, 
-        userRole, 
-        requiredRoles: allowedRoles,
-        path: c.req.path 
-      });
-      return c.json({ 
-        error: 'Forbidden: Insufficient permissions',
-        required: allowedRoles,
-        current: userRole 
-      }, 403);
-    }
-    
-    // Attach user and profile to context for use in handlers
-    c.set('user', user);
-    c.set('profile', profile);
-    
-    return next();
-  };
-};
+const auth = createAuthHandlers({ supabaseAdmin, getSupabaseClient, kv });
+const requireRole = auth.requireRole;
 
 /**
  * INPUT VALIDATION HELPERS
  */
-const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-const validatePassword = (password: string): { valid: boolean; error?: string } => {
-  if (password.length < 8) {
-    return { valid: false, error: 'Password must be at least 8 characters long' };
-  }
-  if (!/[A-Z]/.test(password)) {
-    return { valid: false, error: 'Password must contain at least one uppercase letter' };
-  }
-  if (!/[a-z]/.test(password)) {
-    return { valid: false, error: 'Password must contain at least one lowercase letter' };
-  }
-  if (!/[0-9]/.test(password)) {
-    return { valid: false, error: 'Password must contain at least one number' };
-  }
-  return { valid: true };
-};
-
 const sanitizeString = (str: string, maxLength: number = 255): string => {
   return str.trim().slice(0, maxLength);
 };
@@ -239,8 +171,12 @@ const sanitizeString = (str: string, maxLength: number = 255): string => {
 // APPLY GLOBAL MIDDLEWARE
 // ============================================================================
 
-// Enable logger
-app.use('*', logger(console.log));
+// Request logging: method, path, status and duration only. No headers, query strings or bodies.
+app.use('*', async (c, next) => {
+  const started = Date.now();
+  await next();
+  log.info('http.request', { method: c.req.method, path: c.req.path, status: c.res.status, ms: Date.now() - started });
+});
 
 // Enable CORS for all routes and methods
 app.use(
@@ -269,297 +205,26 @@ app.get("/make-server-2bdc05e6/health", (c) => {
 /**
  * Sign up a new user
  * POST /make-server-2bdc05e6/auth/signup
- * Body: { email, password, name, role, language, intent }
+ * Body: { email, password, name, role?, language?, intent? }
+ * role: only 'viewer' or 'creator' are honoured; anything else becomes 'viewer'.
+ * moderator/admin are granted only via POST /make-server-2bdc05e6/admin/users/:userId/role.
  */
-app.post("/make-server-2bdc05e6/auth/signup", rateLimit(5, 15 * 60 * 1000), async (c) => {
-  try {
-    const body = await c.req.json();
-    console.log("Signup request received - full body:", JSON.stringify(body));
-    console.log("Signup request - body keys:", Object.keys(body));
-    
-    const { email, password, name, role, language, intent } = body;
-    
-    console.log("Extracted values:", { 
-      email: email || 'MISSING', 
-      password: password ? '***' : 'MISSING',
-      name: name || 'MISSING',
-      role: role || 'MISSING',
-      language: language || 'MISSING',
-      intent: intent || 'MISSING'
-    });
-
-    // Validate required fields
-    if (!email || !password || !name || !role) {
-      console.error("Missing required fields:", { email: !!email, password: !!password, name: !!name, role: !!role });
-      return c.json({ 
-        error: "Missing required fields: email, password, name, role",
-        received: { email: !!email, password: !!password, name: !!name, role: !!role }
-      }, 400);
-    }
-
-    // Validate email format
-    if (!validateEmail(email)) {
-      return c.json({ error: "Invalid email format" }, 400);
-    }
-
-    // Validate password strength
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.valid) {
-      return c.json({ error: passwordValidation.error }, 400);
-    }
-
-    // Validate role
-    const validRoles = ['viewer', 'creator', 'moderator', 'admin'];
-    if (!validRoles.includes(role)) {
-      console.error("Invalid role provided:", role);
-      return c.json({ error: "Invalid role. Must be: viewer, creator, moderator, or admin" }, 400);
-    }
-
-    console.log("Creating user with Supabase Auth...");
-    
-    // Create user with Supabase Auth
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      user_metadata: { 
-        name,
-        role,
-        language: language || 'en',
-        intent: intent || 'explore'
-      },
-      // Automatically confirm the user's email since an email server hasn't been configured.
-      email_confirm: true
-    });
-
-    if (error) {
-      console.error("Supabase auth error during signup:", error);
-      
-      // Check if this is an "email already exists" error
-      if (error.message?.includes('already been registered') || error.code === 'email_exists') {
-        return c.json({ 
-          error: 'An account with this email already exists. Please sign in instead.',
-          code: 'email_exists',
-          details: error 
-        }, 409); // 409 Conflict status code
-      }
-      
-      return c.json({ 
-        error: `Failed to create user: ${error.message}`,
-        details: error 
-      }, 400);
-    }
-
-    if (!data || !data.user) {
-      console.error("No user data returned from Supabase");
-      return c.json({ error: "Failed to create user: No user data returned" }, 400);
-    }
-
-    console.log("User created successfully:", data.user.id);
-
-    // Store user profile in KV store
-    try {
-      await kv.set(`user_profile:${data.user.id}`, {
-        id: data.user.id,
-        email,
-        name,
-        role,
-        language: language || 'en',
-        intent: intent || 'explore',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
-      console.log("User profile stored in KV");
-    } catch (kvError) {
-      console.error("Error storing user profile in KV:", kvError);
-      // Continue even if KV storage fails - user is created
-    }
-
-    // Generate access token for the newly created user using admin client
-    console.log("Generating session token for newly created user...");
-    
-    try {
-      // Create a session for the user directly using admin privileges
-      const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.admin.createSession({
-        user_id: data.user.id
-      });
-
-      if (sessionError || !sessionData?.session) {
-        console.error("Failed to create session after signup:", sessionError);
-        
-        // User was created successfully but session creation failed
-        // Return success with instruction to sign in
-        return c.json({ 
-          user: {
-            id: data.user.id,
-            email: data.user.email,
-            name,
-            role,
-            language: language || 'en',
-            intent: intent || 'explore'
-          },
-          requiresSignIn: true,
-          message: 'Account created successfully. Please sign in to continue.'
-        }, 201);
-      }
-
-      console.log("Session created successfully after signup");
-
-      // Return both user data and session
-      return c.json({ 
-        session: {
-          access_token: sessionData.session.access_token,
-          refresh_token: sessionData.session.refresh_token,
-        },
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          name,
-          role,
-          language: language || 'en',
-          intent: intent || 'explore'
-        }
-      }, 201);
-    } catch (sessionCreationError) {
-      console.error("Unexpected error creating session:", sessionCreationError);
-      
-      // Return success but require manual sign-in
-      return c.json({ 
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          name,
-          role,
-          language: language || 'en',
-          intent: intent || 'explore'
-        },
-        requiresSignIn: true,
-        message: 'Account created successfully. Please sign in to continue.'
-      }, 201);
-    }
-  } catch (error) {
-    console.error("Unexpected error in signup endpoint:", error);
-    return c.json({ 
-      error: `Signup failed: ${error.message}`,
-      details: error.toString()
-    }, 500);
-  }
-});
+app.post("/make-server-2bdc05e6/auth/signup", rateLimit(5, 15 * 60 * 1000), (c) => auth.signup(c));
 
 /**
  * Sign in an existing user
  * POST /make-server-2bdc05e6/auth/signin
  * Body: { email, password }
  */
-app.post("/make-server-2bdc05e6/auth/signin", rateLimit(5, 15 * 60 * 1000), async (c) => {
-  try {
-    const { email, password } = await c.req.json();
-    console.log("Sign in request received for:", email);
+app.post("/make-server-2bdc05e6/auth/signin", rateLimit(5, 15 * 60 * 1000), (c) => auth.signin(c));
 
-    if (!email || !password) {
-      console.error("Missing email or password in sign in request");
-      return c.json({ error: "Missing required fields: email, password" }, 400);
-    }
-
-    // Use anon key client for sign in (user-level auth)
-    const supabase = getSupabaseClient();
-    console.log("Attempting sign in with Supabase...");
-    
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      console.error("Error signing in user:", error);
-      console.error("Error details:", { message: error.message, status: error.status, code: error.code });
-      
-      // Provide more helpful error messages
-      if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
-        // Try to check if user exists with admin client
-        try {
-          const { data: adminData } = await supabaseAdmin.auth.admin.listUsers();
-          const userExists = adminData.users.some(u => u.email === email);
-          
-          if (!userExists) {
-            return c.json({ 
-              error: `No account found with email ${email}. Please create an account first.`,
-              code: 'account_not_found'
-            }, 404);
-          } else {
-            // User exists but credentials are wrong or email not confirmed
-            const user = adminData.users.find(u => u.email === email);
-            console.log("User found in database:", { 
-              id: user?.id, 
-              email: user?.email, 
-              confirmed: user?.email_confirmed_at,
-              lastSignIn: user?.last_sign_in_at 
-            });
-            
-            return c.json({ 
-              error: `Invalid password for ${email}. Please check your password and try again.`,
-              code: 'invalid_password'
-            }, 401);
-          }
-        } catch (adminError) {
-          console.error("Error checking user existence:", adminError);
-        }
-        
-        return c.json({ 
-          error: `Sign in failed: Invalid email or password. Please check your credentials or create a new account.`,
-          code: 'invalid_credentials'
-        }, 401);
-      }
-      
-      return c.json({ error: `Sign in failed: ${error.message}` }, 401);
-    }
-
-    if (!data || !data.user || !data.session) {
-      console.error("No user or session data returned from sign in");
-      return c.json({ error: "Sign in failed: No session created" }, 401);
-    }
-
-    console.log("User signed in successfully:", data.user.id);
-
-    // Get user profile from KV store
-    const profile = await kv.get(`user_profile:${data.user.id}`);
-
-    if (!profile) {
-      console.warn("User signed in but no profile found in KV store, creating from auth data");
-      // If profile doesn't exist in KV (shouldn't happen), create one from user metadata
-      const newProfile = {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.user_metadata?.name || 'User',
-        role: data.user.user_metadata?.role || 'viewer',
-        language: data.user.user_metadata?.language || 'en',
-        intent: data.user.user_metadata?.intent || 'explore',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      await kv.set(`user_profile:${data.user.id}`, newProfile);
-    }
-
-    const userProfile = profile || {
-      id: data.user.id,
-      email: data.user.email,
-      name: data.user.user_metadata?.name || 'User',
-      role: data.user.user_metadata?.role || 'viewer',
-      language: data.user.user_metadata?.language || 'en',
-      intent: data.user.user_metadata?.intent || 'explore'
-    };
-
-    return c.json({ 
-      session: {
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token,
-      },
-      user: userProfile
-    });
-  } catch (error) {
-    console.error("Unexpected error in signin endpoint:", error);
-    return c.json({ error: `Sign in failed: ${error.message}` }, 500);
-  }
-});
+/**
+ * Grant a role (admin only). The only API path that can make someone a moderator or admin.
+ * POST /make-server-2bdc05e6/admin/users/:userId/role
+ * Headers: Authorization: Bearer <admin access_token>
+ * Body: { role }
+ */
+app.post("/make-server-2bdc05e6/admin/users/:userId/role", requireRole(['admin']), (c) => auth.grantRole(c));
 
 /**
  * Get current user session
@@ -568,7 +233,7 @@ app.post("/make-server-2bdc05e6/auth/signin", rateLimit(5, 15 * 60 * 1000), asyn
  */
 app.get("/make-server-2bdc05e6/auth/session", async (c) => {
   try {
-    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const accessToken = bearerToken(c);
     
     if (!accessToken) {
       return c.json({ error: "No access token provided" }, 401);
@@ -577,7 +242,7 @@ app.get("/make-server-2bdc05e6/auth/session", async (c) => {
     const { data: { user }, error } = await supabaseAdmin.auth.getUser(accessToken);
 
     if (error || !user) {
-      console.error("Error getting user session:", error);
+      log.warn('session.invalid_token', errInfo(error));
       return c.json({ error: "Invalid or expired token" }, 401);
     }
 
@@ -588,12 +253,13 @@ app.get("/make-server-2bdc05e6/auth/session", async (c) => {
       user: {
         id: user.id,
         email: user.email,
-        ...profile
+        ...profile,
+        role: resolveEffectiveRole(user, profile)
       }
     });
   } catch (error) {
-    console.error("Error in session endpoint:", error);
-    return c.json({ error: `Session check failed: ${error.message}` }, 500);
+    log.error('session.unexpected_error', errInfo(error));
+    return c.json({ error: "Session check failed. Please try again." }, 500);
   }
 });
 
@@ -604,7 +270,7 @@ app.get("/make-server-2bdc05e6/auth/session", async (c) => {
  */
 app.post("/make-server-2bdc05e6/auth/signout", async (c) => {
   try {
-    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const accessToken = bearerToken(c);
     
     if (!accessToken) {
       return c.json({ error: "No access token provided" }, 401);
@@ -614,14 +280,14 @@ app.post("/make-server-2bdc05e6/auth/signout", async (c) => {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      console.error("Error signing out user:", error);
-      return c.json({ error: `Sign out failed: ${error.message}` }, 400);
+      log.error('signout.failed', errInfo(error));
+      return c.json({ error: "Sign out failed. Please try again." }, 400);
     }
 
     return c.json({ message: "Signed out successfully" });
   } catch (error) {
-    console.error("Error in signout endpoint:", error);
-    return c.json({ error: `Sign out failed: ${error.message}` }, 500);
+    log.error('signout.unexpected_error', errInfo(error));
+    return c.json({ error: "Sign out failed. Please try again." }, 500);
   }
 });
 
@@ -647,7 +313,7 @@ app.post("/make-server-2bdc05e6/auth/recovery", rateLimit(3, 15 * 60 * 1000), as
     });
 
     if (error) {
-      console.error("Error requesting password recovery:", error);
+      log.warn('recovery.request_failed', errInfo(error));
       // Don't reveal if email exists for security
       // Return success anyway to prevent user enumeration
     }
@@ -657,8 +323,8 @@ app.post("/make-server-2bdc05e6/auth/recovery", rateLimit(3, 15 * 60 * 1000), as
       message: "If an account exists with this email, a recovery link has been sent."
     });
   } catch (error) {
-    console.error("Error in recovery endpoint:", error);
-    return c.json({ error: `Password recovery failed: ${error.message}` }, 500);
+    log.error('recovery.unexpected_error', errInfo(error));
+    return c.json({ error: "Password recovery failed. Please try again." }, 500);
   }
 });
 
@@ -673,7 +339,7 @@ app.post("/make-server-2bdc05e6/auth/recovery", rateLimit(3, 15 * 60 * 1000), as
  */
 app.get("/make-server-2bdc05e6/profile", async (c) => {
   try {
-    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const accessToken = bearerToken(c);
     
     if (!accessToken) {
       return c.json({ error: "Unauthorized" }, 401);
@@ -682,7 +348,7 @@ app.get("/make-server-2bdc05e6/profile", async (c) => {
     const { data: { user }, error } = await supabaseAdmin.auth.getUser(accessToken);
 
     if (error || !user) {
-      console.error("Authorization error while getting profile:", error);
+      log.warn('profile.get_unauthorized', errInfo(error));
       return c.json({ error: "Unauthorized" }, 401);
     }
 
@@ -692,10 +358,10 @@ app.get("/make-server-2bdc05e6/profile", async (c) => {
       return c.json({ error: "Profile not found" }, 404);
     }
 
-    return c.json({ profile });
+    return c.json({ profile: { ...profile, role: resolveEffectiveRole(user, profile) } });
   } catch (error) {
-    console.error("Error in profile endpoint:", error);
-    return c.json({ error: `Failed to get profile: ${error.message}` }, 500);
+    log.error('profile.get_unexpected_error', errInfo(error));
+    return c.json({ error: "Failed to get profile. Please try again." }, 500);
   }
 });
 
@@ -707,7 +373,7 @@ app.get("/make-server-2bdc05e6/profile", async (c) => {
  */
 app.put("/make-server-2bdc05e6/profile", async (c) => {
   try {
-    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const accessToken = bearerToken(c);
     
     if (!accessToken) {
       return c.json({ error: "Unauthorized" }, 401);
@@ -716,7 +382,7 @@ app.put("/make-server-2bdc05e6/profile", async (c) => {
     const { data: { user }, error } = await supabaseAdmin.auth.getUser(accessToken);
 
     if (error || !user) {
-      console.error("Authorization error while updating profile:", error);
+      log.warn('profile.update_unauthorized', errInfo(error));
       return c.json({ error: "Unauthorized" }, 401);
     }
 
@@ -727,21 +393,25 @@ app.put("/make-server-2bdc05e6/profile", async (c) => {
       return c.json({ error: "Profile not found" }, 404);
     }
 
-    // Users cannot change their own role through this endpoint
-    delete updates.role;
+    // Only display fields can be changed here. role, id, email and anything else are ignored;
+    // roles are granted only via POST /make-server-2bdc05e6/admin/users/:userId/role.
+    const allowedUpdates: Record<string, string> = {};
+    if (typeof updates?.name === 'string') allowedUpdates.name = sanitizeString(updates.name, 255);
+    if (typeof updates?.language === 'string') allowedUpdates.language = sanitizeString(updates.language, 10);
+    if (typeof updates?.intent === 'string') allowedUpdates.intent = sanitizeString(updates.intent, 50);
 
     const updatedProfile = {
       ...profile,
-      ...updates,
+      ...allowedUpdates,
       updatedAt: new Date().toISOString()
     };
 
     await kv.set(`user_profile:${user.id}`, updatedProfile);
 
-    return c.json({ profile: updatedProfile });
+    return c.json({ profile: { ...updatedProfile, role: resolveEffectiveRole(user, updatedProfile) } });
   } catch (error) {
-    console.error("Error in profile update endpoint:", error);
-    return c.json({ error: `Failed to update profile: ${error.message}` }, 500);
+    log.error('profile.update_unexpected_error', errInfo(error));
+    return c.json({ error: "Failed to update profile. Please try again." }, 500);
   }
 });
 
@@ -753,7 +423,7 @@ app.put("/make-server-2bdc05e6/profile", async (c) => {
  */
 app.post("/make-server-2bdc05e6/profile/request-role", async (c) => {
   try {
-    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const accessToken = bearerToken(c);
     
     if (!accessToken) {
       return c.json({ error: "Unauthorized" }, 401);
@@ -762,7 +432,7 @@ app.post("/make-server-2bdc05e6/profile/request-role", async (c) => {
     const { data: { user }, error } = await supabaseAdmin.auth.getUser(accessToken);
 
     if (error || !user) {
-      console.error("Authorization error while requesting role elevation:", error);
+      log.warn('role_request.unauthorized', errInfo(error));
       return c.json({ error: "Unauthorized" }, 401);
     }
 
@@ -770,6 +440,10 @@ app.post("/make-server-2bdc05e6/profile/request-role", async (c) => {
 
     if (!requestedRole || !reason) {
       return c.json({ error: "Missing required fields: requestedRole, reason" }, 400);
+    }
+
+    if (!isRole(requestedRole)) {
+      return c.json({ error: "Invalid requestedRole. Must be: viewer, creator, moderator, or admin" }, 400);
     }
 
     // Store role request for admin review
@@ -786,8 +460,8 @@ app.post("/make-server-2bdc05e6/profile/request-role", async (c) => {
       status: "pending"
     });
   } catch (error) {
-    console.error("Error in role request endpoint:", error);
-    return c.json({ error: `Failed to submit role request: ${error.message}` }, 500);
+    log.error('role_request.unexpected_error', errInfo(error));
+    return c.json({ error: "Failed to submit role request. Please try again." }, 500);
   }
 });
 
@@ -815,11 +489,11 @@ app.post("/make-server-2bdc05e6/auth/refresh", rateLimit(10, 15 * 60 * 1000), as
     const { data, error } = await supabase.auth.refreshSession({ refresh_token });
     
     if (error || !data?.session) {
-      console.error("Error refreshing session:", error);
+      log.warn('refresh.failed', errInfo(error));
       return c.json({ error: "Failed to refresh session: Invalid or expired refresh token" }, 401);
     }
     
-    console.log("Session refreshed successfully for user:", data.user?.id);
+    log.info('refresh.succeeded', { userId: data.user?.id });
     
     // Get updated user profile
     const profile = await kv.get(`user_profile:${data.user.id}`);
@@ -833,12 +507,13 @@ app.post("/make-server-2bdc05e6/auth/refresh", rateLimit(10, 15 * 60 * 1000), as
       user: {
         id: data.user.id,
         email: data.user.email,
-        ...profile
+        ...profile,
+        role: resolveEffectiveRole(data.user, profile)
       }
     });
   } catch (error) {
-    console.error("Unexpected error in refresh endpoint:", error);
-    return c.json({ error: `Session refresh failed: ${error.message}` }, 500);
+    log.error('refresh.unexpected_error', errInfo(error));
+    return c.json({ error: "Session refresh failed. Please try again." }, 500);
   }
 });
 
@@ -851,7 +526,7 @@ app.post("/make-server-2bdc05e6/auth/refresh", rateLimit(10, 15 * 60 * 1000), as
  */
 app.put("/make-server-2bdc05e6/preferences", async (c) => {
   try {
-    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const accessToken = bearerToken(c);
     
     if (!accessToken) {
       return c.json({ error: "Unauthorized" }, 401);
@@ -894,14 +569,14 @@ app.put("/make-server-2bdc05e6/preferences", async (c) => {
     
     await kv.set(`user_profile:${user.id}`, updatedProfile);
     
-    console.log("Preferences updated for user:", user.id, preferences);
+    log.info('preferences.updated', { userId: user.id, keys: Object.keys(preferences) });
     
     return c.json({ 
       preferences: updatedProfile.personalizationPreferences 
     });
   } catch (error) {
-    console.error("Error in preferences endpoint:", error);
-    return c.json({ error: `Failed to update preferences: ${error.message}` }, 500);
+    log.error('preferences.update_unexpected_error', errInfo(error));
+    return c.json({ error: "Failed to update preferences. Please try again." }, 500);
   }
 });
 
@@ -913,7 +588,7 @@ app.put("/make-server-2bdc05e6/preferences", async (c) => {
  */
 app.get("/make-server-2bdc05e6/preferences", async (c) => {
   try {
-    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const accessToken = bearerToken(c);
     
     if (!accessToken) {
       return c.json({ error: "Unauthorized" }, 401);
@@ -940,8 +615,8 @@ app.get("/make-server-2bdc05e6/preferences", async (c) => {
     
     return c.json({ preferences });
   } catch (error) {
-    console.error("Error in get preferences endpoint:", error);
-    return c.json({ error: `Failed to get preferences: ${error.message}` }, 500);
+    log.error('preferences.get_unexpected_error', errInfo(error));
+    return c.json({ error: "Failed to get preferences. Please try again." }, 500);
   }
 });
 
@@ -1020,7 +695,7 @@ app.post("/make-server-2bdc05e6/content/publish", requireRole(['creator', 'moder
         createdAt: new Date().toISOString()
       });
       
-      console.log("Content submitted for moderation:", contentId);
+      log.info('content.submitted_for_moderation', { contentId });
     }
     
     // Add to content index for search
@@ -1036,7 +711,7 @@ app.post("/make-server-2bdc05e6/content/publish", requireRole(['creator', 'moder
     };
     await kv.set(indexKey, existingIndex);
     
-    console.log("Content published:", { contentId, status, authorId: user.id });
+    log.info('content.published', { contentId, status, authorId: user.id });
     
     return c.json({ 
       contentId,
@@ -1046,8 +721,8 @@ app.post("/make-server-2bdc05e6/content/publish", requireRole(['creator', 'moder
         : 'Content published successfully.'
     }, 201);
   } catch (error) {
-    console.error("Error in content publish endpoint:", error);
-    return c.json({ error: `Failed to publish content: ${error.message}` }, 500);
+    log.error('content.publish_unexpected_error', errInfo(error));
+    return c.json({ error: "Failed to publish content. Please try again." }, 500);
   }
 });
 
@@ -1090,8 +765,8 @@ app.get("/make-server-2bdc05e6/moderation/queue", requireRole(['moderator', 'adm
       total: enrichedItems.length
     });
   } catch (error) {
-    console.error("Error in moderation queue endpoint:", error);
-    return c.json({ error: `Failed to get moderation queue: ${error.message}` }, 500);
+    log.error('moderation.queue_unexpected_error', errInfo(error));
+    return c.json({ error: "Failed to get moderation queue. Please try again." }, 500);
   }
 });
 
@@ -1167,14 +842,14 @@ app.post("/make-server-2bdc05e6/moderation/review", requireRole(['moderator', 'a
       }
     }
     
-    console.log("Moderation review completed:", { itemId, action, reviewedBy: user.id });
+    log.info('moderation.reviewed', { itemId, action, reviewedBy: user.id });
     
     return c.json({ 
       message: `Content ${action === 'approve' ? 'approved' : 'rejected'} successfully.`
     });
   } catch (error) {
-    console.error("Error in moderation review endpoint:", error);
-    return c.json({ error: `Failed to review content: ${error.message}` }, 500);
+    log.error('moderation.review_unexpected_error', errInfo(error));
+    return c.json({ error: "Failed to review content. Please try again." }, 500);
   }
 });
 
@@ -1186,7 +861,7 @@ app.post("/make-server-2bdc05e6/moderation/review", requireRole(['moderator', 'a
  */
 app.delete("/make-server-2bdc05e6/account", async (c) => {
   try {
-    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const accessToken = bearerToken(c);
     
     if (!accessToken) {
       return c.json({ error: "Unauthorized" }, 401);
@@ -1201,7 +876,7 @@ app.delete("/make-server-2bdc05e6/account", async (c) => {
     // Get user profile for logging
     const profile = await kv.get(`user_profile:${user.id}`);
     
-    console.log("Account deletion requested:", { userId: user.id, email: user.email });
+    log.info('account.deletion_requested', { userId: user.id });
     
     // Mark account for deletion (30-day grace period)
     const scheduledDeletionDate = new Date();
@@ -1233,7 +908,7 @@ app.delete("/make-server-2bdc05e6/account", async (c) => {
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
     
     if (deleteError) {
-      console.error("Error deleting user from Supabase:", deleteError);
+      log.error('account.auth_delete_failed', { userId: user.id, ...errInfo(deleteError) });
       // Continue anyway - user data is anonymized
     }
     
@@ -1241,15 +916,15 @@ app.delete("/make-server-2bdc05e6/account", async (c) => {
     await kv.del(`role_request:${user.id}`);
     await kv.del(`creator_verified:${user.id}`);
     
-    console.log("Account deleted successfully:", user.id);
+    log.info('account.deleted', { userId: user.id });
     
     return c.json({
       message: "Your account has been permanently deleted. All personal data has been removed, and your content contributions have been anonymized.",
       deletedAt: new Date().toISOString()
     });
   } catch (error) {
-    console.error("Error in account deletion endpoint:", error);
-    return c.json({ error: `Failed to delete account: ${error.message}` }, 500);
+    log.error('account.delete_unexpected_error', errInfo(error));
+    return c.json({ error: "Failed to delete account. Please try again." }, 500);
   }
 });
 

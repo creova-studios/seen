@@ -6,6 +6,12 @@ async function enterSeen(page: import("@playwright/test").Page) {
   await page.getByRole("button", { name: /^continue$/i }).click();
 }
 
+/** The first screen: the glowing S.E.E.N entry button. It must never be removed. */
+async function enterSeen(page: import("@playwright/test").Page) {
+  await page.getByRole("button", { name: /s\W*e\W*e\W*n/i }).click();
+  await page.getByRole("button", { name: /^continue$/i }).click();
+}
+
 test.describe("first visit", () => {
   test("the first screen is the glowing S.E.E.N entry button", async ({ page }) => {
     await page.goto("/");

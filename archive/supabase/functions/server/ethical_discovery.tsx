@@ -134,15 +134,18 @@ function isUnderrepresentedRegion(province: string): boolean {
 export async function curateContent(params: {
   contentId: string;
   curatorId: string;
+  /** Role resolved by requireRole from server-controlled data (app_metadata / KV). */
+  curatorRole?: string;
   qualityScore: number;
   culturalSignificance: number;
   technicalExecution: number;
   notes?: string;
   featuredUntil?: string;
 }): Promise<EditorialCuration> {
-  // Verify curator has moderator/admin role
-  const curatorProfile = await kv.get(`user_profile:${params.curatorId}`);
-  if (!curatorProfile || !['moderator', 'admin'].includes(curatorProfile.role)) {
+  // Verify curator has moderator/admin role. Uses the role requireRole resolved from
+  // server-controlled data (app_metadata), not the raw KV profile role, which may be a
+  // pre-CRE-167 self-assigned value.
+  if (!params.curatorRole || !['moderator', 'admin'].includes(params.curatorRole)) {
     throw new Error('Only moderators and admins can curate content');
   }
   
