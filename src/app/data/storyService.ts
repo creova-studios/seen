@@ -224,6 +224,7 @@ export function getStoryWorldData(storyWorldId: string, language: Language) {
     totalDuration: story.totalDuration,
     chapterCount: story.chapterCount,
     culturalThemes: story.culturalThemes,
+    languagesAvailable: story.languagesAvailable,
     chapters: chapters.map(ch => ({
       id: ch.id,
       order: ch.order,

@@ -1,10 +1,19 @@
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowLeft, ChevronLeft, ChevronRight, List, Share2, Bookmark, Info, MessageCircle } from "lucide-react";
-import { useState, useEffect } from "react";
-import { AudioPlayer } from "./AudioPlayer";
-import { useAudioPlayer } from "../hooks/useAudioPlayer";
+import { useState, useEffect, useRef } from "react";
+import { usePlayback } from "../playback/PlaybackProvider";
+import { pushNotification } from "../services";
+import { deleteBookmark, isBookmarked, saveBookmark } from "../data/userDataService";
+import { toast } from "sonner";
+import { ExpandedPlayer } from "./seen/MediaPlayerBar";
+import { Button } from "./seen/primitives";
+import { CaptionBar, FollowAlongText, PlayerAlert, ReaderTools, StoryCompletion, TranscriptSheet } from "./StoryReaderExtras";
+import { useAppNav } from "../navigation/AppNav";
+import { useT } from "../i18n/useT";
+import { SeenImage } from "./seen/SeenImage";
 import { useStoryState } from "../contexts/StoryStateContext";
 import { useAuth } from "../contexts/AuthContext";
+import { useGuest } from "../guest/useGuest";
 import {
   getChaptersForStory,
   getLocalizedText,
@@ -14,6 +23,7 @@ import {
 } from "../data/storyDatabase";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ContextCardModal } from "./ContextCardModal";
+import { shareUrl } from "../navigation/shareUrl";
 import { CommunityResponsesPanel } from "./CommunityResponsesPanel";
 import { BranchingChoiceOverlay } from "./BranchingChoiceOverlay";
 import { SubmitResponseModal } from "./SubmitResponseModal";
@@ -30,7 +40,9 @@ export function StoryChapterScreen({
   onShowIndex,
   storyWorldId = 'midnight-resonance'
 }: StoryChapterScreenProps) {
-  const { state, navigateToChapter, updateAudioState, saveProgress, setLanguage, recordBranchChoice } = useStoryState();
+  const { state, navigateToChapter, updateAudioState, saveProgress, setLanguage, recordBranchChoice, setAccessibilityPreferences } = useStoryState();
+  const nav = useAppNav();
+  const { requireAccount } = useGuest();
   const { state: authState } = useAuth();
   const chapters = getChaptersForStory(storyWorldId);
   const storyWorld = getStoryWorldById(storyWorldId);
@@ -41,7 +53,6 @@ export function StoryChapterScreen({
     return chapters.find(ch => ch.id === savedChapterId) || chapters[0];
   });
   
-  const [showCaptions, setShowCaptions] = useState(state.accessibilityPreferences.captionsEnabled);
   const [controlsVisible, setControlsVisible] = useState(true);
   
   // NEW: State for context cards, community responses, and branching
@@ -54,7 +65,7 @@ export function StoryChapterScreen({
   // Early return if no chapter is found
   if (!currentChapter) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-dvh bg-black flex items-center justify-center">
         <div className="text-white/60 text-center px-5">
           <p className="mb-4">No chapters available</p>
           <button 
@@ -83,18 +94,46 @@ export function StoryChapterScreen({
   }));
   const branchChoice = currentChapter.branchChoices?.[0]; // Get first branch choice if available
   
-  const audio = useAudioPlayer({
-    src: currentChapter.media?.narration?.url,
-    autoPlay: false
-  });
-
-  // Sync audio state with global state
-  useEffect(() => {
-    updateAudioState({
-      isPlaying: audio.isPlaying,
-      playbackPosition: audio.currentTime
+  // Shared playback engine: keeps narrating if the reader is left, and falls
+  // back to the device voice when no recorded narration exists.
+  const playback = usePlayback();
+  const loadChapter = () =>
+    playback.load({
+      storyId: storyWorldId,
+      chapterId: currentChapter.id,
+      title: getLocalizedText(currentChapter.title, state.language),
+      artist: storyWorld ? getLocalizedText(storyWorld.creator, state.language) : undefined,
+      src: currentChapter.media?.narration?.url,
+      text: getLocalizedText(currentChapter.text, state.language),
+      lang: state.language,
+      coverImage: storyWorld?.coverImage,
     });
-  }, [audio.isPlaying, audio.currentTime]);
+  useEffect(() => {
+    loadChapter();
+  }, [currentChapter.id, state.language]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const t = useT();
+  const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const textScroller = useRef<HTMLDivElement>(null);
+  const [completionOpen, setCompletionOpen] = useState(false);
+  const [completionSeen, setCompletionSeen] = useState(false);
+  const chapterText = getLocalizedText(currentChapter.text, state.language);
+  const captionsOn = state.accessibilityPreferences.captionsEnabled;
+  const onLastChapter = chapters.findIndex(ch => ch.id === currentChapter.id) === chapters.length - 1;
+  // Reaching the end of the last chapter completes the story (once per visit to that chapter).
+  useEffect(() => {
+    setCompletionSeen(false);
+  }, [currentChapter.id]);
+  useEffect(() => {
+    if (onLastChapter && playback.status === "ended" && !completionSeen) {
+      setCompletionOpen(true);
+      setCompletionSeen(true);
+    }
+  }, [onLastChapter, playback.status, completionSeen]);
+
+  useEffect(() => {
+    updateAudioState({ isPlaying: playback.status === "playing", playbackPosition: playback.elapsed });
+  }, [playback.status, playback.elapsed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-hide controls after 3 seconds of inactivity
   useEffect(() => {
@@ -128,7 +167,7 @@ export function StoryChapterScreen({
     if (branchChoice.impactsOutcome && nextChapterId) {
       const targetChapter = getChapterById(storyWorldId, nextChapterId);
       if (targetChapter) {
-        audio.fadeOut();
+        playback.pause();
         setTimeout(() => {
           setCurrentChapter(targetChapter);
         }, 600);
@@ -145,6 +184,34 @@ export function StoryChapterScreen({
 
   const [submissionForceRefresh, setSubmissionForceRefresh] = useState(0);
 
+  const [saved, setSaved] = useState(() => isBookmarked(storyWorldId));
+  const handleToggleSaved = () =>
+    requireAccount({ reason: "save", subject: storyWorld ? getLocalizedText(storyWorld.title, state.language) : undefined }, () => {
+      if (saved) {
+        deleteBookmark(storyWorldId);
+        toast.success("Removed from Saved");
+      } else {
+        saveBookmark({ contentId: storyWorldId, contentType: "story", savedAt: new Date().toISOString() });
+        toast.success("Saved to your Library");
+      }
+      setSaved(!saved);
+    });
+
+  const handleShare = async () => {
+    const url = shareUrl(storyWorldId);
+    const title = storyWorld ? getLocalizedText(storyWorld.title, state.language) : "SEEN";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      toast.success("Link copied");
+    } catch (e) {
+      if ((e as Error)?.name !== "AbortError") toast.error("Couldn't share this story. Copy the address from your browser instead.");
+    }
+  };
+
   const handleActualSubmit = (type: "text" | "audio" | "image", content: string, isAnonymous: boolean) => {
     submitCommunityResponse({
       chapterId: currentChapter.id,
@@ -156,6 +223,12 @@ export function StoryChapterScreen({
       language: state.language,
     });
     setShowSubmitResponse(false);
+    pushNotification({
+      type: "moderation",
+      title: "Response sent for review",
+      body: `Your response to “${getLocalizedText(currentChapter.title, state.language)}” will appear once a moderator approves it.`,
+      target: { screen: "story", id: storyWorldId },
+    });
     setSubmissionForceRefresh(n => n + 1); // re-render so any future approved response shows
   };
 
@@ -177,12 +250,17 @@ export function StoryChapterScreen({
   }, [currentChapter.id]);
 
   const navigateChapter = (direction: 'prev' | 'next') => {
+    // Guests read chapter 1; the rest asks for an account (limited guest mode, D2).
+    if (direction === 'next' && !authState.isAuthenticated) {
+      requireAccount({ reason: "continue", subject: storyWorld ? getLocalizedText(storyWorld.title, state.language) : undefined });
+      return;
+    }
     const currentIndex = chapters.findIndex(ch => ch.id === currentChapter.id);
     let newIndex = direction === 'prev' ? currentIndex - 1 : currentIndex + 1;
     
     if (newIndex >= 0 && newIndex < chapters.length) {
       // Cinematic transition: fade out audio
-      audio.fadeOut();
+      playback.pause();
       
       // Wait for fade, then switch chapter
       setTimeout(() => {
@@ -200,16 +278,18 @@ export function StoryChapterScreen({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={handleShowControls}
-      className="fixed inset-0 bg-black z-50 overflow-hidden"
+      className="fixed inset-0 bg-black z-50 overflow-hidden flex flex-col"
     >
       {/* Background image */}
       <div className="absolute inset-0">
-        <img
+        <SeenImage
           src={currentChapter.media?.images?.[0] || storyWorld?.coverImage}
-          alt={getLocalizedText(currentChapter.title, state.language)}
+          alt={currentChapter.media?.images?.[0] && !currentChapter.media.imageDecorative ? currentChapter.media.imageAlt ?? "" : ""}
+          decorative={!(currentChapter.media?.images?.[0] && !currentChapter.media.imageDecorative && currentChapter.media.imageAlt)}
+          seed={storyWorldId}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/75 to-black" />
       </div>
 
       {/* Top controls - auto-hide */}
@@ -221,10 +301,10 @@ export function StoryChapterScreen({
             exit={{ opacity: 0, y: -20 }}
             className="absolute top-0 left-0 right-0 z-20"
           >
-            <div className="max-w-[428px] mx-auto flex items-center justify-between p-5 pt-8">
+            <div className="max-w-(--seen-content-max) mx-auto flex items-center justify-between p-5 pt-8">
               <button
                 onClick={onClose}
-                className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors"
+                className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors"
                 aria-label="Close"
               >
                 <ArrowLeft className="w-5 h-5 text-white" />
@@ -238,27 +318,30 @@ export function StoryChapterScreen({
                 />
                 <button
                   onClick={onShowIndex}
-                  className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors"
+                  className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors"
                   aria-label="Chapter index"
                 >
                   <List className="w-5 h-5 text-white" />
                 </button>
                 <button
-                  className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors"
+                  onClick={handleShare}
+                  className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors"
                   aria-label="Share"
                 >
                   <Share2 className="w-4 h-4 text-white" />
                 </button>
                 <button
-                  className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors"
-                  aria-label="Bookmark"
+                  onClick={handleToggleSaved}
+                  aria-pressed={saved}
+                  className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors"
+                  aria-label={saved ? "Remove from saved" : "Save story"}
                 >
-                  <Bookmark className="w-4 h-4 text-white" />
+                  <Bookmark className={`w-4 h-4 text-white ${saved ? "fill-white" : ""}`} />
                 </button>
                 <button
                   onClick={() => setSelectedContextCardIndex(contextCards.length > 0 ? 0 : null)}
                   disabled={contextCards.length === 0}
-                  className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="Info"
                 >
                   <Info className="w-4 h-4 text-white" />
@@ -268,7 +351,7 @@ export function StoryChapterScreen({
                 </button>
                 <button
                   onClick={() => setShowCommunityResponses(true)}
-                  className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors"
+                  className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors"
                   aria-label="Community Responses"
                 >
                   <MessageCircle className="w-4 h-4 text-white" />
@@ -285,15 +368,16 @@ export function StoryChapterScreen({
       </AnimatePresence>
 
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-end max-w-[428px] mx-auto">
-        <div className="p-6 pb-32 space-y-6">
+      {/* Scrollable text region: long chapters must be readable, never clipped behind the player */}
+      <div ref={textScroller} className="relative z-10 flex-1 min-h-0 overflow-y-auto">
+        <div className="max-w-(--seen-content-max) mx-auto min-h-full flex flex-col justify-end p-6 pt-28 space-y-6">
           {/* Chapter indicator */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3"
           >
-            <span className="text-xs tracking-[0.3em] uppercase text-white/40">
+            <span className="text-xs tracking-[0.3em] uppercase text-white/55">
               Chapter {currentChapter.order} of {chapters.length}
             </span>
             {/* Soft progress indicator */}
@@ -322,34 +406,41 @@ export function StoryChapterScreen({
             {getLocalizedText(currentChapter.title, state.language)}
           </motion.h1>
 
-          {/* Chapter content */}
-          <motion.p
+          {/* Chapter content: the spoken sentence is lit and followed while it plays */}
+          <motion.div
             key={`${currentChapter.id}-content`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-base text-white/70 leading-relaxed"
+            className="flex flex-col"
           >
-            {getLocalizedText(currentChapter.text, state.language)}
-          </motion.p>
+            <FollowAlongText
+              text={chapterText}
+              progress={playback.progress}
+              playing={playback.status === "playing"}
+              scroller={textScroller}
+              reducedMotion={state.accessibilityPreferences.reducedMotion}
+              chapterKey={currentChapter.id}
+            />
+          </motion.div>
 
-          {/* Captions overlay */}
-          <AnimatePresence>
-            {showCaptions && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="p-4 rounded-xl bg-black/60 backdrop-blur-md border border-white/10"
-              >
-                <p className="text-sm text-white/90 leading-relaxed">
-                  [Ambient sounds: distant city traffic, wind through buildings, occasional footsteps]
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+
         </div>
       </div>
+
+      <TranscriptSheet open={transcriptOpen} onOpenChange={setTranscriptOpen} chapterTitle={getLocalizedText(currentChapter.title, state.language)} text={chapterText} />
+
+      {completionOpen && storyWorld && (
+        <StoryCompletion
+          story={storyWorld}
+          language={state.language}
+          minutes={chapters.reduce((n, c) => n + (c.estimatedDuration || 0), 0)}
+          chapterCount={chapters.length}
+          onReflect={() => { setCompletionOpen(false); setShowSubmitResponse(true); }}
+          onKeepReading={() => setCompletionOpen(false)}
+          onLibrary={() => { setCompletionOpen(false); nav.go("library"); }}
+        />
+      )}
 
       {/* Context Card Modal */}
       {selectedContextCardIndex !== null && contextCards[selectedContextCardIndex] && (
@@ -389,22 +480,29 @@ export function StoryChapterScreen({
       </AnimatePresence>
 
       {/* Bottom controls */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black via-black to-transparent">
-        <div className="max-w-[428px] mx-auto p-6 space-y-4">
+      <div className="relative z-20 flex-shrink-0 bg-black/90 backdrop-blur-xl border-t border-white/5">
+        <div className="max-w-(--seen-content-max) mx-auto px-5 pt-4 pb-5 space-y-3">
+          <PlayerAlert status={playback.status} onRetry={loadChapter} />
+          <CaptionBar text={chapterText} progress={playback.progress} show={captionsOn && playback.source === "voice" && (playback.status === "playing" || playback.status === "paused")} />
+          {captionsOn && playback.source === "recording" && <p className="text-xs text-seen-muted text-center">{t("reader.captions.voiceOnly")}</p>}
+
           {/* Audio player */}
-          <AudioPlayer
-            isPlaying={audio.isPlaying}
-            onTogglePlay={audio.togglePlay}
-            volume={audio.volume}
-            onVolumeChange={audio.setVolume}
-            currentTime={audio.currentTime}
-            duration={audio.duration}
-            onSeek={audio.seek}
-            showCaptions={showCaptions}
-            onToggleCaptions={() => setShowCaptions(!showCaptions)}
-            title={getLocalizedText(currentChapter.title, state.language)}
-            artist={storyWorld ? getLocalizedText(storyWorld.creator, state.language) : undefined}
-          />
+          <ExpandedPlayer compact />
+
+          {/* At the end of a chapter, offer the next one clearly. It never starts by itself (PR-4). */}
+          {canGoNext && playback.status === "ended" && (
+            <Button fullWidth onClick={() => navigateChapter('next')} icon={<ChevronRight className="w-4 h-4" aria-hidden />}>
+              {t("reader.nextChapter")}
+            </Button>
+          )}
+
+          <div className="flex justify-center">
+            <ReaderTools
+              captionsOn={captionsOn}
+              onToggleCaptions={() => setAccessibilityPreferences({ captionsEnabled: !captionsOn })}
+              onOpenTranscript={() => setTranscriptOpen(true)}
+            />
+          </div>
 
           {/* Chapter navigation */}
           <div className="flex items-center justify-between pt-2">
@@ -415,7 +513,7 @@ export function StoryChapterScreen({
                 flex items-center gap-2 px-4 py-2 rounded-full transition-all
                 ${canGoPrev 
                   ? 'bg-white/10 hover:bg-white/20 text-white' 
-                  : 'bg-white/5 text-white/20 cursor-not-allowed'
+                  : 'bg-white/5 text-white/55 cursor-not-allowed'
                 }
               `}
             >
@@ -424,17 +522,16 @@ export function StoryChapterScreen({
             </button>
 
             <button
-              onClick={() => navigateChapter('next')}
-              disabled={!canGoNext}
+              onClick={() => (canGoNext ? navigateChapter('next') : setCompletionOpen(true))}
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-full transition-all
                 ${canGoNext 
                   ? 'bg-white/10 hover:bg-white/20 text-white' 
-                  : 'bg-white/5 text-white/20 cursor-not-allowed'
+                  : 'bg-white/5 text-white/55 cursor-not-allowed'
                 }
               `}
             >
-              <span className="text-xs tracking-wider uppercase">Next</span>
+              <span className="text-xs tracking-wider uppercase">{canGoNext ? "Next" : t("reader.finish")}</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

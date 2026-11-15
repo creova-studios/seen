@@ -1,249 +1,77 @@
-# SEEN Platform - Development Guide
+# SEEN — development guide
 
-## Project Overview
+SEEN by CREOVA: a mobile-first web app for multilingual (EN/FR/ES) community story worlds — stories, creators, collections, funding for storytellers. Production: https://seen-sigma-eight.vercel.app (Vercel, deploys `main`).
 
-**SEEN by CREOVA** is a React/TypeScript platform for interactive, multilingual story content with audio, video, and community features.
+**Source of truth:** this repository (`creova-gif/SEEN`), branch `main`. See `docs/operations/REPOSITORY_MAP.md`. Every other SEEN branch or project is an archive.
 
-- **Status**: Pre-launch audit complete
-- **System Score**: 38/100 (requires critical fixes)
-- **Launch Status**: NOT READY
+## Git workflow (read before touching anything)
 
-## Tech Stack
+- `main` = production and the testers' build. Never commit to it directly; it only changes by a reviewed merge from `staging` (or an urgent `fix/*`).
+- `dev` = integration branch for ongoing work. `staging` = release candidate; only bug fixes land there.
+- `feature/<name>` and `fix/<name>` branch from `dev` and merge back by PR. Flow: `feature/*` → `dev` → `staging` → `main`.
+- Full rules, Vercel behaviour and the release/hotfix steps: `docs/operations/BRANCHING.md`.
 
-| Layer | Technology |
-|-------|------------|
-| **Frontend** | React 18.3.1 + TypeScript |
-| **Build** | Vite 6.3.5 |
-| **Styling** | Tailwind CSS 4.1.12 + Radix UI |
-| **Animation** | Motion (Framer Motion) |
-| **State** | Context API (StoryStateContext, AuthContext) |
-| **Backend** | Supabase |
-| **Languages** | EN, FR, ES |
-| **Roles** | viewer, creator, moderator, admin |
-
-## Project Structure
-
-```
-src/app/
-├── data/
-│   ├── content.ts              # Type definitions + sample data (2 stories)
-│   ├── storyDatabase.ts        # Complete story data (12 stories) [SOURCE OF TRUTH]
-│   ├── storyService.ts         # Data access layer functions
-│   ├── types.ts                # TypeScript interfaces
-│   └── demoData.ts             # Test data helpers
-├── context/
-│   ├── StoryStateContext.tsx   # Global state (language, intent, role, progress)
-│   ├── AuthContext.tsx         # Authentication & roles
-│   └── NavigationProvider.tsx   # Screen routing
-├── screens/
-│   ├── ForYouScreen.tsx        # Personalized feed
-│   ├── ExploreScreen.tsx       # Content discovery
-│   ├── LibraryScreen.tsx       # User's reading list
-│   ├── ProfileScreen.tsx       # User settings
-│   └── OnboardingScreen.tsx    # Initial setup
-├── components/
-│   ├── NavigationBar.tsx       # Header with logo & buttons
-│   ├── StoryCard.tsx           # Story display component
-│   ├── StoryReader.tsx         # Content player
-│   └── ...other components
-└── App.tsx                     # Main router & initialization
-```
-
-## Critical Issues (BLOCKING)
-
-### 1. Data Source Conflict ⚠️
-**Problem**: Two conflicting story databases exist
-- `content.ts`: 2 stories
-- `storyDatabase.ts`: 12 stories ← **USE THIS**
-
-**Action**: Delete `content.ts`, use `storyDatabase.ts` as single source of truth
-
-### 2. Incomplete Stories 🚧
-**Problem**: 4 of 12 stories have missing chapters (22 total chapters incomplete)
-- `black-atlantic-canada` (6 chapters)
-- `what-we-carry` (5 chapters)
-- `small-histories` (6 chapters)
-- `work-worth` (5 chapters)
-
-**Action**: Generate remaining content
-
-### 3. Dead Search Button 🔍
-**Problem**: Search button in NavigationBar has no implementation
-- File: `src/app/components/NavigationBar.tsx`
-- Line: onClick handler logs only
-
-**Action**: Implement search using Fuse.js
-
-### 4. Chapter Architecture Flaw 🏗️
-**Problem**: Chapters are nested inside StoryWorld objects, cannot be independently queried
-- Cannot look up chapters by storyWorldId + chapterId
-- Breaks modularity and API design
-
-**Action**: Refactor to separate chapter references
-
-## Custom Skills / Commands
-
-### Audit & Analysis
-```bash
-# Full audit (Critical/High/Medium/Low issues)
-npm run audit:full
-
-# Check data consistency
-npm run validate:content
-
-# CMF compliance audit
-npm run audit:cmf
-
-# Runtime testing
-npm run test:runtime
-```
-
-### Critical Fixes
-```bash
-# Fix all 4 CRITICAL issues at once
-npm run fix:critical
-
-# Or fix individually:
-npm run fix:data-conflict
-npm run fix:search-button
-npm run fix:chapter-architecture
-npm run generate:missing-chapters
-```
-
-### New Features (from awesome-design-md, svgl, Open-Generative-AI)
-```bash
-# Create DESIGN.md (design system as code)
-npm run create:design-system
-
-# Add search with Fuse.js
-npm run implement:search
-
-# Add favorites/bookmarks
-npm run add:favorites
-
-# Convert to multi-studio editor
-npm run setup:multi-studio-editor
-```
-
-## Data Flow Architecture
-
-```
-User Input
-    ↓
-[StoryStateContext] - Global state (language, intent, role, progress, a11y)
-    ↓
-[AuthContext] - User auth & permissions
-    ↓
-[NavigationProvider] - Screen routing
-    ↓
-[Screens] (ForYou, Explore, Library, Profile)
-    ↓
-[storyService] - Data access layer
-    ↓
-[storyDatabase] - Story worlds + chapters + media
-```
-
-## Language & Multilingual Support
-
-Languages: `en` (English), `fr` (French), `es` (Spanish)
-
-Fallback order: preferred lang → English → first available
-
-**Issue**: Fallback logic untested across all content
-
-## Roles & Permissions
-
-```typescript
-type UserRole = 'viewer' | 'creator' | 'moderator' | 'admin';
-
-// Current status: Structure defined, enforcement untested
-// TODO: Verify role-based access in all screens
-```
-
-## Recommended Development Workflow
-
-### Phase 1: Critical Fixes (Week 1)
-1. Resolve data source conflict (delete content.ts)
-2. Generate missing 22 chapters
-3. Implement search button with Fuse.js
-4. Refactor chapter storage
-
-### Phase 2: Design System & Components (Week 2)
-1. Create DESIGN.md for AI-assisted UI generation
-2. Add favorites/bookmarks store
-3. Implement multi-studio editor
-4. Update component library
-
-### Phase 3: Testing & Validation (Week 3)
-1. Runtime testing (browser, feeds, auth, i18n)
-2. CMF compliance audit
-3. Multilingual content validation
-4. Role-based permission testing
-5. Media file hosting verification
-
-### Phase 4: Polish & Launch (Week 4)
-1. Performance optimization
-2. Accessibility review
-3. Error handling & edge cases
-4. Final QA
-
-## Key Files to Edit
-
-| Issue | File | Priority |
-|-------|------|----------|
-| Data conflict | `src/app/data/content.ts` | DELETE ASAP |
-| Search button | `src/app/components/NavigationBar.tsx` | CRITICAL |
-| Chapter structure | `src/app/data/storyDatabase.ts` | CRITICAL |
-| Story data | `src/app/data/storyDatabase.ts` | CRITICAL |
-| Type definitions | `src/app/data/types.ts` | HIGH |
-| Global state | `src/app/context/StoryStateContext.tsx` | HIGH |
-
-## Resources Used
-
-- **Design System**: [awesome-design-md](https://github.com/VoltAgent/awesome-design-md) - DESIGN.md pattern
-- **Search & Assets**: [svgl](https://github.com/pheralb/svgl) - Favorites store, Fuse.js search
-- **Editor Architecture**: [Open-Generative-AI](https://github.com/Anil-matcha/Open-Generative-AI) - Multi-studio tabs, file upload
-
-## Getting Started
+## Commands
 
 ```bash
-# Install dependencies
-npm install fuse.js
-
-# Start dev server
-npm run dev
-
-# Run audit
-npm run audit:full
-
-# Apply critical fixes
-npm run fix:critical
+npm install
+npm run dev          # Vite dev server
+npm run typecheck    # must be 0 errors
+npm test             # Vitest unit + component tests
+npm run test:e2e     # Playwright journeys + axe (sandbox: PW_CHROMIUM_PATH=/opt/pw-browsers/chromium)
+npm run check        # typecheck + test + build
 ```
 
-## System Score Breakdown
+## Where things are
 
-| Category | Score | Notes |
-|----------|-------|-------|
-| Content Availability | 50/100 | 4 of 12 stories incomplete |
-| Functional Completeness | 30/100 | Search dead, no runtime testing |
-| Data Integrity | 40/100 | Source conflicts, nested chapters |
-| Multilingual Support | 50/100 | System exists, untested |
-| Compliance Readiness | 0/100 | CMF audit not performed |
-| Architecture Quality | 35/100 | Multiple data layers |
-| User Permissions | 25/100 | Structure exists, enforcement untested |
-| **TOTAL** | **38/100** | **NOT READY FOR LAUNCH** |
+- `src/app/App.tsx` — screen state, hash URL sync, role guards, providers. Screens/URLs/roles: `src/app/navigation/routes.ts`. Navigation from anywhere: `useAppNav()`.
+- `src/app/services/` — feature data behind typed contracts (`contracts/`); `api` currently uses the demo adapter (`services/demo/`), Supabase adapter behind `backend.ts`. Never import an adapter directly.
+- `src/app/components/seen/` — design-system primitives and Figma organisms; tokens in `src/styles/seen-tokens.css`.
+- `src/app/data/storyDatabase.ts` — the story catalogue (single source of truth; chapters via `CHAPTERS_REGISTRY`).
+- `archive/` — unreachable code kept for history/content. Not built, not type-checked; don't import from it.
+- Phones: the app is installable (manifest, icons, iOS tags; see `docs/operations/MOBILE.md`). Never disable zoom in the viewport meta, and keep the manifest icons and tests in sync.
+- Docs: `docs/` (start with `docs/release/RELEASE_READINESS.md`, `docs/product/MASTER_FEATURE_MATRIX.md`, `docs/design/FIGMA_COVERAGE_REPORT.md`). `docs/archive/` is historical and its "complete/ready" claims are not current.
 
-## Next Steps
+## Rules
 
-1. ✅ Audit complete (38/100)
-2. 🔄 Apply critical fixes (target: 75/100)
-3. 🔄 Implement design system & features (target: 90/100)
-4. ⏳ Comprehensive testing & validation (target: 95/100)
-5. ⏳ Launch readiness (target: 100/100)
+- Cards are the single tap target; use `typeLabel`/`badge` slots, never overlay badges or wrap cards in clickable divs.
+- No dead buttons: render "See all"/actions only when wired.
+- Every async surface uses `useResource` + `ResourceView` (loading, empty, error+retry, offline, stale).
+- Mutations are optimistic with rollback and a toast; never show success before the write succeeds.
+- Secondary text is `text-white/55` or `text-seen-muted` (AA contrast); touch targets ≥ 44 px.
+- Demo data must be labelled (`isDemo`) and derived from real catalogue data where possible. Never name real organisations as partners without a signed agreement.
+- Funding listings (`services/data/fundingListings.ts`) are real: store a deadline only if the funder published it, cite `sourceUrls`, update `verifiedAt` (process: `docs/product/FUNDING_LISTINGS.md`).
+- The first onboarding screen (Invocation: the glowing S.E.E.N entry button, `InvocationLayer` in `OnboardingSystem.tsx`) and the manifesto screen after it ("This is not social media", `OnboardingPurpose.tsx`) are protected: never remove, merge or skip them. E2e tests guard them.
+- Role checks in the UI are UX only; real enforcement belongs in the backend (see `docs/security/`).
+- Analytics: only `track()` with allow-listed events and id/enum properties — no names, emails, free text.
+- New user-visible strings go in `src/app/i18n/strings.ts` with EN/FR/ES.
+- Screens added or removed must update `scripts/screen_matrix_data.py` and regenerate (`python3 scripts/gen_screen_matrix.py`); a vitest guards the matrix.
 
----
+## gstack (REQUIRED — global install)
 
-**Last Updated**: 2025-02-XX  
-**Audit Status**: COMPLETE  
-**Launch Status**: NOT READY  
-**Next Audit**: After critical fixes applied
+**Before doing ANY work, verify gstack is installed:**
+
+```bash
+_GS=""
+for _D in "${GSTACK_ROOT:-}" "$HOME/.claude/skills/gstack" "$HOME/.codex/skills/gstack" "$HOME/.factory/skills/gstack" "$HOME/.kiro/skills/gstack" "$HOME/.config/opencode/skills/gstack" "$HOME/.slate/skills/gstack" "$HOME/.cursor/skills/gstack" "$HOME/.openclaw/skills/gstack" "$HOME/.hermes/skills/gstack" "$HOME/.gbrain/skills/gstack" "$HOME/.copilot/skills/gstack" "$HOME/.gstack/repos/gstack"; do
+  [ -z "$_GS" ] && [ -n "$_D" ] && [ -d "$_D/bin" ] && _GS="$_D"
+done
+[ -n "$_GS" ] && echo "GSTACK_OK: $_GS" || echo "GSTACK_MISSING"
+```
+
+If GSTACK_MISSING: STOP. Do not proceed. Tell the user:
+
+> gstack is required for all AI-assisted work in this repo.
+> Install it:
+> ```bash
+> git clone --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
+> cd ~/.claude/skills/gstack && ./setup --team
+> ```
+> Then restart your AI coding tool.
+
+Do not skip skills, ignore gstack errors, or work around missing gstack.
+
+Using gstack skills: After install, skills like /qa, /ship, /review, /investigate,
+and /browse are available. Use /browse for all web browsing (Aside first, the bundled gstack browser as fallback).
+Use the resolved install path above for gstack file paths
+(default: ~/.claude/skills/gstack).

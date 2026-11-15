@@ -103,7 +103,7 @@ export function PaywallModal({ isOpen, onClose, onUnlocked, contentId, contentTi
                     ? t("Premium Content", "Contenu Premium", "Contenido Premium")
                     : t("Subscriber Exclusive", "Exclusif Abonnés", "Exclusivo para Suscriptores")}
                 </h3>
-                <p className="text-sm text-white/50 mb-6 leading-relaxed">
+                <p className="text-sm text-white/55 mb-6 leading-relaxed">
                   {isOneTime
                     ? t(
                         `Unlock "${contentTitle}" with a one-time purchase.`,
@@ -125,10 +125,10 @@ export function PaywallModal({ isOpen, onClose, onUnlocked, contentId, contentTi
                       <Users className="w-4 h-4 text-amber-300" />
                     )}
                     <span className="text-2xl text-white font-semibold">{formatCents(price)}</span>
-                    {!isOneTime && <span className="text-sm text-white/40">/{t("mo", "mois", "mes")}</span>}
+                    {!isOneTime && <span className="text-sm text-white/55">/{t("mo", "mois", "mes")}</span>}
                   </div>
                   {!isOneTime && plan?.benefits && plan.benefits.length > 0 && (
-                    <ul className="text-xs text-white/50 mt-3 space-y-1 text-left">
+                    <ul className="text-xs text-white/55 mt-3 space-y-1 text-left">
                       {plan.benefits.slice(0, 3).map((b, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-amber-300 mt-0.5">✓</span>
@@ -149,7 +149,7 @@ export function PaywallModal({ isOpen, onClose, onUnlocked, contentId, contentTi
                     : t("Subscribe", "S'abonner", "Suscribirse")}
                 </button>
                 {!authState.user && (
-                  <p className="text-xs text-white/30 mt-3">
+                  <p className="text-xs text-white/55 mt-3">
                     {t("Sign in to purchase content.", "Connectez-vous pour acheter.", "Inicia sesión para comprar.")}
                   </p>
                 )}

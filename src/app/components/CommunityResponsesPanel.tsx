@@ -39,9 +39,9 @@ export function CommunityResponsesPanel({
   const getText = (key: string) => {
     const translations: Record<string, Record<string, string>> = {
       title: {
-        en: "Community Voices",
-        fr: "Voix de la Communauté",
-        es: "Voces de la Comunidad"
+        en: "Reflections",
+        fr: "Réflexions",
+        es: "Reflexiones"
       },
       description: {
         en: "Reflections shared by other listeners",
@@ -49,14 +49,14 @@ export function CommunityResponsesPanel({
         es: "Reflexiones compartidas por otros oyentes"
       },
       addYours: {
-        en: "Share Your Reflection",
-        fr: "Partagez Votre Réflexion",
-        es: "Comparte Tu Reflexión"
+        en: "Add a reflection",
+        fr: "Ajouter une réflexion",
+        es: "Añadir una reflexión"
       },
       noResponses: {
-        en: "No reflections yet. Be the first to share.",
-        fr: "Aucune réflexion pour le moment. Soyez le premier à partager.",
-        es: "Aún no hay reflexiones. Sé el primero en compartir."
+        en: "No reflections yet. Add the first one.",
+        fr: "Aucune réflexion pour l'instant. Ajoutez la première.",
+        es: "Aún no hay reflexiones. Añade la primera."
       },
       note: {
         en: "All responses are moderated to preserve the integrity of the narrative space.",
@@ -99,25 +99,25 @@ export function CommunityResponsesPanel({
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <MessageCircle className="w-4 h-4 text-white/40" />
+                    <MessageCircle className="w-4 h-4 text-white/55" />
                     <h2 className="text-base tracking-tight text-white">
                       {getText("title")}
                     </h2>
                   </div>
-                  <p className="text-xs text-white/40">
+                  <p className="text-xs text-white/55">
                     {chapterTitle}
                   </p>
                 </div>
                 <button
                   onClick={onClose}
-                  className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors flex-shrink-0"
+                  className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors flex-shrink-0"
                   aria-label="Close"
                 >
                   <X className="w-5 h-5 text-white/70" />
                 </button>
               </div>
 
-              <p className="text-sm text-white/50 leading-relaxed mb-4">
+              <p className="text-sm text-white/55 leading-relaxed mb-4">
                 {getText("description")}
               </p>
 
@@ -131,7 +131,7 @@ export function CommunityResponsesPanel({
                       px-3 py-1.5 rounded-full text-xs tracking-wider uppercase transition-all
                       ${filter === type 
                         ? 'bg-white/10 text-white border border-white/20' 
-                        : 'bg-white/5 text-white/50 border border-white/10 hover:bg-white/10'
+                        : 'bg-white/5 text-white/55 border border-white/10 hover:bg-white/10'
                       }
                     `}
                   >
@@ -145,7 +145,7 @@ export function CommunityResponsesPanel({
             <div className="overflow-y-auto px-6 py-4" style={{ maxHeight: "calc(85vh - 240px)" }}>
               {filteredResponses.length === 0 ? (
                 <div className="py-12 text-center">
-                  <p className="text-sm text-white/40">
+                  <p className="text-sm text-white/55">
                     {getText("noResponses")}
                   </p>
                 </div>
@@ -176,7 +176,7 @@ export function CommunityResponsesPanel({
                             <MessageCircle className="w-3 h-3 text-green-300" />
                           </div>
                         )}
-                        <span className="text-xs text-white/40 uppercase tracking-wider">
+                        <span className="text-xs text-white/55 uppercase tracking-wider">
                           {response.type}
                         </span>
                       </div>
@@ -191,27 +191,21 @@ export function CommunityResponsesPanel({
                       {response.type === "audio" && (
                         <div className="mb-3 p-3 rounded-lg bg-white/5 border border-white/10">
                           <div className="flex items-center gap-3">
-                            <button className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
-                              <div className="w-0 h-0 border-l-[8px] border-l-white border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent ml-0.5" />
-                            </button>
-                            <div className="flex-1 h-1 rounded-full bg-white/10">
-                              <div className="w-1/3 h-full rounded-full bg-white/30" />
-                            </div>
-                            <span className="text-xs text-white/40">0:45</span>
+                            <span className="text-xs text-white/70">Audio response</span>
                           </div>
                         </div>
                       )}
 
                       {response.type === "image" && (
                         <div className="mb-3 rounded-lg overflow-hidden bg-white/5 aspect-video">
-                          <div className="w-full h-full flex items-center justify-center text-white/30">
+                          <div className="w-full h-full flex items-center justify-center text-white/55">
                             <ImageIcon className="w-8 h-8" />
                           </div>
                         </div>
                       )}
 
                       {/* Metadata */}
-                      <div className="flex items-center justify-between text-xs text-white/30">
+                      <div className="flex items-center justify-between text-xs text-white/55">
                         <span>{response.authorName || "Anonymous"}</span>
                         <span>{response.language.toUpperCase()}</span>
                       </div>
@@ -232,7 +226,7 @@ export function CommunityResponsesPanel({
               </button>
 
               {/* Moderation note */}
-              <p className="text-xs text-white/30 text-center mt-4 leading-relaxed">
+              <p className="text-xs text-white/55 text-center mt-4 leading-relaxed">
                 {getText("note")}
               </p>
             </div>

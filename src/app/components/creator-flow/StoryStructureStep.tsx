@@ -61,7 +61,7 @@ const STRUCTURE_OPTIONS: StructureOption[] = [
         </div>
         <div className="absolute left-[72px] top-8 flex flex-col items-center">
           <div className="w-0.5 h-4 bg-white/20" />
-          <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-white/40">2a</div>
+          <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-white/55">2a</div>
         </div>
       </div>
     ),
@@ -81,7 +81,7 @@ const STRUCTURE_OPTIONS: StructureOption[] = [
             </div>
           ))}
         </div>
-        <div className="text-[10px] text-white/30 text-center">Independent episodes</div>
+        <div className="text-[10px] text-white/55 text-center">Independent episodes</div>
       </div>
     ),
   },
@@ -122,7 +122,7 @@ export function StoryStructureStep({
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pb-32">
+    <div className="min-h-dvh bg-black text-white pb-32">
       {/* Header */}
       <motion.div
         variants={!reducedMotion ? VARIANTS.fadeInDown : undefined}
@@ -132,7 +132,7 @@ export function StoryStructureStep({
         className="px-5 pt-8 pb-6 border-b border-white/10"
       >
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs tracking-widest uppercase text-white/40">Step 2 of 5</span>
+          <span className="text-xs tracking-widest uppercase text-white/55">Step 2 of 5</span>
           <div className="w-1 h-1 rounded-full bg-white/40" />
           <span className="text-xs tracking-widest uppercase text-white/60">Story Structure</span>
         </div>
@@ -181,7 +181,7 @@ export function StoryStructureStep({
                   </div>
                   <div>
                     <h3 className="text-base font-light tracking-wide mb-1">{option.label}</h3>
-                    <p className="text-xs text-white/40">{option.example}</p>
+                    <p className="text-xs text-white/55">{option.example}</p>
                   </div>
                 </div>
 
@@ -225,7 +225,7 @@ export function StoryStructureStep({
           <label className="text-sm tracking-wide text-white/80 mb-2 block">
             Estimated Chapters
           </label>
-          <p className="text-xs text-white/50 leading-relaxed mb-4">
+          <p className="text-xs text-white/55 leading-relaxed mb-4">
             A rough guide to help you plan. This can change as your story develops.
           </p>
         </div>
@@ -258,9 +258,9 @@ export function StoryStructureStep({
           
           {/* Value Display */}
           <div className="flex justify-between mt-3">
-            <span className="text-xs text-white/40">1 chapter</span>
+            <span className="text-xs text-white/55">1 chapter</span>
             <span className="text-sm text-white font-medium">{estimatedChapters} chapters</span>
-            <span className="text-xs text-white/40">12 chapters</span>
+            <span className="text-xs text-white/55">12 chapters</span>
           </div>
         </div>
       </motion.div>
@@ -283,7 +283,7 @@ export function StoryStructureStep({
 
       {/* Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/10 p-5">
-        <div className="max-w-[428px] mx-auto flex items-center justify-between">
+        <div className="max-w-(--seen-content-max) mx-auto flex items-center justify-between">
           {/* Back button */}
           <motion.button
             type="button"

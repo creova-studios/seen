@@ -1,10 +1,22 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
   <html lang="en">
     <head>
       <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <!-- Zoom stays enabled on purpose (WCAG 1.4.4). viewport-fit=cover lets the app use the notch area; the layout adds safe-area padding. -->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
       <title>SEEN</title>
+      <meta name="description" content="SEEN by CREOVA: multilingual community story worlds. Stories, creators, collections and funding for storytellers." />
+      <meta name="color-scheme" content="dark" />
+      <meta name="theme-color" content="#000000" />
+      <!-- Installable on phones: Android/Chrome reads the manifest; iOS Safari reads the apple-* tags. -->
+      <link rel="manifest" href="/manifest.webmanifest" />
+      <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+      <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-title" content="SEEN" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      <meta name="format-detection" content="telephone=no" />
     </head>
 
     <body>
@@ -12,4 +24,3 @@
       <script type="module" src="/src/main.tsx"></script>
     </body>
   </html>
-  

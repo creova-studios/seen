@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "motion/react";
+import { MetricCard } from "./seen/primitives";
 import { ArrowLeft, TrendingUp, Users, Wallet, ArrowDownToLine, Check } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 import { useStoryState } from "../contexts/StoryStateContext";
@@ -66,12 +67,12 @@ export function CreatorEarningsScreen({ onClose }: CreatorEarningsScreenProps) {
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black z-50 overflow-y-auto"
     >
-      <div className="min-h-full max-w-[428px] mx-auto pb-24">
+      <div className="min-h-full max-w-(--seen-content-max) mx-auto pb-24">
         <div className="sticky top-0 z-10 backdrop-blur-xl bg-black/80 border-b border-white/5">
           <div className="flex items-center justify-between p-5 pt-8">
             <button
               onClick={onClose}
-              className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+              className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
               aria-label={t("Back", "Retour", "Atrás")}
             >
               <ArrowLeft className="w-5 h-5 text-white" />
@@ -101,15 +102,15 @@ export function CreatorEarningsScreen({ onClose }: CreatorEarningsScreenProps) {
           </section>
 
           {/* Stats grid */}
-          <section className="grid grid-cols-3 gap-3">
-            <StatTile icon={<TrendingUp className="w-4 h-4 text-blue-300" />} value={formatCents(summary.totalNetEarnings)} label={t("Lifetime", "À vie", "De por vida")} />
-            <StatTile icon={<Users className="w-4 h-4 text-purple-300" />} value={String(summary.activeSubscriberCount)} label={t("Subscribers", "Abonnés", "Suscriptores")} />
-            <StatTile icon={<Wallet className="w-4 h-4 text-amber-300" />} value={String(summary.totalTransactionCount)} label={t("Sales", "Ventes", "Ventas")} />
+          <section className="grid grid-cols-2 min-[360px]:grid-cols-3 gap-3 auto-rows-fr">
+            <MetricCard className="col-span-2 min-[360px]:col-span-1" label={t("Lifetime", "À vie", "De por vida")} value={formatCents(summary.totalNetEarnings)} />
+            <MetricCard label={t("Subscribers", "Abonnés", "Suscriptores")} value={summary.activeSubscriberCount} />
+            <MetricCard label={t("Sales", "Ventes", "Ventas")} value={summary.totalTransactionCount} />
           </section>
 
           {/* Revenue chart */}
           <section>
-            <h3 className="text-sm tracking-wider uppercase text-white/40 mb-4">
+            <h3 className="text-sm tracking-wider uppercase text-white/55 mb-4">
               {t("Monthly Revenue", "Revenus Mensuels", "Ingresos Mensuales")}
             </h3>
             <div className="h-[200px] p-4 rounded-2xl bg-white/5 border border-white/10">
@@ -140,12 +141,12 @@ export function CreatorEarningsScreen({ onClose }: CreatorEarningsScreenProps) {
 
           {/* Transaction history */}
           <section>
-            <h3 className="text-sm tracking-wider uppercase text-white/40 mb-4">
+            <h3 className="text-sm tracking-wider uppercase text-white/55 mb-4">
               {t("Transaction History", "Historique des Transactions", "Historial de Transacciones")}
             </h3>
             {transactions.length === 0 ? (
               <div className="p-8 rounded-xl bg-white/5 border border-white/10 text-center">
-                <p className="text-sm text-white/40">
+                <p className="text-sm text-white/55">
                   {t("No transactions yet.", "Aucune transaction pour le moment.", "Aún no hay transacciones.")}
                 </p>
               </div>
@@ -155,7 +156,7 @@ export function CreatorEarningsScreen({ onClose }: CreatorEarningsScreenProps) {
                   <div key={txn.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10">
                     <div>
                       <p className="text-sm text-white">{txn.userName}</p>
-                      <p className="text-xs text-white/40">
+                      <p className="text-xs text-white/55">
                         {txn.type === "subscription" ? t("Subscription", "Abonnement", "Suscripción") : t("Purchase", "Achat", "Compra")}
                         {" · "}
                         {new Date(txn.createdAt).toLocaleDateString()}
@@ -173,21 +174,11 @@ export function CreatorEarningsScreen({ onClose }: CreatorEarningsScreenProps) {
   );
 }
 
-function StatTile({ icon, value, label }: { icon: JSX.Element; value: string; label: string }) {
-  return (
-    <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-      <div className="flex justify-center mb-1.5">{icon}</div>
-      <div className="text-sm text-white font-semibold truncate">{value}</div>
-      <div className="text-[10px] text-white/40 mt-0.5">{label}</div>
-    </div>
-  );
-}
-
 function Row({ label, value, muted, strong }: { label: string; value: string; muted?: boolean; strong?: boolean }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-sm text-white/50">{label}</span>
-      <span className={`text-sm ${strong ? "text-white font-semibold" : muted ? "text-white/40" : "text-white"}`}>{value}</span>
+      <span className="text-sm text-white/55">{label}</span>
+      <span className={`text-sm ${strong ? "text-white font-semibold" : muted ? "text-white/55" : "text-white"}`}>{value}</span>
     </div>
   );
 }

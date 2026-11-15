@@ -1,0 +1,1354 @@
+[
+[
+"352:2",
+"13 — PROTOTYPE FLOWS"
+],
+[
+"468:2",
+"WALKTHROUGH / ONBOARDING / Splash / Default / Mobile"
+],
+[
+"468:14",
+"WALKTHROUGH / ONBOARDING / Language Selection / Default / Mobile"
+],
+[
+"468:46",
+"WALKTHROUGH / ONBOARDING / Introduction / Default / Mobile"
+],
+[
+"468:62",
+"WALKTHROUGH / ONBOARDING / Intent / Default / Mobile"
+],
+[
+"468:97",
+"WALKTHROUGH / ONBOARDING / Role / Default / Mobile"
+],
+[
+"468:127",
+"WALKTHROUGH / ONBOARDING / Personalization / Default / Mobile"
+],
+[
+"468:180",
+"WALKTHROUGH / ONBOARDING / Accessibility / Default / Mobile"
+],
+[
+"468:225",
+"WALKTHROUGH / ONBOARDING / Sign Up / Default / Mobile"
+],
+[
+"468:253",
+"WALKTHROUGH / ONBOARDING / Email Verification / OTP / Mobile"
+],
+[
+"468:279",
+"WALKTHROUGH / ONBOARDING / Completion / Mobile"
+],
+[
+"468:289",
+"WALKTHROUGH / DISCOVERY / For You / Default / Mobile"
+],
+[
+"468:385",
+"WALKTHROUGH / STORY / Story World / Default / Mobile"
+],
+[
+"468:447",
+"WALKTHROUGH / STORY / Chapter Index / Default / Mobile"
+],
+[
+"468:473",
+"WALKTHROUGH / STORY / Audio Player / Playing / Mobile"
+],
+[
+"468:583",
+"WALKTHROUGH / STORY / Story Completion / Default / Mobile"
+],
+[
+"468:599",
+"WALKTHROUGH / STORY / Choice Overlay / Ceremonial / Mobile"
+],
+[
+"468:617",
+"WALKTHROUGH / STORY / Soft Branching / Perspective Shift / Mobile"
+],
+[
+"468:640",
+"WALKTHROUGH / STORY / Branch Map / Creator / Mobile"
+],
+[
+"468:687",
+"WALKTHROUGH / STORY / Community Voices / Panel / Mobile"
+],
+[
+"468:737",
+"WALKTHROUGH / STORY / Share Reflection / Modal / Mobile"
+],
+[
+"468:770",
+"WALKTHROUGH / CREATOR / Become a Creator · Intro / Mobile"
+],
+[
+"468:804",
+"WALKTHROUGH / CREATOR / Dashboard · Overview / Mobile"
+],
+[
+"468:870",
+"WALKTHROUGH / CREATOR / Publish · Step 1 / Mobile"
+],
+[
+"468:918",
+"WALKTHROUGH / CREATOR / Publish · Step 2 / Mobile"
+],
+[
+"468:970",
+"WALKTHROUGH / CREATOR / Publish · Step 3 / Mobile"
+],
+[
+"468:1014",
+"WALKTHROUGH / CREATOR / Publish · Step 4 / Mobile"
+],
+[
+"468:1068",
+"WALKTHROUGH / CREATOR / Publish · Step 5 / Mobile"
+],
+[
+"468:1121",
+"WALKTHROUGH / CREATOR / Publish · Processing / Mobile"
+],
+[
+"468:1142",
+"WALKTHROUGH / CREATOR / Publish · In Review / Mobile"
+],
+[
+"468:1165",
+"WALKTHROUGH / FUNDING / Opportunities Hub / Mobile"
+],
+[
+"468:1234",
+"WALKTHROUGH / FUNDING / Opportunity Detail / Mobile"
+],
+[
+"468:1282",
+"WALKTHROUGH / FUNDING / Application · Workspace / Mobile"
+],
+[
+"468:1346",
+"WALKTHROUGH / FUNDING / Application · Submitted / Mobile"
+],
+[
+"468:1359",
+"WALKTHROUGH / FUNDING / Application · Under Review / Mobile"
+],
+[
+"468:1385",
+"WALKTHROUGH / FUNDING / Application · Approved / Mobile"
+],
+[
+"468:1415",
+"WALKTHROUGH / FUNDING / Funding Dashboard / Mobile"
+],
+[
+"310:2",
+"ONBOARDING / Splash / Default / Mobile"
+],
+[
+"310:14",
+"ONBOARDING / Language Selection / Default / Mobile"
+],
+[
+"310:45",
+"ONBOARDING / Introduction / Default / Mobile"
+],
+[
+"311:2",
+"ONBOARDING / Intent / Default / Mobile"
+],
+[
+"311:37",
+"ONBOARDING / Role / Default / Mobile"
+],
+[
+"311:67",
+"ONBOARDING / Personalization / Default / Mobile"
+],
+[
+"312:2",
+"ONBOARDING / Accessibility / Default / Mobile"
+],
+[
+"312:47",
+"ONBOARDING / Sign Up / Default / Mobile"
+],
+[
+"312:74",
+"ONBOARDING / Sign In / Default / Mobile"
+],
+[
+"314:2",
+"ONBOARDING / Email Verification / OTP / Mobile"
+],
+[
+"314:28",
+"ONBOARDING / Forgot Password / Default / Mobile"
+],
+[
+"314:44",
+"ONBOARDING / Reset Password / Default / Mobile"
+],
+[
+"314:66",
+"ONBOARDING / Authentication Failed / Error / Mobile"
+],
+[
+"314:80",
+"ONBOARDING / Session Expired / Default / Mobile"
+],
+[
+"314:93",
+"ONBOARDING / Offline Auth / Default / Mobile"
+],
+[
+"315:2",
+"ONBOARDING / Completion / Mobile"
+],
+[
+"315:10",
+"ONBOARDING / — PAGE NOTES"
+],
+[
+"419:2",
+"AUTH / Sign In · Keyboard Active / Mobile"
+],
+[
+"420:2",
+"Keyboard-active: content scrolls under the nav, the primary CTA pins to the top of the keyboard, the focused field shows the 2px gold ring + caret."
+],
+[
+"316:2",
+"DISCOVERY / For You / Default / Mobile"
+],
+[
+"320:2",
+"DISCOVERY / For You · Loading / Mobile"
+],
+[
+"320:27",
+"DISCOVERY / Explore · Default / Mobile"
+],
+[
+"320:103",
+"DISCOVERY / Explore · Empty Filter / Mobile"
+],
+[
+"322:2",
+"DISCOVERY / Search · Landing / Mobile"
+],
+[
+"322:39",
+"DISCOVERY / Search · Results / Mobile"
+],
+[
+"322:103",
+"DISCOVERY / Search · Zero Results / Mobile"
+],
+[
+"322:117",
+"DISCOVERY / Search · Filters Sheet / Mobile"
+],
+[
+"322:161",
+"DISCOVERY / — PAGE NOTES"
+],
+[
+"348:2",
+"DISCOVERY / Cultural Resonance Quiz / Concept · Mobile"
+],
+[
+"348:25",
+"DISCOVERY / Cultural Map Discovery / Concept · Mobile"
+],
+[
+"348:52",
+"DISCOVERY / Story Mood Mixer / Concept · Mobile"
+],
+[
+"348:99",
+"DISCOVERY / Guest Upgrade Prompt / Concept · Mobile"
+],
+[
+"412:2",
+"DISCOVERY / Object QR Entry / Concept · Mobile"
+],
+[
+"420:3",
+"DISCOVERY / Search · Keyboard Active / Mobile"
+],
+[
+"323:2",
+"STORY / Story World / Default / Mobile"
+],
+[
+"323:63",
+"STORY / Chapter Index / Default / Mobile"
+],
+[
+"323:88",
+"STORY / Audio Player / Playing / Mobile"
+],
+[
+"324:2",
+"STORY / Audio Player · Captions Active / Mobile"
+],
+[
+"324:31",
+"STORY / Audio Player · Buffering / Mobile"
+],
+[
+"324:58",
+"STORY / Audio Player · Playback Failed / Mobile"
+],
+[
+"324:72",
+"STORY / Transcript / Default / Mobile"
+],
+[
+"329:2",
+"STORY / Context Card Modal / Mobile"
+],
+[
+"329:16",
+"STORY / Story Completion / Default / Mobile"
+],
+[
+"329:31",
+"STORY / Video Player / Landscape / Mobile"
+],
+[
+"329:52",
+"STORY / Report Content Sheet / Mobile"
+],
+[
+"329:86",
+"STORY / — PAGE NOTES"
+],
+[
+"350:2",
+"STORY / Community Reaction Heatmap / Concept · Mobile"
+],
+[
+"350:81",
+"STORY / Side-by-Side Translation / Concept · Mobile"
+],
+[
+"350:107",
+"STORY / Smart Queue / Concept · Mobile"
+],
+[
+"397:2",
+"STORY / Choice Overlay / Ceremonial / Mobile"
+],
+[
+"397:20",
+"STORY / Soft Branching / Perspective Shift / Mobile"
+],
+[
+"398:2",
+"STORY / Branch Map / Creator / Mobile"
+],
+[
+"399:2",
+"STORY / Community Voices / Panel / Mobile"
+],
+[
+"399:52",
+"STORY / Share Reflection / Modal / Mobile"
+],
+[
+"421:2",
+"STORY / Share Reflection · Keyboard Active / Mobile"
+],
+[
+"330:2",
+"LIBRARY / Saved · Default / Mobile"
+],
+[
+"330:55",
+"LIBRARY / Continue · Default / Mobile"
+],
+[
+"330:111",
+"LIBRARY / Downloads · Offline / Mobile"
+],
+[
+"330:176",
+"LIBRARY / Collections · Default / Mobile"
+],
+[
+"331:2",
+"LIBRARY / Empty · New User / Mobile"
+],
+[
+"331:40",
+"LIBRARY / Sync In Progress / Mobile"
+],
+[
+"331:90",
+"LIBRARY / Following · Default / Mobile"
+],
+[
+"331:150",
+"LIBRARY / History Timeline / Concept · Mobile"
+],
+[
+"331:195",
+"LIBRARY / — PAGE NOTES"
+],
+[
+"350:152",
+"LIBRARY / Listening Wrapped / Concept · Mobile"
+],
+[
+"332:2",
+"CREATOR / Dashboard · Overview / Mobile"
+],
+[
+"332:67",
+"CREATOR / Stories · List / Mobile"
+],
+[
+"333:2",
+"CREATOR / Publish · Step 1 / Mobile"
+],
+[
+"333:49",
+"CREATOR / Publish · Step 2 / Mobile"
+],
+[
+"333:100",
+"CREATOR / Publish · Step 3 / Mobile"
+],
+[
+"333:143",
+"CREATOR / Publish · Step 4 / Mobile"
+],
+[
+"333:196",
+"CREATOR / Publish · Step 5 / Mobile"
+],
+[
+"334:2",
+"CREATOR / Publish · Validation Errors / Mobile"
+],
+[
+"334:26",
+"CREATOR / Publish · Processing / Mobile"
+],
+[
+"334:46",
+"CREATOR / Publish · In Review / Mobile"
+],
+[
+"334:60",
+"CREATOR / Publish · Failed / Mobile"
+],
+[
+"334:71",
+"CREATOR / — PAGE NOTES"
+],
+[
+"351:2",
+"CREATOR / Story Impact Dashboard / Concept · Mobile"
+],
+[
+"351:36",
+"CREATOR / Creator Milestones / Concept · Mobile"
+],
+[
+"351:72",
+"TRUST / Content Health Dashboard / Concept · Mobile"
+],
+[
+"407:2",
+"CREATOR / Become a Creator · Intro / Mobile"
+],
+[
+"407:29",
+"CREATOR / Invite Collaborator · Sheet / Mobile"
+],
+[
+"335:2",
+"FUNDING / Opportunities Hub / Mobile"
+],
+[
+"335:70",
+"FUNDING / Opportunity Detail / Mobile"
+],
+[
+"335:119",
+"FUNDING / Funding Readiness Profile / Mobile"
+],
+[
+"335:160",
+"FUNDING / Project Funding / Mobile"
+],
+[
+"336:2",
+"FUNDING / Application · Eligibility Check / Mobile"
+],
+[
+"336:34",
+"FUNDING / Application · Workspace / Mobile"
+],
+[
+"336:97",
+"FUNDING / Application · Review & Submit / Mobile"
+],
+[
+"336:129",
+"FUNDING / Application · Submitted / Mobile"
+],
+[
+"337:2",
+"FUNDING / Application · Under Review / Mobile"
+],
+[
+"337:27",
+"FUNDING / Application · Shortlisted / Mobile"
+],
+[
+"337:54",
+"FUNDING / Application · Info Requested / Mobile"
+],
+[
+"337:81",
+"FUNDING / Application · Approved / Mobile"
+],
+[
+"337:110",
+"FUNDING / Application · Declined / Mobile"
+],
+[
+"337:139",
+"FUNDING / Funding Dashboard / Mobile"
+],
+[
+"337:176",
+"FUNDING / — PAGE NOTES"
+],
+[
+"408:2",
+"FUNDING / CMF Eligibility Checker · Step 2 / Mobile"
+],
+[
+"338:2",
+"MONETIZATION / Setup · Eligibility / Mobile"
+],
+[
+"338:33",
+"MONETIZATION / Payment Account Setup / Mobile"
+],
+[
+"338:72",
+"MONETIZATION / Earnings Overview / Mobile"
+],
+[
+"338:114",
+"MONETIZATION / Revenue Breakdown / Mobile"
+],
+[
+"339:2",
+"MONETIZATION / Transaction History / Mobile"
+],
+[
+"339:47",
+"MONETIZATION / Payout · Pending / Mobile"
+],
+[
+"339:69",
+"MONETIZATION / Payout · Complete / Mobile"
+],
+[
+"339:89",
+"MONETIZATION / Payout · Failed / Mobile"
+],
+[
+"339:109",
+"MONETIZATION / Tax & Payment Information / Mobile"
+],
+[
+"339:145",
+"MONETIZATION / Subscription Setup / Mobile"
+],
+[
+"339:169",
+"MONETIZATION / — PAGE NOTES"
+],
+[
+"340:2",
+"INSTITUTIONS / Public Profile / Mobile"
+],
+[
+"340:50",
+"INSTITUTIONS / Institution Dashboard / Mobile"
+],
+[
+"340:99",
+"INSTITUTIONS / Collection Management / Mobile"
+],
+[
+"340:145",
+"INSTITUTIONS / Add Story · Metadata & Rights / Mobile"
+],
+[
+"341:2",
+"INSTITUTIONS / Curator Profile / Mobile"
+],
+[
+"341:23",
+"INSTITUTIONS / Team & Permissions / Mobile"
+],
+[
+"341:64",
+"INSTITUTIONS / Institutional Analytics / Mobile"
+],
+[
+"341:116",
+"INSTITUTIONS / Partnership / Mobile"
+],
+[
+"341:142",
+"INSTITUTIONS / — PAGE NOTES"
+],
+[
+"343:2",
+"TRUST / Report Confirmation / Mobile"
+],
+[
+"343:13",
+"TRUST / Moderation Queue / Mobile"
+],
+[
+"343:72",
+"TRUST / Content Review / Mobile"
+],
+[
+"343:95",
+"TRUST / Cultural Sensitivity Review / Mobile"
+],
+[
+"344:2",
+"TRUST / Moderation Decision / Mobile"
+],
+[
+"344:39",
+"TRUST / Rights Dispute / Mobile"
+],
+[
+"344:74",
+"TRUST / Appeal · Submitted / Mobile"
+],
+[
+"344:107",
+"TRUST / Account Enforcement / Mobile"
+],
+[
+"344:134",
+"TRUST / — PAGE NOTES"
+],
+[
+"416:2",
+"TRUST / Admin · Feature Toggles / Mobile"
+],
+[
+"345:2",
+"PROFILE / Public Profile / Mobile"
+],
+[
+"345:57",
+"PROFILE / Settings Hub / Mobile"
+],
+[
+"345:147",
+"PROFILE / Accessibility Settings / Mobile"
+],
+[
+"345:189",
+"PROFILE / Notification Settings / Mobile"
+],
+[
+"346:2",
+"PROFILE / Privacy & Security / Mobile"
+],
+[
+"346:64",
+"PROFILE / Subscriptions & Billing / Mobile"
+],
+[
+"346:90",
+"PROFILE / Data Controls & Delete Account / Mobile"
+],
+[
+"346:134",
+"PROFILE / Blocked Accounts / Mobile"
+],
+[
+"346:154",
+"PROFILE / Logout Confirmation / Mobile"
+],
+[
+"346:166",
+"PROFILE / — PAGE NOTES"
+],
+[
+"411:2",
+"PROFILE / About SEEN / Mobile"
+],
+[
+"7:341",
+"chapter-playback"
+],
+[
+"7:540",
+"track-context"
+],
+[
+"7:739",
+"story-builder"
+],
+[
+"7:863",
+"creator-insights"
+],
+[
+"9:456",
+"cmf-step1"
+],
+[
+"9:504",
+"cmf-step2"
+],
+[
+"9:559",
+"cmf-results"
+],
+[
+"9:667",
+"role-elevation"
+],
+[
+"9:708",
+"pipeda-data"
+],
+[
+"9:748",
+"onboarding-invocation"
+],
+[
+"9:774",
+"admin-governance"
+],
+[
+"10:11",
+"player-reactions"
+],
+[
+"10:112",
+"language-switcher"
+],
+[
+"10:187",
+"save-to-collection"
+],
+[
+"10:231",
+"explore-cultural-tags"
+],
+[
+"10:398",
+"film-player"
+],
+[
+"10:444",
+"guest-explore"
+],
+[
+"16:9",
+"onboarding-purpose"
+],
+[
+"16:74",
+"onboarding-presence"
+],
+[
+"16:94",
+"onboarding-threshold"
+],
+[
+"16:113",
+"admin-analytics"
+],
+[
+"16:166",
+"creator-post-publish"
+],
+[
+"20:165",
+"notifications-screen"
+],
+[
+"23:232",
+"opportunities-saved"
+],
+[
+"23:600",
+"opportunities-calendar"
+],
+[
+"23:778",
+"opportunities-ai"
+],
+[
+"29:259",
+"error-network"
+],
+[
+"29:369",
+"notifications-empty"
+],
+[
+"29:617",
+"creator-onboarding-step2"
+],
+[
+"29:669",
+"creator-onboarding-step3"
+],
+[
+"32:97",
+"edit-profile"
+],
+[
+"32:155",
+"change-password"
+],
+[
+"33:151",
+"moderation-escalation"
+],
+[
+"33:212",
+"sound-driven-story"
+],
+[
+"33:280",
+"audio-layer-control"
+],
+[
+"33:369",
+"app-update"
+],
+[
+"39:244",
+"profile-empty"
+],
+[
+"39:293",
+"creator-empty"
+],
+[
+"39:359",
+"offline-mode"
+],
+[
+"68:9",
+"creator-library"
+],
+[
+"68:108",
+"creator-explore"
+],
+[
+"68:182",
+"creator-profile"
+],
+[
+"68:303",
+"creator-drafts"
+],
+[
+"68:474",
+"signup-error"
+],
+[
+"68:517",
+"signin-error"
+],
+[
+"68:554",
+"terms-privacy"
+],
+[
+"68:635",
+"admin-users"
+],
+[
+"91:111",
+"pipeda-delete-confirm"
+],
+[
+"91:195",
+"admin-content"
+],
+[
+"91:327",
+"admin-settings"
+],
+[
+"91:625",
+"content-unavailable"
+],
+[
+"91:650",
+"creator-story-preview"
+],
+[
+"99:78",
+"notifications-content"
+],
+[
+"99:162",
+"data-export"
+],
+[
+"101:88",
+"permission-denied"
+],
+[
+"101:195",
+"save-confirmation"
+],
+[
+"103:483",
+"11-20 — Rate Limited State"
+],
+[
+"103:776",
+"06-23 — Creator Analytics Drill-Down"
+],
+[
+"5:28",
+"archive-home"
+],
+[
+"5:76",
+"archive-explore"
+],
+[
+"5:136",
+"archive-story-entry"
+],
+[
+"5:188",
+"archive-creator-profile"
+],
+[
+"5:244",
+"archive-library"
+],
+[
+"107:7",
+"13-01 - Cultural Resonance Quiz (A1/A3)"
+],
+[
+"107:835",
+"13-10 — Creator Milestones (E1)"
+],
+[
+"107:355",
+"13-05 — Community Reaction Heatmap (C3)"
+],
+[
+"107:1426",
+"13-15 — Smart Queue (D1)"
+],
+[
+"107:1581",
+"13-16 — Listening History Timeline (G1)"
+],
+[
+"107:581",
+"13-08 — Listening Wrapped (D1/D2)"
+],
+[
+"107:1249",
+"13-13 — Cultural Sensitivity Review (F1)"
+],
+[
+"107:1329",
+"13-14 — Privacy Dashboard (G3)"
+],
+[
+"107:931",
+"13-11 — Funding Application Tracker (E5)"
+],
+[
+"107:533",
+"13-07 — Story Completion Celebration (C1)"
+],
+[
+"107:731",
+"13-09 — Story Impact Dashboard (E3)"
+],
+[
+"107:1016",
+"13-12 — Content Health Dashboard (F2)"
+],
+[
+"107:70",
+"13-02 — Guest Upgrade Prompt (A2)"
+],
+[
+"107:470",
+"13-06 — Side-by-Side Translation (C4)"
+],
+[
+"107:123",
+"13-03 — Cultural Map Discovery (B2)"
+],
+[
+"107:193",
+"13-04 — Story Mood Mixer (B1)"
+],
+[
+"7:11",
+"language-selection"
+],
+[
+"7:47",
+"onboarding-intent"
+],
+[
+"7:84",
+"onboarding-accessibility"
+],
+[
+"7:126",
+"sign-up"
+],
+[
+"7:165",
+"sign-in"
+],
+[
+"7:203",
+"password-recovery"
+],
+[
+"7:237",
+"profile-settings"
+],
+[
+"7:289",
+"about-screen"
+],
+[
+"7:405",
+"branching-choice"
+],
+[
+"7:439",
+"branch-map"
+],
+[
+"7:499",
+"audio-player"
+],
+[
+"7:574",
+"chapter-index"
+],
+[
+"7:624",
+"community-responses"
+],
+[
+"7:662",
+"submit-response"
+],
+[
+"7:814",
+"creator-onboarding"
+],
+[
+"7:905",
+"creator-publish"
+],
+[
+"7:953",
+"moderator-queue"
+],
+[
+"7:1013",
+"moderation-review"
+],
+[
+"7:1053",
+"institutional-collection"
+],
+[
+"7:1099",
+"empty-states"
+],
+[
+"9:616",
+"collab-invite"
+],
+[
+"10:65",
+"player-captions"
+],
+[
+"10:314",
+"offline-downloads"
+],
+[
+"16:33",
+"onboarding-role"
+],
+[
+"20:6",
+"creator-dashboard"
+],
+[
+"20:76",
+"search-screen"
+],
+[
+"23:6",
+"opportunities-hub"
+],
+[
+"23:139",
+"opportunity-detail"
+],
+[
+"23:452",
+"opportunities-funding"
+],
+[
+"29:54",
+"email-verification"
+],
+[
+"29:83",
+"logout-confirmation"
+],
+[
+"29:117",
+"report-content"
+],
+[
+"29:220",
+"loading-skeleton"
+],
+[
+"29:280",
+"story-completion"
+],
+[
+"29:321",
+"search-no-results"
+],
+[
+"29:537",
+"creator-home-variant"
+],
+[
+"29:719",
+"home-french"
+],
+[
+"32:8",
+"qr-object-entry"
+],
+[
+"32:51",
+"soft-branching"
+],
+[
+"33:8",
+"notification-settings"
+],
+[
+"39:196",
+"explore-empty"
+],
+[
+"68:250",
+"share-sheet"
+],
+[
+"68:375",
+"creator-wizard-media"
+],
+[
+"68:595",
+"moderation-appeal"
+],
+[
+"68:715",
+"guest-signup-prompt"
+],
+[
+"71:204",
+"button-loading-states"
+],
+[
+"71:292",
+"button-loading-action"
+],
+[
+"71:257",
+"button-disabled-form"
+],
+[
+"71:77",
+"fr-story-entry"
+],
+[
+"71:127",
+"fr-settings"
+],
+[
+"71:44",
+"fr-signup"
+],
+[
+"91:560",
+"es-signup"
+],
+[
+"91:593",
+"session-expired"
+],
+[
+"91:7",
+"collection-detail"
+],
+[
+"99:7",
+"search-results"
+],
+[
+"99:227",
+"moderation-confirmed"
+],
+[
+"101:9",
+"media-playback-error"
+],
+[
+"101:40",
+"creator-upload-progress"
+],
+[
+"101:131",
+"library-empty"
+],
+[
+"101:230",
+"onboarding-welcome"
+],
+[
+"103:7",
+"06-20 — Collaboration Management"
+],
+[
+"103:90",
+"06-21 — Contributor Profile"
+],
+[
+"103:159",
+"03-11 — Context Card Modal"
+],
+[
+"103:214",
+"11-18 — Media Buffering State"
+],
+[
+"103:421",
+"11-19 — Form Validation State"
+],
+[
+"103:508",
+"11-21 — Suspended User State"
+],
+[
+"103:532",
+"12-05 — Explorer (Français)"
+],
+[
+"103:698",
+"06-22 — Brock University Partnership"
+],
+[
+"103:935",
+"12-06 — Bibliothèque (Français)"
+],
+[
+"179:2",
+"bottom-navigation"
+],
+[
+"248:82",
+"Button"
+],
+[
+"248:163",
+"Bottom Navigation"
+],
+[
+"248:164",
+"Story Card"
+],
+[
+"248:189",
+"Input Field"
+],
+[
+"248:198",
+"Badge"
+],
+[
+"248:199",
+"Top Nav"
+],
+[
+"248:205",
+"List Item"
+],
+[
+"248:210",
+"Metric Card"
+],
+[
+"248:217",
+"Toggle"
+],
+[
+"248:224",
+"Avatar"
+],
+[
+"248:225",
+"Search Bar"
+],
+[
+"248:228",
+"Notification Item"
+],
+[
+"424:97",
+"Status Bar"
+]
+]

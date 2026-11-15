@@ -28,7 +28,7 @@ export function BranchingChoiceOverlay({
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const getText = (text: { en: string; fr: string; es: string }) => {
-    return getTextHelper(text, state.language);
+    return getLocalizedText(text, state.language);
   };
 
   const handleChoice = (optionId: string, nextChapterId?: string) => {
@@ -47,7 +47,7 @@ export function BranchingChoiceOverlay({
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center"
     >
-      <div className="relative z-10 max-w-[428px] w-full px-6">
+      <div className="relative z-10 max-w-(--seen-content-max) w-full px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -56,8 +56,8 @@ export function BranchingChoiceOverlay({
           className="text-center mb-10"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
-            <GitBranch className="w-5 h-5 text-white/40" />
-            <span className="text-xs tracking-[0.3em] uppercase text-white/40">
+            <GitBranch className="w-5 h-5 text-white/55" />
+            <span className="text-xs tracking-[0.3em] uppercase text-white/55">
               {branchChoice.impactsOutcome ? (
                 state.language === 'en' ? 'Your Choice Matters' : 
                 state.language === 'fr' ? 'Votre Choix Compte' : 
@@ -99,7 +99,7 @@ export function BranchingChoiceOverlay({
                     {getText(option.text)}
                   </p>
                   {option.tag && (
-                    <span className="inline-block mt-2 px-2 py-1 text-xs rounded-full bg-white/10 text-white/50">
+                    <span className="inline-block mt-2 px-2 py-1 text-xs rounded-full bg-white/10 text-white/70">
                       {option.tag}
                     </span>
                   )}
@@ -124,7 +124,7 @@ export function BranchingChoiceOverlay({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="text-center text-xs text-white/40 mt-6"
+            className="text-center text-xs text-white/55 mt-6"
           >
             {state.language === 'en' 
               ? 'This choice will shape your journey' 

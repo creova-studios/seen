@@ -6,13 +6,23 @@
  * NO hardcoded content - all data from queries
  */
 
+import { storiesForInterests } from "../data/interests";
+import { DemoModeNotice } from "./DemoModeNotice";
+import { GuestBanner } from "../guest/GuestBanner";
+import { InterestChips } from "./InterestChips";
+import { PageTitle } from "./seen/primitives";
 import { motion } from "motion/react";
-import { NavigationBar } from "./NavigationBar";
+import { useAppNav } from "../navigation/AppNav";
+import { api } from "../services";
+import { useResource } from "../hooks/useResource";
 import { ContentCard } from "./ContentCard";
 import { StoryCard } from "./StoryCard";
 import { SectionHeader } from "./SectionHeader";
+import { FeaturedHero, Rail, RailCard, VoicesToDiscover } from "./ForYouSections";
+import { useStoryState } from "../contexts/StoryStateContext";
+import { getLibraryStories } from "../data/storyService";
 import { EmptyState } from "./EmptyState";
-import { Play, TrendingUp, Music, Film, BookOpen, Archive, Folder, Home, Compass, Library, User } from "lucide-react";
+import { Play, TrendingUp, Music, Film, BookOpen, Archive, Folder, Users, Home, Compass, Library, User } from "lucide-react";
 import type { ContentLanguage, UserIntent } from "../data/types";
 import { getForYouFeed } from "../data/storyService";
 import type { Language } from "../data/storyDatabase";
@@ -42,6 +52,11 @@ export function ForYouScreen({
   language,
   isFirstVisit
 }: ForYouScreenProps) {
+  const { state: storyState, setInterests } = useStoryState();
+  const interests = storyState.interests ?? [];
+  const interestItems = interests.length > 0 ? storiesForInterests(interests, language as Language).slice(0, 8) : [];
+  const continueItems = getLibraryStories(storyState.progressSnapshots, language as Language).inProgress.slice(0, 6);
+
   // Get personalized feed from story service
   const feedItems = getForYouFeed({
     language: language as Language,
@@ -49,10 +64,11 @@ export function ForYouScreen({
     limit: 20,
   });
   
-  console.log(`[ForYouScreen] Loaded ${feedItems.length} stories for language: ${language}`);
 
   // Separate content types
-  const featuredContent = feedItems.filter(item => item.featured).slice(0, 2);
+  const featuredAll = feedItems.filter(item => item.featured);
+  const heroItem = featuredAll[0] ?? null;
+  const featuredContent = featuredAll.slice(1, 3);
   const trendingContent = feedItems.filter(item => item.trending && !item.featured).slice(0, 3);
   const newContent = feedItems.filter(item => item.new && !item.featured && !item.trending).slice(0, 3);
   const allStories = feedItems.slice(0, 8);
@@ -85,9 +101,8 @@ export function ForYouScreen({
     const text = emptyStateText[language as Language] || emptyStateText.en;
     
     return (
-      <div className="min-h-screen bg-black">
-        <NavigationBar onSearch={onSearch} />
-        <div className="pt-20 pb-24">
+      <div className="min-h-dvh bg-black">
+        <div className="pt-header pb-clearance px-gutter"><DemoModeNotice /><GuestBanner />
           <EmptyState
             icon="Compass"
             title={text.title}
@@ -96,7 +111,6 @@ export function ForYouScreen({
             onAction={() => onNavigate('explore')}
           />
         </div>
-        <BottomNav onNavigate={onNavigate} activeTab="for-you" />
       </div>
     );
   }
@@ -106,13 +120,16 @@ export function ForYouScreen({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
-      className="min-h-screen bg-black"
+      transition={{ duration: 0.2 }}
+      className="min-h-dvh bg-black"
     >
-      <NavigationBar />
 
       {/* Main Content */}
-      <main className="pt-20 pb-24 px-5 max-w-[428px] mx-auto">
+      <main className={`${heroItem ? "pt-0" : "pt-header"} pb-clearance px-gutter max-w-(--seen-content-max) mx-auto`}>
+        {/* Editorial hero (Figma 316:2), full-bleed under the translucent header */}
+        {heroItem && <FeaturedHero item={heroItem} onExperience={onStoryClick} />}
+        {heroItem && <div aria-hidden className="h-6" />}
+        <DemoModeNotice /><GuestBanner />
         {/* Welcome Message for First Visit */}
         {isFirstVisit && (
           <motion.div
@@ -123,145 +140,88 @@ export function ForYouScreen({
             className="mb-8 py-6 border-b border-white/10"
           >
             <p className="text-base text-white/70 leading-relaxed">
-              Welcome. Your space is forming.
+              You are now SEEN.
             </p>
+            <p className="text-sm text-white/70 mt-2">Start with the featured story, or find your theme in Explore.</p>
           </motion.div>
         )}
 
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+          transition={{ duration: 0.25 }}
           className="mb-8"
         >
           {/* Editorial Hero Block */}
           <div className="mb-8">
-            <h1 className="text-4xl font-light text-white/95 mb-3 tracking-tight">
-              For You
-            </h1>
-            <p className="text-base text-white/50 font-light tracking-wide leading-relaxed">
-              Your presence, unfolding in real time.
-            </p>
+            <PageTitle className="mb-3">For You</PageTitle>
           </div>
 
-          {/* Dashboard Stats - Presence Indicators */}
-          <div className="space-y-3">
-            {/* Stories */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.8 }}
-              className="flex items-center gap-4 group cursor-pointer"
-            >
-              <div className="relative">
-                <BookOpen className="w-5 h-5 text-amber-200/70" />
-                <div className="absolute inset-0 bg-amber-400/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-light text-white/90 tabular-nums">
-                  {feedItems.filter(item => item.type === 'story').length}
-                </span>
-                <span className="text-sm text-white/40 font-light tracking-wide">
-                  {feedItems.filter(item => item.type === 'story').length === 1 ? 'Story' : 'Stories'} in motion
-                </span>
-              </div>
-            </motion.div>
-
-            {/* Music */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className="flex items-center gap-4 group cursor-pointer"
-            >
-              <div className="relative">
-                <Music className="w-5 h-5 text-emerald-200/70" />
-                <div className="absolute inset-0 bg-emerald-400/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-light text-white/90 tabular-nums">
-                  {feedItems.filter(item => item.type === 'music').length}
-                </span>
-                <span className="text-sm text-white/40 font-light tracking-wide">
-                  {feedItems.filter(item => item.type === 'music').length === 1 ? 'Track' : 'Tracks'} resonating
-                </span>
-              </div>
-            </motion.div>
-
-            {/* Films */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="flex items-center gap-4 group cursor-pointer"
-            >
-              <div className="relative">
-                <Film className="w-5 h-5 text-violet-200/70" />
-                <div className="absolute inset-0 bg-violet-400/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-light text-white/90 tabular-nums">
-                  {feedItems.filter(item => item.type === 'film').length}
-                </span>
-                <span className="text-sm text-white/40 font-light tracking-wide">
-                  {feedItems.filter(item => item.type === 'film').length === 1 ? 'Film' : 'Films'} living
-                </span>
-              </div>
-            </motion.div>
-
-            {/* Collections */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="flex items-center gap-4 group cursor-pointer"
-            >
-              <div className="relative">
-                <Folder className="w-5 h-5 text-orange-200/70" />
-                <div className="absolute inset-0 bg-orange-400/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-light text-white/90 tabular-nums">
-                  {feedItems.filter(item => item.type === 'collection').length}
-                </span>
-                <span className="text-sm text-white/40 font-light tracking-wide">
-                  {feedItems.filter(item => item.type === 'collection').length === 1 ? 'Collection' : 'Collections'} forming
-                </span>
-              </div>
-            </motion.div>
-          </div>
+          {/* Presence indicators — real counts, each one a shortcut into Explore */}
+          <PresenceIndicators storyCount={feedItems.length} />
         </motion.div>
+
+        {/* One interest filter (PR-5): chips on top, and the matching stories right under them when any are chosen. */}
+        <section className="mb-10">
+          <InterestChips selected={interests} onChange={setInterests} language={language as Language} />
+          {interestItems.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="mt-6" role="region" aria-label="Based on your interests">
+              <SectionHeader title="Based on your interests" subtitle={interests.slice(0, 3).join(" · ")} />
+              <Rail>
+                {interestItems.map(item => (
+                  <RailCard key={item.id} w={150} h={200} onSelect={onStoryClick} item={{ id: item.id, title: item.title, eyebrow: item.type, imageUrl: item.mediaSource }} />
+                ))}
+              </Rail>
+            </motion.div>
+          )}
+        </section>
+
+        {/* Continue experiencing — only when there is real progress */}
+        {continueItems.length > 0 && (
+          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="mb-12" aria-label="Keep reading">
+            <SectionHeader title="Keep reading" subtitle="Pick up where you left off" />
+            <Rail>
+              {continueItems.map(({ content, progress }) => (
+                <RailCard
+                  key={content.id}
+                  w={240}
+                  h={140}
+                  onSelect={onStoryClick}
+                  item={{ id: content.id, title: content.title, eyebrow: `${progress.progressPercentage}% read`, subtitle: content.creator, imageUrl: content.mediaSource }}
+                />
+              ))}
+            </Rail>
+          </motion.section>
+        )}
 
         {/* Featured Content */}
         {featuredContent.length > 0 && (
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ duration: 0.25, delay: 0.05 }}
             className="mb-12"
           >
-            <SectionHeader 
+            <SectionHeader
               title="Featured"
-              subtitle="Hand-picked for you"
+              subtitle="Picked by the SEEN team"
+              onViewAll={() => onNavigate('explore')}
             />
             <div className="space-y-4">
-              {featuredContent.map(item => (
-                <div key={item.id} onClick={() => onStoryClick(item.id)} className="cursor-pointer relative">
-                  <ContentCard
-                    id={item.id}
-                    title={item.title}
-                    creator={item.description}
-                    imageUrl={item.mediaSource}
-                    category={item.creator}
-                    onSelect={onStoryClick}
-                  />
-                  {/* Type badge with icon */}
-                  <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs text-white/90 uppercase tracking-wider border border-white/20 flex items-center gap-1.5">
-                    {getContentTypeIcon(item.type)}
-                    {item.type}
-                  </div>
-                </div>
+              {featuredContent.map((item, i) => (
+                <ContentCard
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  creator={item.creator}
+                  subtitle={item.description}
+                  duration={item.duration}
+                  imageUrl={item.mediaSource}
+                  typeLabel={<>{getContentTypeIcon(item.type)}{item.type}</>}
+                  index={i}
+                  onSelect={onStoryClick}
+                />
               ))}
             </div>
           </motion.section>
@@ -270,31 +230,29 @@ export function ForYouScreen({
         {/* Trending */}
         {trendingContent.length > 0 && (
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ duration: 0.25, delay: 0.1 }}
             className="mb-12"
           >
             <SectionHeader 
-              title="Trending Now"
-              subtitle="Popular in your region"
+              title="Worth your time"
+              subtitle="Our current favourites"
+              onViewAll={() => onNavigate('explore')}
               icon={<TrendingUp className="w-5 h-5" />}
             />
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-5 px-5">
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-gutter px-gutter">
               {trendingContent.map(item => (
-                <div key={item.id} onClick={() => onStoryClick(item.id)} className="flex-shrink-0">
-                  <StoryCard
-                    title={item.title}
-                    author={item.creator}
-                    readTime={item.duration}
-                    imageUrl={item.mediaSource}
-                  />
-                  {/* Type badge with icon */}
-                  <div className="mt-2 text-xs text-white/50 uppercase tracking-wider flex items-center gap-1.5">
-                    {getContentTypeIcon(item.type)}
-                    {item.type}
-                  </div>
-                </div>
+                <StoryCard
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  author={item.creator}
+                  readTime={item.duration}
+                  imageUrl={item.mediaSource}
+                  typeLabel={<>{getContentTypeIcon(item.type)}{item.type}</>}
+                  onSelect={() => onStoryClick(item.id)}
+                />
               ))}
             </div>
           </motion.section>
@@ -303,144 +261,71 @@ export function ForYouScreen({
         {/* New Releases */}
         {newContent.length > 0 && (
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ duration: 0.25, delay: 0.15 }}
             className="mb-12"
           >
             <SectionHeader 
-              title="New Releases"
-              subtitle="Fresh content"
+              title="New"
+              subtitle="Just added"
+              onViewAll={() => onNavigate('explore')}
               icon={<Music className="w-5 h-5" />}
             />
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-5 px-5">
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-gutter px-gutter">
               {newContent.map(item => (
-                <div key={item.id} onClick={() => onStoryClick(item.id)} className="flex-shrink-0">
-                  <StoryCard
-                    title={item.title}
-                    author={item.creator}
-                    readTime={item.duration}
-                    imageUrl={item.mediaSource}
-                  />
-                </div>
+                <StoryCard
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  author={item.creator}
+                  readTime={item.duration}
+                  imageUrl={item.mediaSource}
+                  typeLabel={<>{getContentTypeIcon(item.type)}{item.type}</>}
+                  onSelect={() => onStoryClick(item.id)}
+                />
               ))}
             </div>
           </motion.section>
         )}
 
-        {/* Recommendation reason hint */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="text-center text-xs text-white/30 mt-8"
-        >
-          Content personalized for {userIntent === 'explore' ? 'exploration' : userIntent === 'create' ? 'creators' : 'contributors'}
-        </motion.div>
+        <VoicesToDiscover />
+
       </main>
 
       {/* Bottom Navigation */}
-      <BottomNav onNavigate={onNavigate} activeTab="for-you" />
     </motion.div>
   );
 }
 
-// Bottom Navigation Component
-function BottomNav({ 
-  onNavigate, 
-  activeTab 
-}: { 
-  onNavigate: (screen: string) => void;
-  activeTab: string;
-}) {
+function PresenceIndicators({ storyCount }: { storyCount: number }) {
+  const nav = useAppNav();
+  const counts = useResource(async () => {
+    const [creators, collections] = await Promise.all([api.creators.list(), api.collections.list()]);
+    return { creators: creators.length, collections: collections.length };
+  });
+  const rows = [
+    { icon: <BookOpen className="w-5 h-5 text-amber-200/70" aria-hidden />, n: storyCount, label: storyCount === 1 ? "Story" : "Stories", tab: "stories" },
+    { icon: <Users className="w-5 h-5 text-violet-200/70" aria-hidden />, n: counts.data?.creators, label: "Creators", tab: "creators" },
+    { icon: <Folder className="w-5 h-5 text-orange-200/70" aria-hidden />, n: counts.data?.collections, label: "Collections to explore", tab: "collections" },
+  ];
   return (
-    <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl bg-black/60 border-t border-white/5 z-50 pointer-events-auto">
-      <div className="max-w-[428px] mx-auto px-5 py-4 flex justify-around">
-        <button
-          type="button"
-          onClick={() => onNavigate("for-you")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'for-you' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <Home 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'for-you' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'for-you' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'for-you' ? 'font-medium' : 'font-light'
-          }`}>
-            For You
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onNavigate("explore")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'explore' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <Compass 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'explore' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'explore' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'explore' ? 'font-medium' : 'font-light'
-          }`}>
-            Explore
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onNavigate("library")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'library' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <Library 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'library' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'library' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'library' ? 'font-medium' : 'font-light'
-          }`}>
-            Library
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onNavigate("profile")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'profile' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <User 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'profile' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'profile' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'profile' ? 'font-medium' : 'font-light'
-          }`}>
-            Profile
-          </span>
-        </button>
-      </div>
-    </nav>
+    <ul className="space-y-1">
+      {rows.map((r, i) => (
+        <motion.li key={r.tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i, duration: 0.25 }}>
+          <button
+            type="button"
+            onClick={() => nav.go("explore", { tab: r.tab })}
+            className="flex items-center gap-4 min-h-11 w-full text-left group"
+          >
+            {r.icon}
+            <span className="flex items-baseline gap-2">
+              <span className="text-2xl font-light text-white/90 tabular-nums min-w-[1.5ch]">{r.n ?? "–"}</span>
+              <span className="text-sm text-white/55 font-light tracking-wide group-hover:text-white/70 transition-colors">{r.label}</span>
+            </span>
+          </button>
+        </motion.li>
+      ))}
+    </ul>
   );
 }

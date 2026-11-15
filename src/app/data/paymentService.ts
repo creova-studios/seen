@@ -10,7 +10,7 @@
  * Test cards (mock):
  *   4242 4242 4242 4242 → always succeeds
  *   4000 0000 0000 0002 → always declined
- *   anything else       → succeeds (demo-friendly default)
+ *   anything else       → rejected: demo mode never pretends to charge a real card
  */
 
 export interface CheckoutRequest {
@@ -74,8 +74,20 @@ export async function processPayment(request: CheckoutRequest): Promise<Checkout
     return { success: false, last4, errorMessage: 'Your card was declined.', processedAt: new Date().toISOString() };
   }
 
+  if (!DEMO_TEST_CARDS.has(digits)) {
+    return {
+      success: false,
+      last4,
+      errorMessage: 'Demo mode accepts test cards only — use 4242 4242 4242 4242. No real card is ever charged here.',
+      processedAt: new Date().toISOString(),
+    };
+  }
+
   return { success: true, last4, processedAt: new Date().toISOString() };
 }
+
+// A real card number must never produce a (fake) success.
+export const DEMO_TEST_CARDS = new Set(['4242424242424242']);
 
 export async function processRefund(transactionId: string, amount: number): Promise<{ success: boolean }> {
   await sleep(800);

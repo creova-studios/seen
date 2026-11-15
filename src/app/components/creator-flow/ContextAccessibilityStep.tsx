@@ -33,9 +33,19 @@ export interface ContextAccessibilityData {
   contextCards: ContextCard[];
   hasCaptions: boolean;
   hasTranscripts: boolean;
+  /** Optional content notes shown to listeners before the story starts. */
+  contentWarnings?: string[];
   languageNotes: Record<string, string>; // language code -> notes
   accessibilityConfirmed: boolean;
 }
+
+export const CONTENT_WARNING_OPTIONS = [
+  'Violence',
+  'Racism or discrimination',
+  'Grief or loss',
+  'Strong language',
+  'Difficult historical events',
+];
 
 const CONTEXT_TYPES = [
   { 
@@ -70,6 +80,8 @@ export function ContextAccessibilityStep({
   const [contextCards, setContextCards] = useState<ContextCard[]>(initialData?.contextCards || []);
   const [hasCaptions, setHasCaptions] = useState(initialData?.hasCaptions || false);
   const [hasTranscripts, setHasTranscripts] = useState(initialData?.hasTranscripts || false);
+  const [contentWarnings, setContentWarnings] = useState<string[]>(initialData?.contentWarnings || []);
+  const [customWarning, setCustomWarning] = useState('');
   const [languageNotes, setLanguageNotes] = useState<Record<string, string>>(
     initialData?.languageNotes || {}
   );
@@ -84,9 +96,21 @@ export function ContextAccessibilityStep({
       contextCards,
       hasCaptions,
       hasTranscripts,
+      contentWarnings,
       languageNotes,
       accessibilityConfirmed,
     });
+  };
+
+  const toggleWarning = (w: string) => {
+    setContentWarnings(prev => (prev.includes(w) ? prev.filter(x => x !== w) : [...prev, w]));
+    setTimeout(handleAutoSave, 300);
+  };
+  const addCustomWarning = () => {
+    const w = customWarning.trim();
+    if (w && !contentWarnings.includes(w)) setContentWarnings(prev => [...prev, w]);
+    setCustomWarning('');
+    setTimeout(handleAutoSave, 300);
   };
 
   const addContextCard = () => {
@@ -126,6 +150,7 @@ export function ContextAccessibilityStep({
         contextCards,
         hasCaptions,
         hasTranscripts,
+        contentWarnings,
         languageNotes,
         accessibilityConfirmed,
       });
@@ -133,7 +158,7 @@ export function ContextAccessibilityStep({
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pb-32">
+    <div className="min-h-dvh bg-black text-white pb-32">
       {/* Header */}
       <motion.div
         variants={!reducedMotion ? VARIANTS.fadeInDown : undefined}
@@ -143,7 +168,7 @@ export function ContextAccessibilityStep({
         className="px-5 pt-8 pb-6 border-b border-white/10"
       >
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs tracking-widest uppercase text-white/40">Step 4 of 5</span>
+          <span className="text-xs tracking-widest uppercase text-white/55">Step 4 of 5</span>
           <div className="w-1 h-1 rounded-full bg-white/40" />
           <span className="text-xs tracking-widest uppercase text-white/60">Context & Accessibility</span>
         </div>
@@ -157,7 +182,7 @@ export function ContextAccessibilityStep({
       <div className="px-5 py-6">
         <div className="mb-4">
           <h2 className="text-base font-light tracking-wide mb-2">Context Cards</h2>
-          <p className="text-xs text-white/50 leading-relaxed">
+          <p className="text-xs text-white/55 leading-relaxed">
             Optional cards that provide deeper understanding. These appear alongside your story.
           </p>
         </div>
@@ -181,14 +206,14 @@ export function ContextAccessibilityStep({
                     <Icon className="w-4 h-4 text-white/60" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1">
-                    <span className="text-xs tracking-wider uppercase text-white/40">
+                    <span className="text-xs tracking-wider uppercase text-white/55">
                       {cardType?.label}
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => deleteContextCard(card.id)}
-                    className="text-white/40 hover:text-red-500 transition-colors"
+                    className="text-white/55 hover:text-red-500 transition-colors"
                   >
                     <X className="w-4 h-4" strokeWidth={1.5} />
                   </button>
@@ -199,14 +224,14 @@ export function ContextAccessibilityStep({
                   value={card.title}
                   onChange={(e) => updateContextCard(card.id, { title: e.target.value })}
                   placeholder="Card title"
-                  className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none mb-2"
+                  className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/55 focus:border-white/30 focus:outline-none mb-2"
                 />
 
                 <textarea
                   value={card.content}
                   onChange={(e) => updateContextCard(card.id, { content: e.target.value })}
                   placeholder="Explain the context..."
-                  className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none resize-none"
+                  className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/55 focus:border-white/30 focus:outline-none resize-none"
                   rows={3}
                 />
               </motion.div>
@@ -255,7 +280,7 @@ export function ContextAccessibilityStep({
                         <Icon className="w-4 h-4 text-white/60 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                         <div>
                           <div className="text-sm text-white mb-0.5">{type.label}</div>
-                          <div className="text-xs text-white/40">{type.description}</div>
+                          <div className="text-xs text-white/55">{type.description}</div>
                         </div>
                       </div>
                     </button>
@@ -284,11 +309,50 @@ export function ContextAccessibilityStep({
         )}
       </div>
 
+      {/* Content notes (optional) */}
+      <div className="px-5 py-6 border-t border-white/10">
+        <h2 className="text-base font-light tracking-wide mb-2">Content notes <span className="text-xs uppercase tracking-wider text-white/60 ml-1">Optional</span></h2>
+        <p id="cw-help" className="text-xs text-white/60 leading-relaxed mb-3">
+          If your story deals with difficult material, tell listeners before it starts. They see this note on the story page before they press Start reading. Skip it if it does not apply.
+        </p>
+        <div role="group" aria-labelledby="cw-help" className="flex flex-wrap gap-2">
+          {[...CONTENT_WARNING_OPTIONS, ...contentWarnings.filter(w => !CONTENT_WARNING_OPTIONS.includes(w))].map(w => {
+            const on = contentWarnings.includes(w);
+            return (
+              <button
+                key={w}
+                type="button"
+                aria-pressed={on}
+                onClick={() => toggleWarning(w)}
+                className={`px-3 min-h-11 text-xs rounded-lg border transition-colors ${on ? 'bg-white text-black border-white' : 'bg-white/5 text-white/80 border-white/15 hover:border-white/30'}`}
+              >
+                {w}
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-3 flex gap-2">
+          <label className="flex-1">
+            <span className="sr-only">Add your own content note</span>
+            <input
+              type="text"
+              value={customWarning}
+              maxLength={60}
+              onChange={e => setCustomWarning(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomWarning(); } }}
+              placeholder="Add your own"
+              className="w-full min-h-11 bg-white/5 border border-white/15 rounded-lg px-3 text-sm text-white placeholder:text-white/55 focus:border-white/40 focus:outline-none"
+            />
+          </label>
+          <button type="button" onClick={addCustomWarning} disabled={!customWarning.trim()} className="min-h-11 px-4 rounded-lg border border-white/20 text-sm text-white disabled:opacity-40">Add</button>
+        </div>
+      </div>
+
       {/* Accessibility Checklist */}
       <div className="px-5 py-6 border-t border-white/10">
         <div className="mb-4">
           <h2 className="text-base font-light tracking-wide mb-2">Accessibility</h2>
-          <p className="text-xs text-white/50 leading-relaxed">
+          <p className="text-xs text-white/55 leading-relaxed">
             Ensure your story can be experienced by all audiences.
           </p>
         </div>
@@ -323,7 +387,7 @@ export function ContextAccessibilityStep({
               <Subtitles className="w-4 h-4 text-white/60" strokeWidth={1.5} />
               <div className="flex-1">
                 <div className="text-sm text-white">Captions & Subtitles</div>
-                <div className="text-xs text-white/40">For video and audio content</div>
+                <div className="text-xs text-white/55">For video and audio content</div>
               </div>
             </div>
           </motion.button>
@@ -357,7 +421,7 @@ export function ContextAccessibilityStep({
               <FileText className="w-4 h-4 text-white/60" strokeWidth={1.5} />
               <div className="flex-1">
                 <div className="text-sm text-white">Full Transcripts</div>
-                <div className="text-xs text-white/40">Text version of all audio</div>
+                <div className="text-xs text-white/55">Text version of all audio</div>
               </div>
             </div>
           </motion.button>
@@ -369,7 +433,7 @@ export function ContextAccessibilityStep({
         <div className="px-5 py-6 border-t border-white/10">
           <div className="mb-4">
             <h2 className="text-base font-light tracking-wide mb-2">Language Notes</h2>
-            <p className="text-xs text-white/50 leading-relaxed">
+            <p className="text-xs text-white/55 leading-relaxed">
               Add any language-specific context or translation notes.
             </p>
           </div>
@@ -385,7 +449,7 @@ export function ContextAccessibilityStep({
                     value={languageNotes[lang] || ''}
                     onChange={(e) => updateLanguageNote(lang, e.target.value)}
                     placeholder="Optional translation notes or language context..."
-                    className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none resize-none"
+                    className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/55 focus:border-white/30 focus:outline-none resize-none"
                     rows={2}
                   />
                 </label>
@@ -424,7 +488,7 @@ export function ContextAccessibilityStep({
             </div>
             <div className="flex-1">
               <div className="text-sm text-white mb-1">I confirm this story includes accessibility features</div>
-              <div className="text-xs text-white/50 leading-relaxed">
+              <div className="text-xs text-white/55 leading-relaxed">
                 Your story should be accessible to audiences with different needs. 
                 We'll help you add missing features before publishing.
               </div>
@@ -435,7 +499,7 @@ export function ContextAccessibilityStep({
 
       {/* Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/10 p-5">
-        <div className="max-w-[428px] mx-auto flex items-center justify-between">
+        <div className="max-w-(--seen-content-max) mx-auto flex items-center justify-between">
           <motion.button
             type="button"
             onClick={onBack}
@@ -456,7 +520,7 @@ export function ContextAccessibilityStep({
             className={`flex items-center gap-2 px-6 py-3 rounded-lg text-sm tracking-wide font-medium transition-all ${
               canProceed
                 ? 'bg-white text-black hover:bg-white/90'
-                : 'bg-white/10 text-white/40 cursor-not-allowed'
+                : 'bg-white/10 text-white/55 cursor-not-allowed'
             }`}
           >
             <span>Next: Preview</span>

@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { ArrowLeft, Heart, Globe, Users, Shield } from "lucide-react";
 import { useStoryState } from "../contexts/StoryStateContext";
+import { useAppNav } from "../navigation/AppNav";
 
 interface AboutScreenProps {
   onClose: () => void;
@@ -8,6 +9,7 @@ interface AboutScreenProps {
 
 export function AboutScreen({ onClose }: AboutScreenProps) {
   const { state } = useStoryState();
+  const nav = useAppNav();
 
   const getText = (key: string, type: 'title' | 'body') => {
     const content: Record<string, Record<string, { title: string; body: string }>> = {
@@ -101,13 +103,13 @@ export function AboutScreen({ onClose }: AboutScreenProps) {
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black z-50 overflow-auto"
     >
-      <div className="min-h-full max-w-[428px] mx-auto">
+      <div className="min-h-full max-w-(--seen-content-max) mx-auto">
         {/* Header */}
         <div className="sticky top-0 z-10 backdrop-blur-xl bg-black/80 border-b border-white/5">
           <div className="flex items-center justify-between p-5 pt-8">
             <button
               onClick={onClose}
-              className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+              className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
               aria-label="Close"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
@@ -136,7 +138,7 @@ export function AboutScreen({ onClose }: AboutScreenProps) {
             <h1 className="text-3xl tracking-tight text-white mb-4 leading-tight">
               SEEN
             </h1>
-            <p className="text-sm tracking-[0.3em] uppercase text-white/40">
+            <p className="text-sm tracking-[0.3em] uppercase text-white/55">
               by CREOVA
             </p>
           </motion.div>
@@ -245,30 +247,6 @@ export function AboutScreen({ onClose }: AboutScreenProps) {
             </div>
           </motion.div>
 
-          {/* Contact/Social */}
-          <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-            className="text-center space-y-4"
-          >
-            <p className="text-sm text-white/40">
-              {state.language === 'en' 
-                ? 'Connect with us'
-                : state.language === 'fr'
-                ? 'Connectez-vous avec nous'
-                : 'Conéctate con nosotros'
-              }
-            </p>
-            <div className="flex justify-center gap-3">
-              <button className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/70 hover:bg-white/10 transition-colors">
-                Email
-              </button>
-              <button className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/70 hover:bg-white/10 transition-colors">
-                {state.language === 'en' ? 'Website' : state.language === 'fr' ? 'Site Web' : 'Sitio Web'}
-              </button>
-            </div>
-          </motion.section>
 
           {/* Version footer */}
           <motion.div
@@ -277,16 +255,9 @@ export function AboutScreen({ onClose }: AboutScreenProps) {
             transition={{ delay: 1.4 }}
             className="pt-12 pb-8 text-center"
           >
-            <p className="text-xs text-white/30 mb-2">SEEN v1.0.0</p>
-            <div className="flex justify-center gap-4 text-xs text-white/40">
-              <button className="hover:text-white/60 transition-colors underline">
-                {state.language === 'en' ? 'Privacy Policy' : state.language === 'fr' ? 'Politique de Confidentialité' : 'Política de Privacidad'}
-              </button>
-              <button className="hover:text-white/60 transition-colors underline">
-                {state.language === 'en' ? 'Terms of Use' : state.language === 'fr' ? 'Conditions d\'Utilisation' : 'Términos de Uso'}
-              </button>
-            </div>
-            <p className="text-xs text-white/30 leading-relaxed max-w-[300px] mx-auto">
+            <p className="text-xs text-white/55 mb-2">SEEN v1.0.0</p>
+            <button type="button" onClick={() => nav.go("legal")} className="min-h-11 px-3 text-xs text-white/70 underline underline-offset-2 hover:text-white">Terms &amp; privacy (draft)</button>
+            <p className="text-xs text-white/55 leading-relaxed max-w-[300px] mx-auto">
               {state.language === 'en' 
                 ? 'Made with care for cultural workers, storytellers, and communities who believe in narrative as resistance.'
                 : state.language === 'fr'

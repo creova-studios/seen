@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { pushNotification } from "../services";
 import { motion, AnimatePresence } from "motion/react";
 import { X, CreditCard, Lock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { useStoryState } from "../contexts/StoryStateContext";
@@ -40,6 +41,11 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
 
     if (result.success) {
       setStep("success");
+      pushNotification({
+        type: "money",
+        title: "Payment confirmed",
+        body: `${title}: demo payment of ${formatCents(amount)} accepted with test card •••• ${result.last4}. Nobody was charged.`,
+      });
       setTimeout(() => {
         onSuccess(result.last4);
         reset();
@@ -76,7 +82,7 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed inset-x-0 bottom-0 z-[70] bg-black border-t border-white/10 rounded-t-3xl max-w-[428px] mx-auto overflow-hidden"
+            className="fixed inset-x-0 bottom-0 z-[70] bg-black border-t border-white/10 rounded-t-3xl max-w-(--seen-content-max) mx-auto overflow-hidden"
           >
             <div className="p-6 pb-8 max-h-[85vh] overflow-y-auto">
               <div className="flex justify-center pt-1 pb-4">
@@ -86,7 +92,7 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <Lock className="w-4 h-4 text-green-400" />
-                  <span className="text-xs tracking-wider uppercase text-white/40">
+                  <span className="text-xs tracking-wider uppercase text-white/55">
                     {t("Secure Checkout", "Paiement Sécurisé", "Pago Seguro")}
                   </span>
                 </div>
@@ -102,7 +108,7 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
               {step === "form" && (
                 <>
                   <h3 className="text-lg text-white mb-1">{title}</h3>
-                  <p className="text-sm text-white/50 mb-6">{description}</p>
+                  <p className="text-sm text-white/55 mb-6">{description}</p>
 
                   <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6 flex items-center justify-between">
                     <span className="text-sm text-white/60">{t("Total", "Total", "Total")}</span>
@@ -111,7 +117,7 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
 
                   <div className="space-y-4 mb-6">
                     <div>
-                      <label className="text-xs text-white/40 mb-1.5 block">
+                      <label className="text-xs text-white/55 mb-1.5 block">
                         {t("Cardholder name", "Nom du titulaire", "Nombre del titular")}
                       </label>
                       <input
@@ -123,11 +129,11 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-white/40 mb-1.5 block">
+                      <label className="text-xs text-white/55 mb-1.5 block">
                         {t("Card number", "Numéro de carte", "Número de tarjeta")}
                       </label>
                       <div className="relative">
-                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/55" />
                         <input
                           type="text"
                           value={cardNumber}
@@ -139,7 +145,7 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
                     </div>
                     <div className="flex gap-3">
                       <div className="flex-1">
-                        <label className="text-xs text-white/40 mb-1.5 block">
+                        <label className="text-xs text-white/55 mb-1.5 block">
                           {t("Expiry", "Expiration", "Vencimiento")}
                         </label>
                         <input
@@ -151,7 +157,7 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
                         />
                       </div>
                       <div className="flex-1">
-                        <label className="text-xs text-white/40 mb-1.5 block">CVC</label>
+                        <label className="text-xs text-white/55 mb-1.5 block">CVC</label>
                         <input
                           type="text"
                           value={cvc}
@@ -163,7 +169,7 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-white/30 mb-4 leading-relaxed">
+                  <p className="text-[11px] text-white/55 mb-4 leading-relaxed">
                     {t(
                       "Demo mode: no real charge occurs. Use the pre-filled test card, or 4000 0000 0000 0002 to preview a declined payment.",
                       "Mode démo : aucun débit réel n'a lieu. Utilisez la carte de test préremplie, ou 4000 0000 0000 0002 pour un refus.",
@@ -196,7 +202,7 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
                     <CheckCircle2 className="w-14 h-14 text-green-400 mb-4" />
                   </motion.div>
                   <p className="text-base text-white mb-1">{t("Payment successful", "Paiement réussi", "Pago exitoso")}</p>
-                  <p className="text-sm text-white/50">{formatCents(amount)} {t("charged", "débité", "cobrado")}</p>
+                  <p className="text-sm text-white/55">{formatCents(amount)} {t("charged", "débité", "cobrado")}</p>
                 </div>
               )}
 
@@ -204,7 +210,7 @@ export function CheckoutModal({ isOpen, onClose, title, description, amount, onS
                 <div className="py-8 flex flex-col items-center text-center">
                   <AlertCircle className="w-12 h-12 text-red-400 mb-4" />
                   <p className="text-base text-white mb-1">{t("Payment failed", "Échec du paiement", "Pago fallido")}</p>
-                  <p className="text-sm text-white/50 mb-6">{errorMessage}</p>
+                  <p className="text-sm text-white/55 mb-6">{errorMessage}</p>
                   <button
                     onClick={reset}
                     className="px-6 py-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm hover:bg-white/20"

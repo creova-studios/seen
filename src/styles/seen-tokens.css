@@ -1,0 +1,189 @@
+/*
+ * SEEN design tokens
+ *
+ * Source: Figma "seen.io" → 06 — COMPONENTS → 02 — Design System (node 294:2).
+ * Values are copied 1:1 from the Figma variables (see docs/design/DESIGN_TOKEN_MAP.md).
+ * Components in src/app/components/seen/ bind to these through the Tailwind
+ * utilities declared in the @theme block below (bg-seen-elevated, text-seen-muted, …).
+ */
+
+:root {
+  /* Surfaces */
+  --seen-canvas: #000000;
+  --seen-surface-base: #121214;
+  --seen-surface-elevated: #1a1a1d;
+  --seen-border-default: #222226;
+  --seen-border-focus: rgba(255, 255, 255, 0.3);
+
+  /* Text */
+  --seen-text-primary: #ffffff;
+  --seen-text-secondary: #a1a1aa;
+  --seen-text-muted: #8b8b94;
+  --seen-text-on-brand: #0b0b0c;
+
+  /* Brand */
+  --seen-brand-primary: #ffffff;
+  --seen-brand-on-primary: #000000;
+  --seen-brand-secondary: #c9c9ce;
+  --seen-brand-accent: #c084fc;
+
+  /* Status */
+  --seen-status-success: #20c997;
+  --seen-status-warning: #f5a623;
+  --seen-status-error: #e5484d;
+  --seen-status-info: #60a5fa;
+
+  /* Domain accents */
+  --seen-domain-editorial: #ffe29e;
+  --seen-domain-funding: #ffd166;
+  --seen-domain-creator: #c084fc;
+  --seen-domain-institutional: #60a5fa;
+  --seen-media-story: #fbbf24;
+
+  /* Spacing scale (Figma space-1 … space-12) */
+  --seen-space-1: 2px;
+  --seen-space-2: 4px;
+  --seen-space-3: 8px;
+  --seen-space-4: 12px;
+  --seen-space-5: 16px;
+  --seen-space-6: 20px;
+  --seen-space-7: 24px;
+  --seen-space-8: 32px;
+  --seen-space-9: 40px;
+  --seen-space-10: 56px;
+  --seen-space-12: 96px;
+
+  /* Radii */
+  --seen-radius-xs: 4px;
+  --seen-radius-sm: 8px;
+  --seen-radius-md: 12px;
+  --seen-radius-lg: 16px;
+  --seen-radius-xl: 24px;
+  --seen-radius-pill: 999px;
+
+  /* Elevation */
+  --seen-elevation-2: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+  /* Layout contracts */
+  --seen-content-max: 428px;   /* mobile-first column used by every screen; widens on foldables and tablets (see below) */
+  --seen-gutter: 20px;         /* horizontal page padding; 24px from 360px up (Figma) */
+  --seen-nav-height: 64px;     /* bottom navigation (Figma 316:82) */
+  /* Content clears the fixed header (68px + notch) and the bottom nav (64px + home indicator). */
+  --seen-header-offset: calc(5rem + env(safe-area-inset-top, 0px));
+  --seen-nav-clearance: calc(var(--seen-nav-height) + env(safe-area-inset-bottom, 0px) + 2rem);
+  --seen-touch-min: 44px;      /* minimum hit area (WCAG 2.5.8 / Fitts) */
+
+  /* Motion */
+  /* Three durations only: fast (feedback), base (cards, tabs, content), slow (sheets, drawers, page-level). */
+  --seen-duration-fast: 150ms;
+  --seen-duration-base: 250ms;
+  --seen-duration-slow: 400ms;
+  --seen-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --seen-ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --seen-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Type families (Figma): Inter for UI, Fraunces for editorial titles, Geist Mono for metadata. */
+  --seen-font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --seen-font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@media (min-width: 360px) {
+  :root { --seen-gutter: 24px; }
+}
+
+@theme inline {
+  --spacing-gutter: var(--seen-gutter);
+  --spacing-header: var(--seen-header-offset);
+  --spacing-clearance: var(--seen-nav-clearance);
+  --font-seen-display: var(--seen-font-display);
+  --font-seen-mono: var(--seen-font-mono);
+  --height-seen-nav: var(--seen-nav-height);
+  --color-seen-canvas: var(--seen-canvas);
+  --color-seen-surface: var(--seen-surface-base);
+  --color-seen-elevated: var(--seen-surface-elevated);
+  --color-seen-border: var(--seen-border-default);
+  --color-seen-focus: var(--seen-border-focus);
+  --color-seen-text: var(--seen-text-primary);
+  --color-seen-secondary: var(--seen-text-secondary);
+  --color-seen-muted: var(--seen-text-muted);
+  --color-seen-accent: var(--seen-brand-accent);
+  --color-seen-success: var(--seen-status-success);
+  --color-seen-warning: var(--seen-status-warning);
+  --color-seen-error: var(--seen-status-error);
+  --color-seen-info: var(--seen-status-info);
+  --color-seen-funding: var(--seen-domain-funding);
+  --color-seen-editorial: var(--seen-domain-editorial);
+  --color-seen-creator: var(--seen-domain-creator);
+  --color-seen-institutional: var(--seen-domain-institutional);
+  --color-seen-story: var(--seen-media-story);
+  --radius-seen-sm: var(--seen-radius-sm);
+  --radius-seen-md: var(--seen-radius-md);
+  --radius-seen-lg: var(--seen-radius-lg);
+  --radius-seen-xl: var(--seen-radius-xl);
+}
+
+/* Visible keyboard focus everywhere (WCAG 2.4.7 / 2.4.11). Pointer clicks are unaffected. */
+:where(button, a, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* User preference: Settings → Reduce motion (mirrors the OS media query above). */
+:root[data-motion="reduced"],
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* User preference: Settings → High contrast. Lifts dim text and hairlines. */
+:root[data-contrast="high"] {
+  --seen-text-secondary: #d4d4d8;
+  --seen-text-muted: #c4c4cc;
+  --seen-border-default: #4a4a52;
+}
+:root[data-contrast="high"] [class*="text-white/5"],
+:root[data-contrast="high"] [class*="text-white/6"],
+:root[data-contrast="high"] [class*="text-white/7"] {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+:root[data-contrast="high"] [class*="border-white/5"],
+:root[data-contrast="high"] [class*="border-white/10"],
+:root[data-contrast="high"] [class*="border-white/15"] {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* While the mini player is docked, keep the end of every screen reachable above it. */
+:root[data-player="on"] main {
+  padding-bottom: 12rem !important;
+}
+
+/* Larger text preference (Settings > Accessibility): everything sized in rem scales with it. */
+:root[data-text="large"] {
+  font-size: 118.75%;
+}
+
+/*
+ * Larger screens (unfolded foldables, small tablets): the same screens in a wider column, so the app does not
+ * become a thin strip in the middle. Every screen, the tab bar, sheets and the mini player read --seen-content-max.
+ */
+@media (min-width: 600px) {
+  :root { --seen-content-max: 600px; }
+}
+@media (min-width: 840px) {
+  :root { --seen-content-max: 760px; }
+}

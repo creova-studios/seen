@@ -1,17 +1,48 @@
 {
   "codeReview": {
     "autoReview": true,
-    "focusAreas": ["security", "performance", "types", "i18n"]
+    "focusAreas": [
+      "security",
+      "performance",
+      "types",
+      "i18n"
+    ]
   },
   "hooks": {
     "onToolUse": "sh .claude/hooks/on-tool-use.sh",
-    "beforeGitPush": "sh .claude/hooks/pre-push.sh"
+    "beforeGitPush": "sh .claude/hooks/pre-push.sh",
+    "PreToolUse": [
+      {
+        "matcher": "Skill|skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-gstack.sh\""
+          }
+        ]
+      }
+    ],
+    "UserPromptExpansion": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-gstack.sh\""
+          }
+        ]
+      }
+    ]
   },
   "customSkills": {
     "audit-seen": {
       "description": "Run comprehensive SEEN platform audit (Critical/High/Medium/Low issues)",
       "command": "npm run audit:full",
-      "watchFiles": ["src/**/*.ts", "src/**/*.tsx", "src/app/data/**"]
+      "watchFiles": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/app/data/**"
+      ]
     },
     "fix-critical": {
       "description": "Apply all CRITICAL fixes (data conflict, incomplete stories, search button)",
@@ -87,8 +118,17 @@
     "styling": "Tailwind CSS 4.1.12",
     "ui": "Radix UI + Motion (Framer Motion)",
     "state": "Context API (StoryStateContext + AuthContext)",
-    "languages": ["en", "fr", "es"],
-    "roles": ["viewer", "creator", "moderator", "admin"],
+    "languages": [
+      "en",
+      "fr",
+      "es"
+    ],
+    "roles": [
+      "viewer",
+      "creator",
+      "moderator",
+      "admin"
+    ],
     "database": "Supabase"
   },
   "importantPaths": {

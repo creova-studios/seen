@@ -6,14 +6,24 @@
  * NO personalized content - different from For You
  */
 
+import { DemoModeNotice } from "./DemoModeNotice";
+import { GuestBanner } from "../guest/GuestBanner";
+import { PageTitle } from "./seen/primitives";
+import { languageChipText, languageNamesList } from "./seen/languageChip";
+import type { StringKey } from "../i18n/strings";
+import { useT } from "../i18n/useT";
 import { motion } from "motion/react";
-import { useState } from "react";
-import { NavigationBar } from "./NavigationBar";
+import { useEffect, useState } from "react";
+import { useAppNav } from "../navigation/AppNav";
 import { ContentCard } from "./ContentCard";
 import { StoryCard } from "./StoryCard";
 import { SectionHeader } from "./SectionHeader";
 import { EmptyState } from "./EmptyState";
-import { Search, Filter, Music, Film, Archive, Globe, TrendingUp, Clock, Home, Compass, Library, User } from "lucide-react";
+import { Search, Home, Compass, Library, User, BookOpen } from "lucide-react";
+import { SegmentedTabs } from "./seen/primitives";
+import { SearchBar } from "./seen/forms";
+import { CreatorsPanel } from "../screens/CreatorsPanel";
+import { CollectionsPanel } from "../screens/CollectionsPanel";
 import type { ContentLanguage } from "../data/types";
 import { getExploreCategories, searchStories } from "../data/storyService";
 import type { Language } from "../data/storyDatabase";
@@ -23,7 +33,10 @@ interface ExploreScreenProps {
   onNavigate: (screen: string) => void;
   onSearch?: () => void;
   language: ContentLanguage;
+  initialTab?: ExploreTab;
 }
+
+export type ExploreTab = "stories" | "creators" | "collections";
 
 /**
  * EXPLORE SECTION - CURATED DISCOVERY
@@ -38,28 +51,43 @@ export function ExploreScreen({
   onStoryClick,
   onNavigate,
   onSearch,
-  language
+  language,
+  initialTab = "stories",
 }: ExploreScreenProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const nav = useAppNav();
+  const [tab, setTab] = useState<ExploreTab>(initialTab);
+  useEffect(() => setTab(initialTab), [initialTab]);
+  // Keep the tab in the URL so Back from a creator or collection returns to it.
+  const changeTab = (next: ExploreTab) => {
+    setTab(next);
+    nav.go("explore", { tab: next }, { replace: true });
+  };
 
   // Get curated categories
+  const t = useT();
+  const chipFor = (l: readonly string[] | undefined) => languageChipText(l, language);
+  // Compact chip for the eye, full sentence for assistive tech ("Available in English and Français").
+  const chipNode = (l: readonly string[] | undefined) => {
+    const chip = chipFor(l);
+    if (!chip || !l) return null;
+    const names = languageNamesList([...new Set(l)].map(code => t(`search.lang.${code}` as StringKey)), t("list.and"));
+    return (
+      <span className="text-white/70">
+        <span aria-hidden> · {chip}</span>
+        <span className="sr-only">. {t("story.available", { list: names })}</span>
+      </span>
+    );
+  };
   const categories = getExploreCategories(language as Language);
   
-  console.log(`[ExploreScreen] Loaded ${categories.length} categories for language: ${language}`);
 
   // Search results
   const searchResults = searchQuery.length > 2 
     ? searchStories(searchQuery, language as Language) 
     : [];
 
-  // Filter categories by selected type
-  const filteredCategories = selectedType
-    ? categories.map(cat => ({
-        ...cat,
-        items: cat.items.filter(item => item.type === selectedType)
-      })).filter(cat => cat.items.length > 0)
-    : categories;
+  const filteredCategories = categories;
 
   // Show empty state if no categories
   if (categories.length === 0 && !searchQuery) {
@@ -71,9 +99,8 @@ export function ExploreScreen({
     const text = emptyStateText[language as Language] || emptyStateText.en;
     
     return (
-      <div className="min-h-screen bg-black">
-        <NavigationBar onSearch={onSearch} />
-        <div className="pt-20 pb-24">
+      <div className="min-h-dvh bg-black">
+        <div className="pt-header pb-clearance px-gutter">
           <EmptyState
             icon="Compass"
             title={text.title}
@@ -82,7 +109,6 @@ export function ExploreScreen({
             onAction={() => onNavigate('for-you')}
           />
         </div>
-        <BottomNav onNavigate={onNavigate} activeTab="explore" />
       </div>
     );
   }
@@ -92,13 +118,13 @@ export function ExploreScreen({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
-      className="min-h-screen bg-black"
+      transition={{ duration: 0.2 }}
+      className="min-h-dvh bg-black"
     >
-      <NavigationBar />
 
       {/* Main Content */}
-      <main className="pt-20 pb-24 px-5 max-w-[428px] mx-auto">
+      <main className="pt-header pb-clearance px-gutter max-w-(--seen-content-max) mx-auto">
+        <DemoModeNotice /><GuestBanner />
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -106,69 +132,37 @@ export function ExploreScreen({
           transition={{ delay: 0.1 }}
           className="mb-6"
         >
-          <h1 className="text-2xl font-bold text-white mb-2">Explore</h1>
-          <p className="text-sm text-white/60">Discover cultural stories and creators</p>
+          <PageTitle className="mb-2">Explore</PageTitle>
+          <p className="text-sm text-white/60">Stories, creators and collections, by theme and language</p>
         </motion.div>
 
+        <div className="mb-6">
+          <SegmentedTabs<ExploreTab>
+            label="Explore sections"
+            value={tab}
+            onChange={changeTab}
+            tabs={[
+              { id: "stories", label: "Stories" },
+              { id: "creators", label: "Creators" },
+              { id: "collections", label: "Collections" },
+            ]}
+          />
+        </div>
+
+        {tab === "creators" && <CreatorsPanel />}
+        {tab === "collections" && <CollectionsPanel />}
+
+        {tab === "stories" && (<>
         {/* Search Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-6"
-        >
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-            <input
-              type="text"
-              placeholder="Search stories, creators, topics..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/30 transition-colors"
-            />
-          </div>
-        </motion.div>
-
-        {/* Type Filters */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-8"
-        >
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-5 px-5">
-            <TypeFilter
-              icon={<Globe className="w-4 h-4" />}
-              label="All"
-              active={selectedType === null}
-              onClick={() => setSelectedType(null)}
-            />
-            <TypeFilter
-              icon={<Music className="w-4 h-4" />}
-              label="Music"
-              active={selectedType === 'music'}
-              onClick={() => setSelectedType('music')}
-            />
-            <TypeFilter
-              icon={<Film className="w-4 h-4" />}
-              label="Stories"
-              active={selectedType === 'story'}
-              onClick={() => setSelectedType('story')}
-            />
-            <TypeFilter
-              icon={<Film className="w-4 h-4" />}
-              label="Films"
-              active={selectedType === 'film'}
-              onClick={() => setSelectedType('film')}
-            />
-            <TypeFilter
-              icon={<Archive className="w-4 h-4" />}
-              label="Collections"
-              active={selectedType === 'collection'}
-              onClick={() => setSelectedType('collection')}
-            />
-          </div>
-        </motion.section>
+        <div className="mb-8">
+          <SearchBar
+            id="explore-search"
+            label="Search stories"
+            placeholder="Search stories"
+            value={searchQuery}
+            onChange={setSearchQuery}
+          />
+        </div>
 
         {/* Search Results */}
         {searchQuery.length > 2 && (
@@ -184,23 +178,21 @@ export function ExploreScreen({
             {searchResults.length > 0 ? (
               <div className="space-y-4">
                 {searchResults.map(item => (
-                  <div key={item.id} onClick={() => onStoryClick(item.id)} className="cursor-pointer relative">
-                    <ContentCard
-                      id={item.id}
-                      title={item.title}
-                      creator={item.description}
-                      imageUrl={item.mediaSource}
-                      category={item.creator}
-                      onSelect={onStoryClick}
-                    />
-                    <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs text-white/90 uppercase tracking-wider border border-white/20">
-                      {item.type}
-                    </div>
-                  </div>
+                  <ContentCard
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    creator={item.creator}
+                    subtitle={item.description}
+                    duration={item.duration}
+                    imageUrl={item.mediaSource}
+                    typeLabel={<><BookOpen className="w-3 h-3" aria-hidden />{item.type}{chipNode(item.language)}</>}
+                    onSelect={onStoryClick}
+                  />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-white/40 text-sm">
+              <div className="text-center py-8 text-white/55 text-sm">
                 No results found for "{searchQuery}"
               </div>
             )}
@@ -224,178 +216,44 @@ export function ExploreScreen({
             {/* Render based on category type */}
             {category.id === 'new-music' ? (
               // Horizontal scroll for music
-              <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-5 px-5">
+              <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-gutter px-gutter">
                 {category.items.map(item => (
-                  <div key={item.id} onClick={() => onStoryClick(item.id)} className="flex-shrink-0">
-                    <StoryCard
-                      title={item.title}
-                      author={item.creator}
-                      readTime={item.duration}
-                      imageUrl={item.mediaSource}
-                    />
-                  </div>
+                  <StoryCard
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    author={item.creator}
+                    readTime={item.duration}
+                    imageUrl={item.mediaSource}
+                    onSelect={() => onStoryClick(item.id)}
+                  />
                 ))}
               </div>
             ) : (
               // Vertical list for stories/films/collections
               <div className="space-y-4">
                 {category.items.map(item => (
-                  <div key={item.id} onClick={() => onStoryClick(item.id)} className="cursor-pointer relative">
-                    <ContentCard
-                      id={item.id}
-                      title={item.title}
-                      creator={item.description}
-                      imageUrl={item.mediaSource}
-                      category={item.creator}
-                      onSelect={onStoryClick}
-                    />
-                    <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs text-white/90 uppercase tracking-wider border border-white/20">
-                      {item.type}
-                    </div>
-                  </div>
+                  <ContentCard
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    creator={item.creator}
+                    subtitle={item.description}
+                    duration={item.duration}
+                    imageUrl={item.mediaSource}
+                    typeLabel={<><BookOpen className="w-3 h-3" aria-hidden />{item.type}{chipNode(item.language)}</>}
+                    onSelect={onStoryClick}
+                  />
                 ))}
               </div>
             )}
           </motion.section>
         ))}
 
-        {/* No results for filter */}
-        {!searchQuery && filteredCategories.length === 0 && (
-          <div className="text-center py-16 text-white/40 text-sm">
-            No content found for this filter
-          </div>
-        )}
+        </>)}
       </main>
 
       {/* Bottom Navigation */}
-      <BottomNav onNavigate={onNavigate} activeTab="explore" />
     </motion.div>
-  );
-}
-
-// Type Filter Button
-function TypeFilter({ 
-  icon, 
-  label, 
-  active, 
-  onClick 
-}: { 
-  icon: React.ReactNode;
-  label: string; 
-  active: boolean; 
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
-        active
-          ? "bg-white text-black"
-          : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
-      }`}
-    >
-      {icon}
-      {label}
-    </button>
-  );
-}
-
-// Bottom Navigation Component
-function BottomNav({ 
-  onNavigate, 
-  activeTab 
-}: { 
-  onNavigate: (screen: string) => void;
-  activeTab: string;
-}) {
-  return (
-    <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl bg-black/60 border-t border-white/5 z-50 pointer-events-auto">
-      <div className="max-w-[428px] mx-auto px-5 py-4 flex justify-around">
-        <button
-          type="button"
-          onClick={() => onNavigate("for-you")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'for-you' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <Home 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'for-you' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'for-you' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'for-you' ? 'font-medium' : 'font-light'
-          }`}>
-            For You
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onNavigate("explore")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'explore' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <Compass 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'explore' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'explore' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'explore' ? 'font-medium' : 'font-light'
-          }`}>
-            Explore
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onNavigate("library")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'library' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <Library 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'library' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'library' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'library' ? 'font-medium' : 'font-light'
-          }`}>
-            Library
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onNavigate("profile")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'profile' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <User 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'profile' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'profile' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'profile' ? 'font-medium' : 'font-light'
-          }`}>
-            Profile
-          </span>
-        </button>
-      </div>
-    </nav>
   );
 }

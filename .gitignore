@@ -11,3 +11,5 @@ build/
 out/
 .vercel/
 *.log
+test-results/
+playwright-report/

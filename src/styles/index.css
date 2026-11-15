@@ -1,6 +1,7 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+@import './seen-tokens.css';
 
 /* Custom scrollbar styling for horizontal scroll */
 .scrollbar-hide {
@@ -15,4 +16,64 @@
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
+}
+
+/* Phone behaviour (installed or in the browser). Zoom is never disabled. */
+html {
+  -webkit-text-size-adjust: 100%;
+  background: #000; /* no white flash when the page is pulled past its edge */
+}
+
+body {
+  overscroll-behavior-y: none; /* no pull-to-refresh bounce inside the installed app */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Removes the double-tap-to-zoom delay on controls without blocking pinch zoom. */
+button,
+a,
+[role="button"],
+input,
+select,
+textarea,
+label,
+summary {
+  touch-action: manipulation;
+}
+
+/* First screen: slow zoom on the story covers behind the entry button. Restarts each time a slide becomes active. */
+@keyframes seen-kenburns {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.16); }
+}
+.seen-kenburns {
+  animation: seen-kenburns 9s linear forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .seen-kenburns { animation: none; }
+}
+
+/*
+ * Feels like an app on a touch screen, in the browser, the installed app and the native shell:
+ * no accidental text selection or long-press menus on controls, press feedback, no scrollbars,
+ * no rubber-band. Reading text, form fields and anything marked data-selectable can still be selected.
+ */
+html { overscroll-behavior: none; }
+@media (pointer: coarse) {
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  input, textarea, [contenteditable], [data-selectable], [data-selectable] * {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+  img, svg { -webkit-user-drag: none; user-drag: none; }
+  button:not(:disabled):active,
+  [role="button"]:active,
+  a[href]:active { opacity: 0.7; transition: opacity 60ms linear; }
+  * { scrollbar-width: none; }
+  *::-webkit-scrollbar { display: none; }
 }

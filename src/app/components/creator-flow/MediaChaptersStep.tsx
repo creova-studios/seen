@@ -33,6 +33,8 @@ export interface Chapter {
   ambient?: { file: string };
   music?: { file: string };
   images?: string[];
+  imageAlt?: string;
+  imageDecorative?: boolean;
   video?: { file: string; duration: number };
   estimatedDuration: number; // in minutes
   completeness: number; // 0-100
@@ -107,7 +109,10 @@ export function MediaChaptersStep({
     return score;
   };
 
-  const canProceed = chapters.some(ch => ch.title.trim() && ch.text.trim());
+  // An attached image needs a description, or an explicit "decorative" choice.
+  const missingAlt = (ch: Chapter) => !!ch.images?.length && !ch.imageDecorative && !(ch.imageAlt ?? '').trim();
+  const imagesDescribed = !chapters.some(missingAlt);
+  const canProceed = chapters.some(ch => ch.title.trim() && ch.text.trim()) && imagesDescribed;
 
   const handleNext = () => {
     if (canProceed) {
@@ -116,7 +121,7 @@ export function MediaChaptersStep({
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pb-32">
+    <div className="min-h-dvh bg-black text-white pb-32">
       {/* Header */}
       <motion.div
         variants={!reducedMotion ? VARIANTS.fadeInDown : undefined}
@@ -126,7 +131,7 @@ export function MediaChaptersStep({
         className="px-5 pt-8 pb-6 border-b border-white/10"
       >
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs tracking-widest uppercase text-white/40">Step 3 of 5</span>
+          <span className="text-xs tracking-widest uppercase text-white/55">Step 3 of 5</span>
           <div className="w-1 h-1 rounded-full bg-white/40" />
           <span className="text-xs tracking-widest uppercase text-white/60">Media & Chapters</span>
         </div>
@@ -160,7 +165,7 @@ export function MediaChaptersStep({
                   className="w-full p-4 flex items-center gap-3 text-left hover:bg-white/5 transition-colors"
                 >
                   {/* Drag Handle */}
-                  <GripVertical className="w-4 h-4 text-white/30 flex-shrink-0" strokeWidth={1.5} />
+                  <GripVertical className="w-4 h-4 text-white/55 flex-shrink-0" strokeWidth={1.5} />
 
                   {/* Chapter Number & Status */}
                   <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -169,7 +174,7 @@ export function MediaChaptersStep({
                         <CheckCircle2 className="w-5 h-5 text-green-500" strokeWidth={2} />
                       ) : (
                         <div className="relative w-5 h-5">
-                          <Circle className="w-5 h-5 text-white/20" strokeWidth={2} />
+                          <Circle className="w-5 h-5 text-white/55" strokeWidth={2} />
                           <svg className="absolute inset-0 -rotate-90">
                             <circle
                               cx="10"
@@ -193,12 +198,12 @@ export function MediaChaptersStep({
                           <h3 className="text-sm font-light tracking-wide truncate">
                             {chapter.title}
                           </h3>
-                          <p className="text-xs text-white/40 truncate">
+                          <p className="text-xs text-white/55 truncate">
                             Chapter {index + 1} • {chapter.estimatedDuration} min
                           </p>
                         </>
                       ) : (
-                        <p className="text-sm text-white/40">
+                        <p className="text-sm text-white/55">
                           Chapter {index + 1} • Untitled
                         </p>
                       )}
@@ -210,7 +215,7 @@ export function MediaChaptersStep({
                     <span className={`text-xs px-2 py-1 rounded ${
                       completeness >= 100 ? 'bg-green-500/10 text-green-500' :
                       completeness >= 50 ? 'bg-white/10 text-white/60' :
-                      'bg-white/5 text-white/40'
+                      'bg-white/5 text-white/55'
                     }`}>
                       {completeness}%
                     </span>
@@ -237,7 +242,7 @@ export function MediaChaptersStep({
                               value={chapter.title}
                               onChange={(e) => updateChapter(chapter.id, { title: e.target.value })}
                               placeholder="Give this chapter a title"
-                              className="mt-1.5 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none"
+                              className="mt-1.5 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/55 focus:border-white/30 focus:outline-none"
                             />
                           </label>
                         </div>
@@ -250,7 +255,7 @@ export function MediaChaptersStep({
                               value={chapter.description}
                               onChange={(e) => updateChapter(chapter.id, { description: e.target.value })}
                               placeholder="What happens in this chapter?"
-                              className="mt-1.5 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none resize-none"
+                              className="mt-1.5 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/55 focus:border-white/30 focus:outline-none resize-none"
                               rows={2}
                             />
                           </label>
@@ -264,7 +269,7 @@ export function MediaChaptersStep({
                               value={chapter.text}
                               onChange={(e) => updateChapter(chapter.id, { text: e.target.value })}
                               placeholder="Write the story readers will actually read here..."
-                              className="mt-1.5 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none resize-none"
+                              className="mt-1.5 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder:text-white/55 focus:border-white/30 focus:outline-none resize-none"
                               rows={6}
                             />
                           </label>
@@ -302,7 +307,7 @@ export function MediaChaptersStep({
                             >
                               <Mic className={`w-4 h-4 mb-2 ${chapter.narration ? 'text-green-400' : 'text-white/60'}`} strokeWidth={1.5} />
                               <div className="text-xs text-white/80">Narration</div>
-                              <div className="text-[10px] text-white/40">{chapter.narration ? 'Attached' : 'Add audio URL'}</div>
+                              <div className="text-[10px] text-white/55">{chapter.narration ? 'Attached' : 'Add audio URL'}</div>
                             </button>
 
                             {/* Music */}
@@ -316,7 +321,7 @@ export function MediaChaptersStep({
                             >
                               <Music className={`w-4 h-4 mb-2 ${chapter.music ? 'text-green-400' : 'text-white/60'}`} strokeWidth={1.5} />
                               <div className="text-xs text-white/80">Music</div>
-                              <div className="text-[10px] text-white/40">{chapter.music ? 'Attached' : 'Add soundtrack'}</div>
+                              <div className="text-[10px] text-white/55">{chapter.music ? 'Attached' : 'Add soundtrack'}</div>
                             </button>
 
                             {/* Images */}
@@ -330,7 +335,7 @@ export function MediaChaptersStep({
                             >
                               <ImageIcon className={`w-4 h-4 mb-2 ${chapter.images?.length ? 'text-green-400' : 'text-white/60'}`} strokeWidth={1.5} />
                               <div className="text-xs text-white/80">Images</div>
-                              <div className="text-[10px] text-white/40">{chapter.images?.length ? 'Attached' : 'Add image URL'}</div>
+                              <div className="text-[10px] text-white/55">{chapter.images?.length ? 'Attached' : 'Add image URL'}</div>
                             </button>
 
                             {/* Video */}
@@ -344,10 +349,46 @@ export function MediaChaptersStep({
                             >
                               <Video className={`w-4 h-4 mb-2 ${chapter.video ? 'text-green-400' : 'text-white/60'}`} strokeWidth={1.5} />
                               <div className="text-xs text-white/80">Video</div>
-                              <div className="text-[10px] text-white/40">{chapter.video ? 'Attached' : 'Optional'}</div>
+                              <div className="text-[10px] text-white/55">{chapter.video ? 'Attached' : 'Optional'}</div>
                             </button>
                           </div>
                         </div>
+
+                        {/* Image description (alt text) */}
+                        {chapter.images?.length ? (
+                          <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                            <label htmlFor={`alt-${chapter.id}`} className="block text-xs tracking-wider uppercase text-white/70 mb-1.5">
+                              Describe this image for people who cannot see it
+                            </label>
+                            <textarea
+                              id={`alt-${chapter.id}`}
+                              value={chapter.imageAlt ?? ''}
+                              disabled={!!chapter.imageDecorative}
+                              onChange={(e) => updateChapter(chapter.id, { imageAlt: e.target.value })}
+                              rows={2}
+                              maxLength={250}
+                              aria-describedby={`alt-help-${chapter.id}`}
+                              aria-invalid={missingAlt(chapter)}
+                              placeholder="e.g. A woman in a red coat stands on a harbour dock at dawn"
+                              className="w-full bg-black/40 border border-white/15 rounded px-3 py-2 text-sm text-white placeholder:text-white/55 focus:border-white/40 focus:outline-none disabled:opacity-50"
+                            />
+                            <p id={`alt-help-${chapter.id}`} className="text-xs text-white/60 mt-1.5">
+                              Say what matters about the image in a sentence or two. Screen readers read this aloud.
+                            </p>
+                            <label className="mt-3 flex items-center gap-3 min-h-11 text-sm text-white/85 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={!!chapter.imageDecorative}
+                                onChange={(e) => updateChapter(chapter.id, { imageDecorative: e.target.checked })}
+                                className="w-5 h-5 accent-white"
+                              />
+                              This image is decorative (no description needed)
+                            </label>
+                            {missingAlt(chapter) && (
+                              <p role="alert" className="text-xs text-red-300 mt-1">Add a description, or mark the image as decorative, to continue.</p>
+                            )}
+                          </div>
+                        ) : null}
 
                         {/* Delete Chapter */}
                         {chapters.length > 1 && (
@@ -393,7 +434,7 @@ export function MediaChaptersStep({
 
       {/* Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/10 p-5">
-        <div className="max-w-[428px] mx-auto flex items-center justify-between">
+        <div className="max-w-(--seen-content-max) mx-auto flex items-center justify-between">
           {/* Back button */}
           <motion.button
             type="button"
@@ -416,7 +457,7 @@ export function MediaChaptersStep({
             className={`flex items-center gap-2 px-6 py-3 rounded-lg text-sm tracking-wide font-medium transition-all ${
               canProceed
                 ? 'bg-white text-black hover:bg-white/90'
-                : 'bg-white/10 text-white/40 cursor-not-allowed'
+                : 'bg-white/10 text-white/55 cursor-not-allowed'
             }`}
           >
             <span>Next: Context</span>

@@ -32,7 +32,7 @@ export function LanguageSwitcher({
       {/* Toggle button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center transition-colors"
+        className="w-11 h-11 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center transition-colors"
         aria-label="Change language"
       >
         <Globe className="w-5 h-5 text-white/70" />
@@ -85,7 +85,7 @@ export function LanguageSwitcher({
 
               {/* Note about availability */}
               <div className="px-4 py-3 border-t border-white/5">
-                <p className="text-xs text-white/40 leading-relaxed">
+                <p className="text-xs text-white/55 leading-relaxed">
                   Content adapts to your language. Original language shown when translation unavailable.
                 </p>
               </div>

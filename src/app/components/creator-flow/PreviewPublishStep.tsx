@@ -5,7 +5,6 @@ import {
   Eye, 
   Globe, 
   Lock,
-  Building2,
   Play,
   Check,
   Shield,
@@ -29,7 +28,6 @@ export interface PublishData {
   guidelinesAccepted: boolean;
 }
 
-type PreviewMode = 'viewer' | 'language' | 'accessibility';
 
 const VISIBILITY_OPTIONS = [
   {
@@ -38,12 +36,9 @@ const VISIBILITY_OPTIONS = [
     description: 'Visible to all SEEN audiences',
     icon: Globe,
   },
-  {
-    value: 'institutional',
-    label: 'Institutional Collection',
-    description: 'Shared with partnered institutions',
-    icon: Building2,
-  },
+  // "Institutional Collection" is intentionally not offered: SEEN has no
+  // confirmed institutional partners yet. Re-add it with a list loaded from
+  // real partner agreements, never hard-coded organisation names.
   {
     value: 'private',
     label: 'Private',
@@ -61,7 +56,6 @@ export function PreviewPublishStep({
 }: PreviewPublishStepProps) {
   const reducedMotion = prefersReducedMotion();
   
-  const [previewMode, setPreviewMode] = useState<PreviewMode>('viewer');
   const [visibility, setVisibility] = useState<'public' | 'institutional' | 'private'>('public');
   const [institutionalCollection, setInstitutionalCollection] = useState('');
   const [rightsConfirmed, setRightsConfirmed] = useState(false);
@@ -84,7 +78,7 @@ export function PreviewPublishStep({
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pb-32">
+    <div className="min-h-dvh bg-black text-white pb-32">
       {/* Header */}
       <motion.div
         variants={!reducedMotion ? VARIANTS.fadeInDown : undefined}
@@ -94,7 +88,7 @@ export function PreviewPublishStep({
         className="px-5 pt-8 pb-6 border-b border-white/10"
       >
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs tracking-widest uppercase text-white/40">Step 5 of 5</span>
+          <span className="text-xs tracking-widest uppercase text-white/55">Step 5 of 5</span>
           <div className="w-1 h-1 rounded-full bg-white/40" />
           <span className="text-xs tracking-widest uppercase text-white/60">Preview & Publish</span>
         </div>
@@ -138,55 +132,19 @@ export function PreviewPublishStep({
 
       {/* Preview Modes */}
       <div className="px-5 py-6 border-b border-white/10">
-        <div className="mb-4">
-          <h3 className="text-base font-light tracking-wide mb-2">Preview Modes</h3>
-          <p className="text-xs text-white/50 leading-relaxed">
-            See how your story will appear to different audiences.
-          </p>
-        </div>
-
-        {/* Preview Mode Tabs */}
-        <div className="flex gap-2 mb-4">
-          {[
-            { id: 'viewer', label: 'Viewer', icon: Eye },
-            { id: 'language', label: 'Language', icon: Globe },
-            { id: 'accessibility', label: 'Accessibility', icon: Eye },
-          ].map(({ id, label, icon: Icon }) => {
-            const isActive = previewMode === id;
-            
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setPreviewMode(id as PreviewMode)}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg border transition-all ${
-                  isActive
-                    ? 'bg-white/10 border-white/30 text-white'
-                    : 'bg-white/5 border-white/10 text-white/60 hover:border-white/20'
-                }`}
-              >
-                <Icon className="w-4 h-4" strokeWidth={1.5} />
-                <span className="text-xs tracking-wide">{label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Preview Area */}
-        <div className="aspect-[9/16] bg-white/5 border border-white/10 rounded-lg flex items-center justify-center">
-          <div className="text-center px-8">
-            <Play className="w-12 h-12 text-white/40 mx-auto mb-4" strokeWidth={1.5} />
-            <p className="text-sm text-white/60 mb-2">Preview Mode: {previewMode}</p>
-            <p className="text-xs text-white/40">Interactive preview coming soon</p>
-          </div>
-        </div>
+        <h3 className="text-base font-light tracking-wide mb-3">What you are publishing</h3>
+        <dl className="rounded-lg border border-white/10 bg-white/5 divide-y divide-white/10 text-sm">
+          <div className="flex justify-between gap-4 px-4 py-3"><dt className="text-white/70">Title</dt><dd className="text-white text-right">{storyTitle || 'Untitled'}</dd></div>
+          <div className="flex justify-between gap-4 px-4 py-3"><dt className="text-white/70">Chapters</dt><dd className="text-white">{totalChapters}</dd></div>
+          <div className="flex justify-between gap-4 px-4 py-3"><dt className="text-white/70">Languages</dt><dd className="text-white">{storyLanguages.map(l => l.toUpperCase()).join(', ')}</dd></div>
+        </dl>
       </div>
 
       {/* Visibility Settings */}
       <div className="px-5 py-6 border-b border-white/10">
         <div className="mb-4">
           <h3 className="text-base font-light tracking-wide mb-2">Visibility</h3>
-          <p className="text-xs text-white/50 leading-relaxed">
+          <p className="text-xs text-white/55 leading-relaxed">
             Choose who can access your story.
           </p>
         </div>
@@ -223,7 +181,7 @@ export function PreviewPublishStep({
                   <Icon className="w-5 h-5 text-white/60 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                   <div className="flex-1">
                     <div className="text-sm text-white mb-0.5">{option.label}</div>
-                    <div className="text-xs text-white/50">{option.description}</div>
+                    <div className="text-xs text-white/55">{option.description}</div>
                   </div>
                 </div>
               </motion.button>
@@ -233,31 +191,7 @@ export function PreviewPublishStep({
 
         {/* Institutional Collection Input */}
         <AnimatePresence>
-          {visibility === 'institutional' && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={TRANSITIONS.organic}
-              className="mt-3"
-            >
-              <label className="block">
-                <span className="text-xs tracking-wider uppercase text-white/60 mb-2 block">
-                  Select Collection
-                </span>
-                <select
-                  value={institutionalCollection}
-                  onChange={(e) => setInstitutionalCollection(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-white/30 focus:outline-none"
-                >
-                  <option value="">Choose a collection...</option>
-                  <option value="nfb-indigenous">NFB Indigenous Voices</option>
-                  <option value="cmh-franco">Canadian Museum - Franco Heritage</option>
-                  <option value="tpl-multicultural">Toronto Public Library - Multicultural</option>
-                </select>
-              </label>
-            </motion.div>
-          )}
+
         </AnimatePresence>
       </div>
 
@@ -294,7 +228,7 @@ export function PreviewPublishStep({
               <Shield className="w-5 h-5 text-white/60 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
               <div className="flex-1">
                 <div className="text-sm text-white mb-1">Rights & IP Ownership</div>
-                <div className="text-xs text-white/50 leading-relaxed">
+                <div className="text-xs text-white/55 leading-relaxed">
                   I confirm I have the rights to publish this content. 
                   <strong className="text-white/70"> I retain full ownership</strong> of my work, 
                   and grant SEEN a non-exclusive license to present it.
@@ -329,7 +263,7 @@ export function PreviewPublishStep({
               <FileText className="w-5 h-5 text-white/60 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
               <div className="flex-1">
                 <div className="text-sm text-white mb-1">Community Guidelines</div>
-                <div className="text-xs text-white/50 leading-relaxed">
+                <div className="text-xs text-white/55 leading-relaxed">
                   I agree to SEEN's community guidelines regarding respectful cultural representation 
                   and ethical storytelling practices.
                 </div>
@@ -391,7 +325,7 @@ export function PreviewPublishStep({
 
       {/* Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/10 p-5">
-        <div className="max-w-[428px] mx-auto flex items-center justify-between">
+        <div className="max-w-(--seen-content-max) mx-auto flex items-center justify-between">
           <motion.button
             type="button"
             onClick={onBack}
@@ -412,7 +346,7 @@ export function PreviewPublishStep({
             className={`flex items-center gap-2 px-8 py-3 rounded-lg text-sm tracking-wide font-medium transition-all ${
               canPublish
                 ? 'bg-white text-black hover:bg-white/90'
-                : 'bg-white/10 text-white/40 cursor-not-allowed'
+                : 'bg-white/10 text-white/55 cursor-not-allowed'
             }`}
           >
             <Sparkles className="w-4 h-4" strokeWidth={2} />

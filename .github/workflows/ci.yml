@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, staging, dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck · unit tests · build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # No lockfile is committed yet (see docs/operations/CI_CD.md), so this is npm install, not npm ci.
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Dependency audit (high+ in production deps)
+        run: npm audit --omit=dev --audit-level=high
+
+  native:
+    name: Native app · typecheck · tests · bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # The native app shares plain-TypeScript data from ../src, which needs the website's packages (fuse.js) too.
+      - run: npm install --no-audit --no-fund
+      - run: npm install --no-audit --no-fund --legacy-peer-deps
+        working-directory: mobile
+      - run: npm run typecheck
+        working-directory: mobile
+      - run: npx jest
+        working-directory: mobile
+      - name: The app bundles for iOS and Android
+        run: npx expo export --platform ios --output-dir /tmp/export-ios && npx expo export --platform android --output-dir /tmp/export-android
+        working-directory: mobile
+      - name: Browser tests of the native app (the web export Vercel serves)
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test -c playwright.native.config.ts
+
+  database:
+    name: Database RLS tests · secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y --no-install-recommends postgresql-16 >/dev/null
+      - run: npm run test:db
+      - run: bash scripts/secret-scan.sh
+
+  e2e:
+    name: End-to-end journeys
+    runs-on: ubuntu-latest
+    needs: verify
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+        env:
+          CI: "true"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7

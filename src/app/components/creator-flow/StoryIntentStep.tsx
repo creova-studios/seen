@@ -7,6 +7,8 @@ interface StoryIntentStepProps {
   onNext: (data: StoryIntentData) => void;
   onSaveDraft: (data: Partial<StoryIntentData>) => void;
   initialData?: Partial<StoryIntentData>;
+  /** Optional link under the draft indicator (the publish flow passes "Your stories" for creators). */
+  footerLink?: { label: string; onClick: () => void };
 }
 
 export interface StoryIntentData {
@@ -30,6 +32,8 @@ const CULTURAL_THEMES = [
   "Environmental",
 ];
 
+const AUDIENCES = ["Youth", "Educators", "Families", "Community members", "Researchers", "General public"];
+
 const LANGUAGES = [
   { code: 'en', label: 'English', native: 'English' },
   { code: 'fr', label: 'French', native: 'Français' },
@@ -39,7 +43,8 @@ const LANGUAGES = [
 export function StoryIntentStep({ 
   onNext, 
   onSaveDraft,
-  initialData 
+  initialData,
+  footerLink,
 }: StoryIntentStepProps) {
   const reducedMotion = prefersReducedMotion();
   
@@ -50,6 +55,13 @@ export function StoryIntentStep({
     initialData?.languages || ['en']
   );
   const [intendedAudience, setIntendedAudience] = useState(initialData?.intendedAudience || '');
+
+  const audienceTokens = intendedAudience.split(',').map(a => a.trim()).filter(Boolean);
+  const toggleAudience = (a: string) => {
+    const next = audienceTokens.includes(a) ? audienceTokens.filter(t => t !== a) : [...audienceTokens, a];
+    setIntendedAudience(next.join(', '));
+    setTimeout(handleAutoSave, 500);
+  };
 
   // Auto-save on changes
   const handleAutoSave = () => {
@@ -93,7 +105,7 @@ export function StoryIntentStep({
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pb-32">
+    <div className="min-h-dvh bg-black text-white pb-32">
       {/* Header */}
       <motion.div
         variants={!reducedMotion ? VARIANTS.fadeInDown : undefined}
@@ -103,7 +115,7 @@ export function StoryIntentStep({
         className="px-5 pt-8 pb-6 border-b border-white/10"
       >
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs tracking-widest uppercase text-white/40">Step 1 of 5</span>
+          <span className="text-xs tracking-widest uppercase text-white/55">Step 1 of 5</span>
           <div className="w-1 h-1 rounded-full bg-white/40" />
           <span className="text-xs tracking-widest uppercase text-white/60">Story Intent</span>
         </div>
@@ -132,10 +144,10 @@ export function StoryIntentStep({
                 setTimeout(handleAutoSave, 500);
               }}
               placeholder="Give your story a meaningful title"
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/55 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
               maxLength={100}
             />
-            <span className="text-xs text-white/40 mt-1.5 block">{title.length}/100</span>
+            <span className="text-xs text-white/55 mt-1.5 block">{title.length}/100</span>
           </label>
         </motion.div>
 
@@ -155,11 +167,11 @@ export function StoryIntentStep({
                 setTimeout(handleAutoSave, 500);
               }}
               placeholder="What is this story about? Who should experience it?"
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/55 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none"
               rows={4}
               maxLength={500}
             />
-            <span className="text-xs text-white/40 mt-1.5 block">{description.length}/500</span>
+            <span className="text-xs text-white/55 mt-1.5 block">{description.length}/500</span>
           </label>
         </motion.div>
 
@@ -172,7 +184,7 @@ export function StoryIntentStep({
         >
           <div className="mb-3">
             <span className="text-sm tracking-wide text-white/80 mb-2 block">Cultural Themes</span>
-            <p className="text-xs text-white/50 leading-relaxed">
+            <p className="text-xs text-white/55 leading-relaxed">
               Select themes that best represent your story. Choose as many as relevant.
             </p>
           </div>
@@ -191,7 +203,7 @@ export function StoryIntentStep({
                   transition={{ ...TRANSITIONS.organic, delay: 0.4 + (index * 0.03) }}
                   whileHover={!reducedMotion ? { scale: 1.05 } : undefined}
                   whileTap={!reducedMotion ? { scale: 0.98 } : undefined}
-                  className={`px-3 py-2 text-xs tracking-wide rounded-lg border transition-all duration-300 ${
+                  className={`px-3 min-h-11 text-xs tracking-wide rounded-lg border transition-all duration-300 ${
                     isSelected
                       ? 'bg-white/10 text-white border-white/30'
                       : 'bg-white/5 text-white/60 border-white/10 hover:border-white/20'
@@ -249,7 +261,7 @@ export function StoryIntentStep({
                     </div>
                     <div className="text-left">
                       <div className="text-sm text-white">{lang.label}</div>
-                      <div className="text-xs text-white/40">{lang.native}</div>
+                      <div className="text-xs text-white/55">{lang.native}</div>
                     </div>
                   </div>
                 </motion.button>
@@ -265,24 +277,45 @@ export function StoryIntentStep({
           animate="animate"
           transition={{ ...TRANSITIONS.organic, delay: 0.5 }}
         >
-          <label className="block mb-3">
+          <div className="mb-3">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm tracking-wide text-white/80">Intended Audience</span>
-              <span className="text-xs tracking-wider uppercase text-white/40 bg-white/5 px-2 py-0.5 rounded">
+              <span id="audience-label" className="text-sm tracking-wide text-white/80">Who is this story for?</span>
+              <span className="text-xs tracking-wider uppercase text-white/55 bg-white/5 px-2 py-0.5 rounded">
                 Optional
               </span>
             </div>
-            <input
-              type="text"
-              value={intendedAudience}
-              onChange={(e) => {
-                setIntendedAudience(e.target.value);
-                setTimeout(handleAutoSave, 500);
-              }}
-              placeholder="Who is this story for? (e.g., educators, community members, youth)"
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
-            />
-          </label>
+            <div role="group" aria-labelledby="audience-label" className="flex flex-wrap gap-2 mb-3">
+              {AUDIENCES.map(a => {
+                const on = audienceTokens.includes(a);
+                return (
+                  <button
+                    key={a}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => toggleAudience(a)}
+                    className={`px-3 min-h-11 text-xs tracking-wide rounded-lg border transition-colors ${
+                      on ? 'bg-white/10 text-white border-white/30' : 'bg-white/5 text-white/70 border-white/10 hover:border-white/20'
+                    }`}
+                  >
+                    {a}
+                  </button>
+                );
+              })}
+            </div>
+            <label className="block">
+              <span className="sr-only">Other audiences, separated by commas</span>
+              <input
+                type="text"
+                value={intendedAudience}
+                onChange={(e) => {
+                  setIntendedAudience(e.target.value);
+                  setTimeout(handleAutoSave, 500);
+                }}
+                placeholder="Pick above, or add your own (comma separated)"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/55 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+              />
+            </label>
+          </div>
         </motion.div>
 
         {/* Helper Card */}
@@ -307,15 +340,22 @@ export function StoryIntentStep({
 
       {/* Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/10 p-5">
-        <div className="max-w-[428px] mx-auto flex items-center justify-between">
+        <div className="max-w-(--seen-content-max) mx-auto flex items-center justify-between">
           {/* Auto-save indicator */}
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-xs text-white/40"
-          >
-            Draft saved
-          </motion.span>
+          <div className="flex flex-col items-start">
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-xs text-white/55"
+            >
+              Draft saved
+            </motion.span>
+            {footerLink && (
+              <button type="button" onClick={footerLink.onClick} className="min-h-11 text-xs text-white/80 underline underline-offset-2">
+                {footerLink.label}
+              </button>
+            )}
+          </div>
 
           {/* Next button */}
           <motion.button
@@ -327,7 +367,7 @@ export function StoryIntentStep({
             className={`flex items-center gap-2 px-6 py-3 rounded-lg text-sm tracking-wide font-medium transition-all duration-300 ${
               canProceed
                 ? 'bg-white text-black hover:bg-white/90'
-                : 'bg-white/10 text-white/40 cursor-not-allowed'
+                : 'bg-white/10 text-white/55 cursor-not-allowed'
             }`}
           >
             <span>Next: Structure</span>

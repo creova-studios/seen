@@ -72,12 +72,12 @@ export function CreatorMonetizationScreen({ onClose }: CreatorMonetizationScreen
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black z-50 overflow-y-auto"
     >
-      <div className="min-h-full max-w-[428px] mx-auto pb-24">
+      <div className="min-h-full max-w-(--seen-content-max) mx-auto pb-24">
         <div className="sticky top-0 z-10 backdrop-blur-xl bg-black/80 border-b border-white/5">
           <div className="flex items-center justify-between p-5 pt-8">
             <button
               onClick={onClose}
-              className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+              className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
               aria-label={t("Back", "Retour", "Atrás")}
             >
               <ArrowLeft className="w-5 h-5 text-white" />
@@ -92,10 +92,10 @@ export function CreatorMonetizationScreen({ onClose }: CreatorMonetizationScreen
         <div className="px-6 py-6 space-y-10">
           {/* Subscription plan configuration */}
           <section>
-            <span className="text-xs tracking-[0.3em] uppercase text-white/40 mb-3 block">
+            <span className="text-xs tracking-[0.3em] uppercase text-white/55 mb-3 block">
               {t("Your Subscription Tier", "Votre Palier d'Abonnement", "Tu Nivel de Suscripción")}
             </span>
-            <p className="text-sm text-white/50 mb-5 leading-relaxed">
+            <p className="text-sm text-white/55 mb-5 leading-relaxed">
               {t(
                 "Fans subscribe monthly for exclusive access to your subscriber-only content.",
                 "Les fans s'abonnent mensuellement pour un accès exclusif à votre contenu réservé aux abonnés.",
@@ -105,7 +105,7 @@ export function CreatorMonetizationScreen({ onClose }: CreatorMonetizationScreen
 
             <div className="space-y-4 p-5 rounded-2xl bg-white/5 border border-white/10">
               <div>
-                <label className="text-xs text-white/40 mb-1.5 block">{t("Tier name", "Nom du palier", "Nombre del nivel")}</label>
+                <label className="text-xs text-white/55 mb-1.5 block">{t("Tier name", "Nom du palier", "Nombre del nivel")}</label>
                 <input
                   type="text"
                   value={tierName}
@@ -114,9 +114,9 @@ export function CreatorMonetizationScreen({ onClose }: CreatorMonetizationScreen
                 />
               </div>
               <div>
-                <label className="text-xs text-white/40 mb-1.5 block">{t("Monthly price (USD)", "Prix mensuel (USD)", "Precio mensual (USD)")}</label>
+                <label className="text-xs text-white/55 mb-1.5 block">{t("Monthly price (USD)", "Prix mensuel (USD)", "Precio mensual (USD)")}</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/55">$</span>
                   <input
                     type="number"
                     step="0.01"
@@ -128,7 +128,7 @@ export function CreatorMonetizationScreen({ onClose }: CreatorMonetizationScreen
                 </div>
               </div>
               <div>
-                <label className="text-xs text-white/40 mb-1.5 block">
+                <label className="text-xs text-white/55 mb-1.5 block">
                   {t("Benefits (one per line)", "Avantages (un par ligne)", "Beneficios (uno por línea)")}
                 </label>
                 <textarea
@@ -162,10 +162,10 @@ export function CreatorMonetizationScreen({ onClose }: CreatorMonetizationScreen
 
           {/* Content pricing table */}
           <section>
-            <span className="text-xs tracking-[0.3em] uppercase text-white/40 mb-3 block">
+            <span className="text-xs tracking-[0.3em] uppercase text-white/55 mb-3 block">
               {t("Content Pricing", "Tarification du Contenu", "Precios de Contenido")}
             </span>
-            <p className="text-sm text-white/50 mb-5 leading-relaxed">
+            <p className="text-sm text-white/55 mb-5 leading-relaxed">
               {t(
                 "Set the access tier for each story. Demo mode lets you configure pricing across the catalog.",
                 "Définissez le palier d'accès pour chaque histoire. Le mode démo vous permet de configurer les prix pour tout le catalogue.",
@@ -187,7 +187,7 @@ export function CreatorMonetizationScreen({ onClose }: CreatorMonetizationScreen
                         <button
                           key={opt.value}
                           onClick={() => handleSetTier(story.id, opt.value)}
-                          className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs transition-colors ${
+                          className={`flex items-center gap-1.5 px-2.5 min-h-11 rounded-lg text-xs transition-colors ${
                             pricing.accessTier === opt.value
                               ? "bg-white text-black"
                               : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
@@ -200,7 +200,7 @@ export function CreatorMonetizationScreen({ onClose }: CreatorMonetizationScreen
                     </div>
                     {pricing.accessTier === "one-time-purchase" && (
                       <div className="relative mt-2">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm">$</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/55 text-sm">$</span>
                         <input
                           type="number"
                           step="0.01"

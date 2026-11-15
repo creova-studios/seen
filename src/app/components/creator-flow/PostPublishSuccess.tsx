@@ -33,7 +33,7 @@ export function PostPublishSuccess({
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-5">
+    <div className="min-h-dvh bg-black text-white flex items-center justify-center px-5">
       <div className="max-w-md w-full">
         {/* Success Icon */}
         <motion.div
@@ -162,15 +162,15 @@ export function PostPublishSuccess({
             {visibility === 'public' && (
               <>
                 <li className="flex items-start gap-2">
-                  <span className="text-white/40">•</span>
+                  <span className="text-white/55">•</span>
                   <span>Your story is live now and visible to readers</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-white/40">•</span>
+                  <span className="text-white/55">•</span>
                   <span>Community responses are reviewed by moderators before appearing</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-white/40">•</span>
+                  <span className="text-white/55">•</span>
                   <span>Check Earnings for revenue once you set pricing</span>
                 </li>
               </>
@@ -178,11 +178,11 @@ export function PostPublishSuccess({
             {visibility === 'institutional' && (
               <>
                 <li className="flex items-start gap-2">
-                  <span className="text-white/40">•</span>
+                  <span className="text-white/55">•</span>
                   <span>Your story is saved to the Institutional Collection</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-white/40">•</span>
+                  <span className="text-white/55">•</span>
                   <span>You can change its visibility anytime</span>
                 </li>
               </>
@@ -190,11 +190,11 @@ export function PostPublishSuccess({
             {visibility === 'private' && (
               <>
                 <li className="flex items-start gap-2">
-                  <span className="text-white/40">•</span>
+                  <span className="text-white/55">•</span>
                   <span>Your story remains in your private library</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-white/40">•</span>
+                  <span className="text-white/55">•</span>
                   <span>You can change visibility settings anytime</span>
                 </li>
               </>

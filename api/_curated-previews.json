@@ -1,0 +1,68 @@
+{
+  "midnight-resonance": {
+    "title": "Midnight Resonance",
+    "description": "A sonic journey through Montreal's underground jazz scene, tracing the lives of three musicians whose paths converge in the city's most mysterious club.",
+    "image": "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  },
+  "indigenous-languages": {
+    "title": "Words That Remember",
+    "description": "A journey into Indigenous language revitalization, following three communities working to bring their languages back from the edge of extinction.",
+    "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  },
+  "seen-unseen": {
+    "title": "Seen / Unseen",
+    "description": "Four meditations on visibility and erasure in Canadian public space, exploring who is seen, who remains invisible, and why it matters.",
+    "image": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  },
+  "letters-never-sent": {
+    "title": "Letters Never Sent",
+    "description": "Five letters written but never delivered, exploring the silence between migrant parents and the children they left behind.",
+    "image": "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  },
+  "soft-power": {
+    "title": "Soft Power",
+    "description": "Six stories exploring how culture, language, and identity become tools of influence in the Canadian diaspora.",
+    "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  },
+  "home-no-fixed-address": {
+    "title": "Home (No Fixed Address)",
+    "description": "Five meditations on belonging, place-making, and what home means when you carry it with you instead of living in it.",
+    "image": "https://images.unsplash.com/photo-1464207687429-7505649dae38?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  },
+  "the-first-generation": {
+    "title": "The First Generation",
+    "description": "Seven stories about the immigrants who came first, their sacrifices, their dreams, and the complex legacy they left for those who followed.",
+    "image": "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  },
+  "black-atlantic-canada": {
+    "title": "Black Atlantic Canada",
+    "description": "Six stories exploring the Caribbean-Canadian diaspora, maritime migration, and what it means to be Black and Atlantic in Canada.",
+    "image": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  },
+  "what-we-carry": {
+    "title": "What We Carry",
+    "description": "Five meditations on intergenerational trauma, inherited pain, and the work of healing across generations.",
+    "image": "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  },
+  "small-histories": {
+    "title": "Small Histories",
+    "description": "Six archival vignettes preserving the everyday moments that official history forgets.",
+    "image": "https://images.unsplash.com/photo-1533158326339-7f3cf2404354?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  },
+  "work-worth": {
+    "title": "Work / Worth",
+    "description": "Five stories examining labor, value, and what we are worth in systems that undervalue us.",
+    "image": "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=1200&fit=crop",
+    "locale": "en_CA"
+  }
+}

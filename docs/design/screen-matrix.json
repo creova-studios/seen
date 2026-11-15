@@ -1,0 +1,3382 @@
+[
+ {
+  "id": "352:2",
+  "name": "13 — PROTOTYPE FLOWS",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "468:2",
+  "name": "WALKTHROUGH / ONBOARDING / Splash / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 310:2 (ONBOARDING / Splash / Default / Mobile)"
+ },
+ {
+  "id": "468:14",
+  "name": "WALKTHROUGH / ONBOARDING / Language Selection / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 310:14 (ONBOARDING / Language Selection / Default / Mobile)"
+ },
+ {
+  "id": "468:46",
+  "name": "WALKTHROUGH / ONBOARDING / Introduction / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 310:45 (ONBOARDING / Introduction / Default / Mobile)"
+ },
+ {
+  "id": "468:62",
+  "name": "WALKTHROUGH / ONBOARDING / Intent / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 311:2 (ONBOARDING / Intent / Default / Mobile)"
+ },
+ {
+  "id": "468:97",
+  "name": "WALKTHROUGH / ONBOARDING / Role / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 311:37 (ONBOARDING / Role / Default / Mobile)"
+ },
+ {
+  "id": "468:127",
+  "name": "WALKTHROUGH / ONBOARDING / Personalization / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 311:67 (ONBOARDING / Personalization / Default / Mobile)"
+ },
+ {
+  "id": "468:180",
+  "name": "WALKTHROUGH / ONBOARDING / Accessibility / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 312:2 (ONBOARDING / Accessibility / Default / Mobile)"
+ },
+ {
+  "id": "468:225",
+  "name": "WALKTHROUGH / ONBOARDING / Sign Up / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 312:47 (ONBOARDING / Sign Up / Default / Mobile)"
+ },
+ {
+  "id": "468:253",
+  "name": "WALKTHROUGH / ONBOARDING / Email Verification / OTP / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 314:2 (ONBOARDING / Email Verification / OTP / Mobile)"
+ },
+ {
+  "id": "468:279",
+  "name": "WALKTHROUGH / ONBOARDING / Completion / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 315:2 (ONBOARDING / Completion / Mobile)"
+ },
+ {
+  "id": "468:289",
+  "name": "WALKTHROUGH / DISCOVERY / For You / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 316:2 (DISCOVERY / For You / Default / Mobile)"
+ },
+ {
+  "id": "468:385",
+  "name": "WALKTHROUGH / STORY / Story World / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 323:2 (STORY / Story World / Default / Mobile)"
+ },
+ {
+  "id": "468:447",
+  "name": "WALKTHROUGH / STORY / Chapter Index / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 323:63 (STORY / Chapter Index / Default / Mobile)"
+ },
+ {
+  "id": "468:473",
+  "name": "WALKTHROUGH / STORY / Audio Player / Playing / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 323:88 (STORY / Audio Player / Playing / Mobile)"
+ },
+ {
+  "id": "468:583",
+  "name": "WALKTHROUGH / STORY / Story Completion / Default / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 329:16 (STORY / Story Completion / Default / Mobile)"
+ },
+ {
+  "id": "468:599",
+  "name": "WALKTHROUGH / STORY / Choice Overlay / Ceremonial / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 397:2 (STORY / Choice Overlay / Ceremonial / Mobile)"
+ },
+ {
+  "id": "468:617",
+  "name": "WALKTHROUGH / STORY / Soft Branching / Perspective Shift / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 397:20 (STORY / Soft Branching / Perspective Shift / Mobile)"
+ },
+ {
+  "id": "468:640",
+  "name": "WALKTHROUGH / STORY / Branch Map / Creator / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 398:2 (STORY / Branch Map / Creator / Mobile)"
+ },
+ {
+  "id": "468:687",
+  "name": "WALKTHROUGH / STORY / Community Voices / Panel / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 399:2 (STORY / Community Voices / Panel / Mobile)"
+ },
+ {
+  "id": "468:737",
+  "name": "WALKTHROUGH / STORY / Share Reflection / Modal / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 399:52 (STORY / Share Reflection / Modal / Mobile)"
+ },
+ {
+  "id": "468:770",
+  "name": "WALKTHROUGH / CREATOR / Become a Creator · Intro / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 407:2 (CREATOR / Become a Creator · Intro / Mobile)"
+ },
+ {
+  "id": "468:804",
+  "name": "WALKTHROUGH / CREATOR / Dashboard · Overview / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 332:2 (CREATOR / Dashboard · Overview / Mobile)"
+ },
+ {
+  "id": "468:870",
+  "name": "WALKTHROUGH / CREATOR / Publish · Step 1 / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 333:2 (CREATOR / Publish · Step 1 / Mobile)"
+ },
+ {
+  "id": "468:918",
+  "name": "WALKTHROUGH / CREATOR / Publish · Step 2 / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 333:49 (CREATOR / Publish · Step 2 / Mobile)"
+ },
+ {
+  "id": "468:970",
+  "name": "WALKTHROUGH / CREATOR / Publish · Step 3 / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 333:100 (CREATOR / Publish · Step 3 / Mobile)"
+ },
+ {
+  "id": "468:1014",
+  "name": "WALKTHROUGH / CREATOR / Publish · Step 4 / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 333:143 (CREATOR / Publish · Step 4 / Mobile)"
+ },
+ {
+  "id": "468:1068",
+  "name": "WALKTHROUGH / CREATOR / Publish · Step 5 / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 333:196 (CREATOR / Publish · Step 5 / Mobile)"
+ },
+ {
+  "id": "468:1121",
+  "name": "WALKTHROUGH / CREATOR / Publish · Processing / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 334:26 (CREATOR / Publish · Processing / Mobile)"
+ },
+ {
+  "id": "468:1142",
+  "name": "WALKTHROUGH / CREATOR / Publish · In Review / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 334:46 (CREATOR / Publish · In Review / Mobile)"
+ },
+ {
+  "id": "468:1165",
+  "name": "WALKTHROUGH / FUNDING / Opportunities Hub / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 335:2 (FUNDING / Opportunities Hub / Mobile)"
+ },
+ {
+  "id": "468:1234",
+  "name": "WALKTHROUGH / FUNDING / Opportunity Detail / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 335:70 (FUNDING / Opportunity Detail / Mobile)"
+ },
+ {
+  "id": "468:1282",
+  "name": "WALKTHROUGH / FUNDING / Application · Workspace / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 336:34 (FUNDING / Application · Workspace / Mobile)"
+ },
+ {
+  "id": "468:1346",
+  "name": "WALKTHROUGH / FUNDING / Application · Submitted / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 336:129 (FUNDING / Application · Submitted / Mobile)"
+ },
+ {
+  "id": "468:1359",
+  "name": "WALKTHROUGH / FUNDING / Application · Under Review / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 337:2 (FUNDING / Application · Under Review / Mobile)"
+ },
+ {
+  "id": "468:1385",
+  "name": "WALKTHROUGH / FUNDING / Application · Approved / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 337:81 (FUNDING / Application · Approved / Mobile)"
+ },
+ {
+  "id": "468:1415",
+  "name": "WALKTHROUGH / FUNDING / Funding Dashboard / Mobile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Prototype-flow copy of 337:139 (FUNDING / Funding Dashboard / Mobile)"
+ },
+ {
+  "id": "310:2",
+  "name": "ONBOARDING / Splash / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/ (onboarding entry)",
+  "component": "OnboardingSystem (entry)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "310:14",
+  "name": "ONBOARDING / Language Selection / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/ (onboarding)",
+  "component": "LanguageSelectionScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "310:45",
+  "name": "ONBOARDING / Introduction / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/ (onboarding step 1)",
+  "component": "OnboardingOrientation PurposeStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Splash and introduction merged into the first choice screen (4 screens instead of 9)"
+ },
+ {
+  "id": "311:2",
+  "name": "ONBOARDING / Intent / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/ (onboarding step 1)",
+  "component": "OnboardingOrientation PurposeStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Merged: intent is derived from the purposes chosen on step 1"
+ },
+ {
+  "id": "311:37",
+  "name": "ONBOARDING / Role / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/ (onboarding step 1)",
+  "component": "OnboardingOrientation PurposeStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Merged: Share my story or Build an audience means creator; the Moderator choice was removed (admins appoint moderators)"
+ },
+ {
+  "id": "311:67",
+  "name": "ONBOARDING / Personalization / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/ (onboarding step 2)",
+  "component": "OnboardingOrientation InterestsStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Optional interests chosen from real catalogue topics; feeds the For You interests rail"
+ },
+ {
+  "id": "312:2",
+  "name": "ONBOARDING / Accessibility / Default / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Removed from first run: its three toggles were not read by anything. Accessibility settings (High contrast, Reduce motion, Larger text) are in Settings"
+ },
+ {
+  "id": "312:47",
+  "name": "ONBOARDING / Sign Up / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/ (onboarding account)",
+  "component": "OnboardingSystem AccountStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "312:74",
+  "name": "ONBOARDING / Sign In / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/ (onboarding account, sign-in mode)",
+  "component": "OnboardingSystem AccountStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "314:2",
+  "name": "ONBOARDING / Email Verification / OTP / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Needs a configured Supabase project (verifyOtp); it is rendered only when the backend flag is on, per the no-dead-buttons rule. Tracked in docs/release/RESTORE_SUPABASE.md"
+ },
+ {
+  "id": "314:28",
+  "name": "ONBOARDING / Forgot Password / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/ (account, recovery mode)",
+  "component": "OnboardingSystem AccountStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "314:44",
+  "name": "ONBOARDING / Reset Password / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/reset-password/:token",
+  "component": "ResetPasswordScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "314:66",
+  "name": "ONBOARDING / Authentication Failed / Error / Mobile",
+  "status": "STATE",
+  "route": "#/ (account)",
+  "component": "AccountStep error text (WRONG_CREDENTIALS_MESSAGE)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "State of Sign In"
+ },
+ {
+  "id": "314:80",
+  "name": "ONBOARDING / Session Expired / Default / Mobile",
+  "status": "STATE",
+  "route": "#/ (account)",
+  "component": "AccountStep session-expired Banner",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "State of Sign In"
+ },
+ {
+  "id": "314:93",
+  "name": "ONBOARDING / Offline Auth / Default / Mobile",
+  "status": "STATE",
+  "route": "#/ (account)",
+  "component": "AccountStep offline Banner",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "State of Sign In"
+ },
+ {
+  "id": "315:2",
+  "name": "ONBOARDING / Completion / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Removed: creating the account goes straight to For You"
+ },
+ {
+  "id": "315:10",
+  "name": "ONBOARDING / — PAGE NOTES",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "419:2",
+  "name": "AUTH / Sign In · Keyboard Active / Mobile",
+  "status": "STATE",
+  "route": "#/ (account)",
+  "component": "AccountStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Keyboard state of Sign In; the form scrolls above the keyboard"
+ },
+ {
+  "id": "420:2",
+  "name": "Keyboard-active: content scrolls under the nav, the primary CTA pins to the top of the keyboard, the focused field shows the 2px gold ring + caret.",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "316:2",
+  "name": "DISCOVERY / For You / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/for-you",
+  "component": "ForYouScreen + ForYouSections",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Aligned in e17d70c; see FOR_YOU_ALIGNMENT.md"
+ },
+ {
+  "id": "320:2",
+  "name": "DISCOVERY / For You · Loading / Mobile",
+  "status": "STATE",
+  "route": "#/for-you",
+  "component": "ForYouScreen (synchronous catalogue; presence rows use useResource skeleton)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "State of For You"
+ },
+ {
+  "id": "320:27",
+  "name": "DISCOVERY / Explore · Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/explore",
+  "component": "ExploreScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "320:103",
+  "name": "DISCOVERY / Explore · Empty Filter / Mobile",
+  "status": "STATE",
+  "route": "#/explore",
+  "component": "ExploreScreen empty branch",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "State of Explore"
+ },
+ {
+  "id": "322:2",
+  "name": "DISCOVERY / Search · Landing / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "search overlay (#/search)",
+  "component": "SearchScreen (recent searches, browse by theme)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Landing shows device-stored recents and themes from the catalogue."
+ },
+ {
+  "id": "322:39",
+  "name": "DISCOVERY / Search · Results / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/search",
+  "component": "SearchScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "322:103",
+  "name": "DISCOVERY / Search · Zero Results / Mobile",
+  "status": "STATE",
+  "route": "#/search",
+  "component": "SearchScreen 'No stories found'",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "State of Search; improve with suggestions"
+ },
+ {
+  "id": "322:117",
+  "name": "DISCOVERY / Search · Filters Sheet / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/search",
+  "component": "SearchFiltersSheet",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Language, length and theme filters over the real catalogue."
+ },
+ {
+  "id": "322:161",
+  "name": "DISCOVERY / — PAGE NOTES",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "348:2",
+  "name": "DISCOVERY / Cultural Resonance Quiz / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "348:25",
+  "name": "DISCOVERY / Cultural Map Discovery / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "348:52",
+  "name": "DISCOVERY / Story Mood Mixer / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "348:99",
+  "name": "DISCOVERY / Guest Upgrade Prompt / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "412:2",
+  "name": "DISCOVERY / Object QR Entry / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "420:3",
+  "name": "DISCOVERY / Search · Keyboard Active / Mobile",
+  "status": "STATE",
+  "route": "#/search",
+  "component": "SearchScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Keyboard state of Search"
+ },
+ {
+  "id": "323:2",
+  "name": "STORY / Story World / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/story/:id",
+  "component": "FeaturedStoryPreview",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "323:63",
+  "name": "STORY / Chapter Index / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "chapter-index screen",
+  "component": "ChapterIndexScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "323:88",
+  "name": "STORY / Audio Player / Playing / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "story-chapter screen",
+  "component": "StoryChapterScreen + MediaPlayerBar",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "324:2",
+  "name": "STORY / Audio Player · Captions Active / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "story-chapter screen",
+  "component": "CaptionBar (StoryReaderExtras)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Captions only for device-voice playback; no invented timing."
+ },
+ {
+  "id": "324:31",
+  "name": "STORY / Audio Player · Buffering / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "story-chapter screen",
+  "component": "PlayerAlert (StoryReaderExtras)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Buffering state shown by the player."
+ },
+ {
+  "id": "324:58",
+  "name": "STORY / Audio Player · Playback Failed / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "story-chapter screen",
+  "component": "PlayerAlert (StoryReaderExtras)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Playback-failed state with retry."
+ },
+ {
+  "id": "324:72",
+  "name": "STORY / Transcript / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "story-chapter screen",
+  "component": "TranscriptSheet",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Chapter text paragraphs; no timestamps."
+ },
+ {
+  "id": "329:2",
+  "name": "STORY / Context Card Modal / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "overlay on story-chapter",
+  "component": "ContextCardModal",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "329:16",
+  "name": "STORY / Story Completion / Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "story-chapter end",
+  "component": "StoryCompletion",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Finish button on last chapter; real counts and related stories."
+ },
+ {
+  "id": "329:31",
+  "name": "STORY / Video Player / Landscape / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "No video content exists in the catalogue (audio and text stories only); landscape player has nothing to play"
+ },
+ {
+  "id": "329:52",
+  "name": "STORY / Report Content Sheet / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "sheet on story preview, creator profile",
+  "component": "ReportContentSheet",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Shipped in c5d98f3"
+ },
+ {
+  "id": "329:86",
+  "name": "STORY / — PAGE NOTES",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "350:2",
+  "name": "STORY / Community Reaction Heatmap / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "350:81",
+  "name": "STORY / Side-by-Side Translation / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "350:107",
+  "name": "STORY / Smart Queue / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "397:2",
+  "name": "STORY / Choice Overlay / Ceremonial / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "overlay on story-chapter",
+  "component": "BranchingChoiceOverlay",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "397:20",
+  "name": "STORY / Soft Branching / Perspective Shift / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "story-chapter",
+  "component": "BranchingChoiceOverlay",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Same overlay; non-outcome branches use 'Share your perspective' heading (EN/FR/ES), outcome branches 'Your choice matters'."
+ },
+ {
+  "id": "398:2",
+  "name": "STORY / Branch Map / Creator / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Creator branch-map editor needs a graph authoring tool that the five-step publish flow does not have; branches are authored in the story data. Revisit with the creator tools roadmap"
+ },
+ {
+  "id": "399:2",
+  "name": "STORY / Community Voices / Panel / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "panel on story-chapter",
+  "component": "CommunityResponsesPanel",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "399:52",
+  "name": "STORY / Share Reflection / Modal / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "modal on story-chapter",
+  "component": "SubmitResponseModal",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "421:2",
+  "name": "STORY / Share Reflection · Keyboard Active / Mobile",
+  "status": "STATE",
+  "route": "modal",
+  "component": "SubmitResponseModal",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Keyboard state"
+ },
+ {
+  "id": "330:2",
+  "name": "LIBRARY / Saved · Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/library (Saved)",
+  "component": "LibraryScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "330:55",
+  "name": "LIBRARY / Continue · Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/library (In progress)",
+  "component": "LibraryScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "330:111",
+  "name": "LIBRARY / Downloads · Offline / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Offline reading (E6) waits on the Supabase adapter being live; rules and tests exist (offlineCache.ts), spec in docs/design/OFFLINE_SAVE_SPEC.md. No fake version ships"
+ },
+ {
+  "id": "330:176",
+  "name": "LIBRARY / Collections · Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/library",
+  "component": "LibraryPanels SavedCollectionsPanel",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Saved collections tab."
+ },
+ {
+  "id": "331:2",
+  "name": "LIBRARY / Empty · New User / Mobile",
+  "status": "STATE",
+  "route": "#/library",
+  "component": "LibraryScreen empty states",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "State of Library"
+ },
+ {
+  "id": "331:40",
+  "name": "LIBRARY / Sync In Progress / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Cross-device sync needs the backend; the demo adapter is device-local so there is nothing to sync"
+ },
+ {
+  "id": "331:90",
+  "name": "LIBRARY / Following · Default / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/library",
+  "component": "LibraryPanels FollowingPanel",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Followed creators with optimistic unfollow and rollback."
+ },
+ {
+  "id": "331:150",
+  "name": "LIBRARY / History Timeline / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "331:195",
+  "name": "LIBRARY / — PAGE NOTES",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "350:152",
+  "name": "LIBRARY / Listening Wrapped / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "332:2",
+  "name": "CREATOR / Dashboard · Overview / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/profile (creator section)",
+  "component": "ProfileScreen creator card",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Published and Drafts counts plus Your stories, Notes, New story and Analytics links."
+ },
+ {
+  "id": "332:67",
+  "name": "CREATOR / Stories · List / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/creator-stories",
+  "component": "CreatorStoriesScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Published and Drafts tabs; creator/admin only."
+ },
+ {
+  "id": "333:2",
+  "name": "CREATOR / Publish · Step 1 / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/creator-publish",
+  "component": "StoryIntentStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "333:49",
+  "name": "CREATOR / Publish · Step 2 / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/creator-publish",
+  "component": "StoryStructureStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "333:100",
+  "name": "CREATOR / Publish · Step 3 / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/creator-publish",
+  "component": "MediaChaptersStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "333:143",
+  "name": "CREATOR / Publish · Step 4 / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/creator-publish",
+  "component": "ContextAccessibilityStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "333:196",
+  "name": "CREATOR / Publish · Step 5 / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/creator-publish",
+  "component": "PreviewPublishStep",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "334:2",
+  "name": "CREATOR / Publish · Validation Errors / Mobile",
+  "status": "STATE",
+  "route": "#/creator-publish",
+  "component": "creator-flow steps (disabled Next + helper text)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "State of publish steps; verify messages"
+ },
+ {
+  "id": "334:26",
+  "name": "CREATOR / Publish · Processing / Mobile",
+  "status": "STATE",
+  "route": "#/creator-publish",
+  "component": "PreviewPublishStep publishing state",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "State of publish"
+ },
+ {
+  "id": "334:46",
+  "name": "CREATOR / Publish · In Review / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Stories publish immediately; there is no pre-publication review pipeline to represent. Revisit with moderation policy owner"
+ },
+ {
+  "id": "334:60",
+  "name": "CREATOR / Publish · Failed / Mobile",
+  "status": "STATE",
+  "route": "#/creator-publish",
+  "component": "PreviewPublishStep error",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "State of publish"
+ },
+ {
+  "id": "334:71",
+  "name": "CREATOR / — PAGE NOTES",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "351:2",
+  "name": "CREATOR / Story Impact Dashboard / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "351:36",
+  "name": "CREATOR / Creator Milestones / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame: exploratory feature labelled Concept in Figma, no product decision"
+ },
+ {
+  "id": "351:72",
+  "name": "TRUST / Content Health Dashboard / Concept · Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame"
+ },
+ {
+  "id": "407:2",
+  "name": "CREATOR / Become a Creator · Intro / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/profile (Share Your Story card) -> creator-publish",
+  "component": "ProfileScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "407:29",
+  "name": "CREATOR / Invite Collaborator · Sheet / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Collaboration needs accounts on a server (invites, permissions); waits on the Supabase backend"
+ },
+ {
+  "id": "335:2",
+  "name": "FUNDING / Opportunities Hub / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/funding",
+  "component": "FundingScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "335:70",
+  "name": "FUNDING / Opportunity Detail / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/opportunity/:id",
+  "component": "OpportunityDetailScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "335:119",
+  "name": "FUNDING / Funding Readiness Profile / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/funding-readiness",
+  "component": "FundingReadinessScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Self-ticked checklist, no score or verdict; stored on device."
+ },
+ {
+  "id": "335:160",
+  "name": "FUNDING / Project Funding / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Project funding and payments are undecided (D-07)"
+ },
+ {
+  "id": "336:2",
+  "name": "FUNDING / Application · Eligibility Check / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/opportunity/:id",
+  "component": "OpportunityDetailScreen eligibility self-check",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Yes / Not sure / No per listed criterion; result copy is guidance, 'the funder decides'."
+ },
+ {
+  "id": "336:34",
+  "name": "FUNDING / Application · Workspace / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/opportunity/:id",
+  "component": "OpportunityDetailScreen checklist, notes, status",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Checklist, private notes (1000 chars) and tracked status; stored with the application."
+ },
+ {
+  "id": "336:97",
+  "name": "FUNDING / Application · Review & Submit / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/opportunity/:id",
+  "component": "OpportunityDetailScreen 'Mark as applied'",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Submission happens on the funder's site by design; SEEN records 'marked applied by you'."
+ },
+ {
+  "id": "336:129",
+  "name": "FUNDING / Application · Submitted / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/opportunity/:id",
+  "component": "OpportunityDetailScreen applied state",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Shown as 'Marked as applied', followed by the outcome selector; no funder confirmation is claimed."
+ },
+ {
+  "id": "337:2",
+  "name": "FUNDING / Application · Under Review / Mobile",
+  "status": "STATE",
+  "route": "#/opportunity/:id",
+  "component": "OpportunityDetailScreen outcome selector",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Under Review is a user-recorded outcome labelled \"tracked by you\"; SEEN receives no funder decisions, so no separate screen."
+ },
+ {
+  "id": "337:27",
+  "name": "FUNDING / Application · Shortlisted / Mobile",
+  "status": "STATE",
+  "route": "#/opportunity/:id",
+  "component": "OpportunityDetailScreen outcome selector",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Shortlisted is a user-recorded outcome labelled \"tracked by you\"; SEEN receives no funder decisions, so no separate screen."
+ },
+ {
+  "id": "337:54",
+  "name": "FUNDING / Application · Info Requested / Mobile",
+  "status": "STATE",
+  "route": "#/opportunity/:id",
+  "component": "OpportunityDetailScreen outcome selector",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Info Requested is a user-recorded outcome labelled \"tracked by you\"; SEEN receives no funder decisions, so no separate screen."
+ },
+ {
+  "id": "337:81",
+  "name": "FUNDING / Application · Approved / Mobile",
+  "status": "STATE",
+  "route": "#/opportunity/:id",
+  "component": "OpportunityDetailScreen outcome selector",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Approved is a user-recorded outcome labelled \"tracked by you\"; SEEN receives no funder decisions, so no separate screen."
+ },
+ {
+  "id": "337:110",
+  "name": "FUNDING / Application · Declined / Mobile",
+  "status": "STATE",
+  "route": "#/opportunity/:id",
+  "component": "OpportunityDetailScreen outcome selector",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Declined is a user-recorded outcome labelled \"tracked by you\"; SEEN receives no funder decisions, so no separate screen."
+ },
+ {
+  "id": "337:139",
+  "name": "FUNDING / Funding Dashboard / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/funding (My tracker)",
+  "component": "FundingScreen tracker summary tiles",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Tracked, Applied, Next deadline, Outcomes noted. Status filter chips not added."
+ },
+ {
+  "id": "337:176",
+  "name": "FUNDING / — PAGE NOTES",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "408:2",
+  "name": "FUNDING / CMF Eligibility Checker · Step 2 / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Programme-specific eligibility wizard needs the funder's rules; the generic checklist covers it. No invented eligibility logic"
+ },
+ {
+  "id": "338:2",
+  "name": "MONETIZATION / Setup · Eligibility / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Payments undecided (D-07)"
+ },
+ {
+  "id": "338:33",
+  "name": "MONETIZATION / Payment Account Setup / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Payments undecided (D-07)"
+ },
+ {
+  "id": "338:72",
+  "name": "MONETIZATION / Earnings Overview / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/creator-earnings",
+  "component": "CreatorEarningsScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Demo data, labelled in the screen"
+ },
+ {
+  "id": "338:114",
+  "name": "MONETIZATION / Revenue Breakdown / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/creator-earnings",
+  "component": "CreatorEarningsScreen breakdown",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "339:2",
+  "name": "MONETIZATION / Transaction History / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Payments undecided (D-07); no real transactions exist"
+ },
+ {
+  "id": "339:47",
+  "name": "MONETIZATION / Payout · Pending / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Payments undecided (D-07)"
+ },
+ {
+  "id": "339:69",
+  "name": "MONETIZATION / Payout · Complete / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Payments undecided (D-07)"
+ },
+ {
+  "id": "339:89",
+  "name": "MONETIZATION / Payout · Failed / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Payments undecided (D-07)"
+ },
+ {
+  "id": "339:109",
+  "name": "MONETIZATION / Tax & Payment Information / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Payments undecided (D-07); tax data needs legal review"
+ },
+ {
+  "id": "339:145",
+  "name": "MONETIZATION / Subscription Setup / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/creator-monetization",
+  "component": "CreatorMonetizationScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Demo"
+ },
+ {
+  "id": "339:169",
+  "name": "MONETIZATION / — PAGE NOTES",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "340:2",
+  "name": "INSTITUTIONS / Public Profile / Mobile",
+  "status": "PARTIAL",
+  "route": "#/collection/:id (institutional)",
+  "component": "CollectionDetailScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Institutional collections show curator, description and stories. There is no institution entity or profile page; that needs signed partners (D-12)."
+ },
+ {
+  "id": "340:50",
+  "name": "INSTITUTIONS / Institution Dashboard / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "No institutions workspace without signed partners (D-12)"
+ },
+ {
+  "id": "340:99",
+  "name": "INSTITUTIONS / Collection Management / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Excluded by decision D-12: institutional partner workspaces need signed partner agreements"
+ },
+ {
+  "id": "340:145",
+  "name": "INSTITUTIONS / Add Story · Metadata & Rights / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Excluded by decision D-12: institutional partner workspaces need signed partner agreements"
+ },
+ {
+  "id": "341:2",
+  "name": "INSTITUTIONS / Curator Profile / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Excluded by decision D-12: institutional partner workspaces need signed partner agreements"
+ },
+ {
+  "id": "341:23",
+  "name": "INSTITUTIONS / Team & Permissions / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "D-12; needs server roles"
+ },
+ {
+  "id": "341:64",
+  "name": "INSTITUTIONS / Institutional Analytics / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Excluded by decision D-12: institutional partner workspaces need signed partner agreements"
+ },
+ {
+  "id": "341:116",
+  "name": "INSTITUTIONS / Partnership / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "D-12: never name real organisations as partners without a signed agreement"
+ },
+ {
+  "id": "341:142",
+  "name": "INSTITUTIONS / — PAGE NOTES",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "343:2",
+  "name": "TRUST / Report Confirmation / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "sheet success state",
+  "component": "ReportContentSheet (sent)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "343:13",
+  "name": "TRUST / Moderation Queue / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/moderation-governance",
+  "component": "ModerationGovernanceSystem Queue + Reports",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "343:72",
+  "name": "TRUST / Content Review / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/moderation-governance",
+  "component": "ModerationQueue item review (approve, reject, flag)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "343:95",
+  "name": "TRUST / Cultural Sensitivity Review / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Needs a named moderation policy owner and reviewers (G4 gate)"
+ },
+ {
+  "id": "344:2",
+  "name": "TRUST / Moderation Decision / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/moderation-governance",
+  "component": "approve/reject/flag + Audit Log",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "344:39",
+  "name": "TRUST / Rights Dispute / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Needs a named policy owner and legal process (G4 gate)"
+ },
+ {
+  "id": "344:74",
+  "name": "TRUST / Appeal · Submitted / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Needs a named policy owner (G4 gate); appeals would otherwise imply an outcome nobody has agreed to deliver"
+ },
+ {
+  "id": "344:107",
+  "name": "TRUST / Account Enforcement / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Needs a named policy owner and server-side enforcement (G4 gate)"
+ },
+ {
+  "id": "344:134",
+  "name": "TRUST / — PAGE NOTES",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "416:2",
+  "name": "TRUST / Admin · Feature Toggles / Mobile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "No feature-flag system exists; the only switch is the build-time backend flag (docs/release/BACKEND_CUTOVER.md)"
+ },
+ {
+  "id": "345:2",
+  "name": "PROFILE / Public Profile / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/profile",
+  "component": "ProfileScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "345:57",
+  "name": "PROFILE / Settings Hub / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/settings",
+  "component": "ProfilePreferencesScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "345:147",
+  "name": "PROFILE / Accessibility Settings / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/settings (Accessibility)",
+  "component": "ProfilePreferencesScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "345:189",
+  "name": "PROFILE / Notification Settings / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/account (Notifications)",
+  "component": "AccountPrivacyScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "346:2",
+  "name": "PROFILE / Privacy & Security / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/account",
+  "component": "AccountPrivacyScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "346:64",
+  "name": "PROFILE / Subscriptions & Billing / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/subscription-management",
+  "component": "SubscriptionManagementScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Demo"
+ },
+ {
+  "id": "346:90",
+  "name": "PROFILE / Data Controls & Delete Account / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/account (Your data)",
+  "component": "AccountPrivacyScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "346:134",
+  "name": "PROFILE / Blocked Accounts / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/account (Blocked accounts)",
+  "component": "AccountPrivacyScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "346:154",
+  "name": "PROFILE / Logout Confirmation / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "dialog on #/account",
+  "component": "ConfirmDialog",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "346:166",
+  "name": "PROFILE / — PAGE NOTES",
+  "status": "NOTE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Design notes / prototype wiring, not a screen"
+ },
+ {
+  "id": "411:2",
+  "name": "PROFILE / About SEEN / Mobile",
+  "status": "IMPLEMENTED",
+  "route": "#/about",
+  "component": "AboutScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": ""
+ },
+ {
+  "id": "7:341",
+  "name": "chapter-playback",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Superseded (canonical: 323:88 STORY / Audio Player / Playing / Mobile)"
+ },
+ {
+  "id": "7:540",
+  "name": "track-context",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Superseded (canonical: 329:2 STORY / Context Card Modal / Mobile)"
+ },
+ {
+  "id": "7:739",
+  "name": "story-builder",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Superseded by the five-step publish flow (canonical: 333:2 CREATOR / Publish · Step 1 / Mobile)"
+ },
+ {
+  "id": "7:863",
+  "name": "creator-insights",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Creator analytics concept; no analytics collected per creator (privacy-first: no per-person counts)"
+ },
+ {
+  "id": "9:456",
+  "name": "cmf-step1",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Programme-specific CMF eligibility wizard; see FUNDING / CMF Eligibility Checker"
+ },
+ {
+  "id": "9:504",
+  "name": "cmf-step2",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Programme-specific CMF eligibility wizard; see FUNDING / CMF Eligibility Checker"
+ },
+ {
+  "id": "9:559",
+  "name": "cmf-results",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Programme-specific CMF eligibility wizard; see FUNDING / CMF Eligibility Checker"
+ },
+ {
+  "id": "9:667",
+  "name": "role-elevation",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Role elevation is an admin approval flow that needs server roles; the app records requests only (AuthContext) and says so"
+ },
+ {
+  "id": "9:708",
+  "name": "pipeda-data",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 346:90 PROFILE / Data Controls & Delete Account / Mobile)"
+ },
+ {
+  "id": "9:748",
+  "name": "onboarding-invocation",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Superseded (canonical: 310:45 ONBOARDING / Introduction / Default / Mobile)"
+ },
+ {
+  "id": "9:774",
+  "name": "admin-governance",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Superseded (canonical: 343:13 TRUST / Moderation Queue / Mobile)"
+ },
+ {
+  "id": "10:11",
+  "name": "player-reactions",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Public reaction counts conflict with the product principle of no public counts (E1 private notes instead)"
+ },
+ {
+  "id": "10:112",
+  "name": "language-switcher",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "LanguageSwitcher + #/settings language group",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "10:187",
+  "name": "save-to-collection",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Users cannot create personal collections yet; collections are curated and can be saved as a whole (CollectionsScreen)"
+ },
+ {
+  "id": "10:231",
+  "name": "explore-cultural-tags",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Variant of Explore categories (canonical: 320:27 DISCOVERY / Explore · Default / Mobile)"
+ },
+ {
+  "id": "10:398",
+  "name": "film-player",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "No video content in the catalogue"
+ },
+ {
+  "id": "10:444",
+  "name": "guest-explore",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen: For You with the guest banner and locked tabs (canonical: ? ONBOARDING / Explore without an account / Mobile)"
+ },
+ {
+  "id": "16:9",
+  "name": "onboarding-purpose",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 310:45 ONBOARDING / Introduction / Default / Mobile)"
+ },
+ {
+  "id": "16:74",
+  "name": "onboarding-presence",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (the presence step itself was removed) (canonical: 311:67 ONBOARDING / Personalization / Default / Mobile)"
+ },
+ {
+  "id": "16:94",
+  "name": "onboarding-threshold",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 315:2 ONBOARDING / Completion / Mobile)"
+ },
+ {
+  "id": "16:113",
+  "name": "admin-analytics",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Superseded by the Admin dashboard overview"
+ },
+ {
+  "id": "16:166",
+  "name": "creator-post-publish",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "PostPublishSuccess",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "20:165",
+  "name": "notifications-screen",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "NotificationsScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "23:232",
+  "name": "opportunities-saved",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "FundingScreen My tracker",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "23:600",
+  "name": "opportunities-calendar",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Calendar view of deadlines; read-time reminders (E5) planned instead, no calendar in scope"
+ },
+ {
+  "id": "23:778",
+  "name": "opportunities-ai",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "AI matching of funding is not built and would need explainability; out of beta scope"
+ },
+ {
+  "id": "29:259",
+  "name": "error-network",
+  "status": "STATE",
+  "route": "-",
+  "component": "ResourceView offline/error states",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "29:369",
+  "name": "notifications-empty",
+  "status": "STATE",
+  "route": "-",
+  "component": "NotificationsScreen empty state",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "29:617",
+  "name": "creator-onboarding-step2",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Superseded (canonical: 407:2 CREATOR / Become a Creator · Intro / Mobile)"
+ },
+ {
+  "id": "29:669",
+  "name": "creator-onboarding-step3",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Superseded (canonical: 407:2 CREATOR / Become a Creator · Intro / Mobile)"
+ },
+ {
+  "id": "32:97",
+  "name": "edit-profile",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "EditProfileScreen at #/edit-profile (name, bio)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "32:155",
+  "name": "change-password",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "ChangePasswordScreen at #/change-password",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "33:151",
+  "name": "moderation-escalation",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "G4 gate: needs a named moderation policy owner"
+ },
+ {
+  "id": "33:212",
+  "name": "sound-driven-story",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept (sound-driven story mode); no decision"
+ },
+ {
+  "id": "33:280",
+  "name": "audio-layer-control",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept; the catalogue has single-track audio"
+ },
+ {
+  "id": "33:369",
+  "name": "app-update",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Native app update prompt; the native app is paused (D-03) and the web app updates on load"
+ },
+ {
+  "id": "39:244",
+  "name": "profile-empty",
+  "status": "STATE",
+  "route": "-",
+  "component": "ProfileScreen empty counts",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "39:293",
+  "name": "creator-empty",
+  "status": "STATE",
+  "route": "-",
+  "component": "CreatorsPanel/Stories empty states",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "39:359",
+  "name": "offline-mode",
+  "status": "STATE",
+  "route": "-",
+  "component": "ResourceView offline banner, auth offline banner",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "68:9",
+  "name": "creator-library",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Archive-era frame (canonical: 330:2 LIBRARY / Saved · Default / Mobile)"
+ },
+ {
+  "id": "68:108",
+  "name": "creator-explore",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Archive-era frame (canonical: 320:27 DISCOVERY / Explore · Default / Mobile)"
+ },
+ {
+  "id": "68:182",
+  "name": "creator-profile",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Legacy off-system frame (JetBrains Mono, 56px nav); implemented as CreatorProfileScreen (canonical: 345:2 PROFILE / Public Profile / Mobile)"
+ },
+ {
+  "id": "68:303",
+  "name": "creator-drafts",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "Drafts tab in CreatorStoriesScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "68:474",
+  "name": "signup-error",
+  "status": "STATE",
+  "route": "-",
+  "component": "AccountStep error text",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "68:517",
+  "name": "signin-error",
+  "status": "STATE",
+  "route": "-",
+  "component": "AccountStep error text",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "68:554",
+  "name": "terms-privacy",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "LegalScreen at #/legal, clearly marked draft pending counsel review",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "68:635",
+  "name": "admin-users",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "AdminDashboardScreen Users tab",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "91:111",
+  "name": "pipeda-delete-confirm",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "AccountPrivacyScreen delete ConfirmDialog",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "91:195",
+  "name": "admin-content",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Superseded by the moderation queue"
+ },
+ {
+  "id": "91:327",
+  "name": "admin-settings",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "AdminDashboardScreen Settings tab",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "91:625",
+  "name": "content-unavailable",
+  "status": "STATE",
+  "route": "-",
+  "component": "ResourceView not_found state",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "91:650",
+  "name": "creator-story-preview",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 323:2 STORY / Story World / Default / Mobile)"
+ },
+ {
+  "id": "99:78",
+  "name": "notifications-content",
+  "status": "STATE",
+  "route": "-",
+  "component": "NotificationsScreen list",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "99:162",
+  "name": "data-export",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "AccountPrivacyScreen Download my data",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "101:88",
+  "name": "permission-denied",
+  "status": "STATE",
+  "route": "-",
+  "component": "App 'Restricted' screen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "101:195",
+  "name": "save-confirmation",
+  "status": "STATE",
+  "route": "-",
+  "component": "Toast 'Saved to your Library'",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "103:483",
+  "name": "11-20 — Rate Limited State",
+  "status": "STATE",
+  "route": "-",
+  "component": "AccountStep rate-limit message; note and report rate limits (rate_limited)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "103:776",
+  "name": "06-23 — Creator Analytics Drill-Down",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "No per-person analytics by design"
+ },
+ {
+  "id": "5:28",
+  "name": "archive-home",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Archive-era frame (canonical: 316:2 DISCOVERY / For You / Default / Mobile)"
+ },
+ {
+  "id": "5:76",
+  "name": "archive-explore",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Archive-era frame (canonical: 320:27 DISCOVERY / Explore · Default / Mobile)"
+ },
+ {
+  "id": "5:136",
+  "name": "archive-story-entry",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Archive-era frame (canonical: 323:2 STORY / Story World / Default / Mobile)"
+ },
+ {
+  "id": "5:188",
+  "name": "archive-creator-profile",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Archive-era frame (canonical: 345:2 PROFILE / Public Profile / Mobile)"
+ },
+ {
+  "id": "5:244",
+  "name": "archive-library",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Archive-era frame (canonical: 330:2 LIBRARY / Saved · Default / Mobile)"
+ },
+ {
+  "id": "107:7",
+  "name": "13-01 - Cultural Resonance Quiz (A1/A3)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame"
+ },
+ {
+  "id": "107:835",
+  "name": "13-10 — Creator Milestones (E1)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame"
+ },
+ {
+  "id": "107:355",
+  "name": "13-05 — Community Reaction Heatmap (C3)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame; conflicts with no public counts"
+ },
+ {
+  "id": "107:1426",
+  "name": "13-15 — Smart Queue (D1)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame"
+ },
+ {
+  "id": "107:1581",
+  "name": "13-16 — Listening History Timeline (G1)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame"
+ },
+ {
+  "id": "107:581",
+  "name": "13-08 — Listening Wrapped (D1/D2)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame"
+ },
+ {
+  "id": "107:1249",
+  "name": "13-13 — Cultural Sensitivity Review (F1)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame; see TRUST / Cultural Sensitivity Review"
+ },
+ {
+  "id": "107:1329",
+  "name": "13-14 — Privacy Dashboard (G3)",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept version of the shipped Account and privacy screen (canonical: 346:2 PROFILE / Privacy & Security / Mobile)"
+ },
+ {
+  "id": "107:931",
+  "name": "13-11 — Funding Application Tracker (E5)",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept version of the funding tracker (canonical: 337:139 FUNDING / Funding Dashboard / Mobile)"
+ },
+ {
+  "id": "107:533",
+  "name": "13-07 — Story Completion Celebration (C1)",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept version of Story Completion (canonical: 329:16 STORY / Story Completion / Default / Mobile)"
+ },
+ {
+  "id": "107:731",
+  "name": "13-09 — Story Impact Dashboard (E3)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame; no per-person analytics"
+ },
+ {
+  "id": "107:1016",
+  "name": "13-12 — Content Health Dashboard (F2)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame"
+ },
+ {
+  "id": "107:70",
+  "name": "13-02 — Guest Upgrade Prompt (A2)",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same sheet (canonical: ? GUEST / Sign-in sheet / Mobile)"
+ },
+ {
+  "id": "107:470",
+  "name": "13-06 — Side-by-Side Translation (C4)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame; needs translated chapter text pairing, evaluate after Transcript"
+ },
+ {
+  "id": "107:123",
+  "name": "13-03 — Cultural Map Discovery (B2)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame"
+ },
+ {
+  "id": "107:193",
+  "name": "13-04 — Story Mood Mixer (B1)",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept frame"
+ },
+ {
+  "id": "7:11",
+  "name": "language-selection",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 310:14 ONBOARDING / Language Selection / Default / Mobile)"
+ },
+ {
+  "id": "7:47",
+  "name": "onboarding-intent",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 311:2 ONBOARDING / Intent / Default / Mobile)"
+ },
+ {
+  "id": "7:84",
+  "name": "onboarding-accessibility",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 312:2 ONBOARDING / Accessibility / Default / Mobile)"
+ },
+ {
+  "id": "7:126",
+  "name": "sign-up",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 312:47 ONBOARDING / Sign Up / Default / Mobile)"
+ },
+ {
+  "id": "7:165",
+  "name": "sign-in",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 312:74 ONBOARDING / Sign In / Default / Mobile)"
+ },
+ {
+  "id": "7:203",
+  "name": "password-recovery",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 314:28 ONBOARDING / Forgot Password / Default / Mobile)"
+ },
+ {
+  "id": "7:237",
+  "name": "profile-settings",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 345:57 PROFILE / Settings Hub / Mobile)"
+ },
+ {
+  "id": "7:289",
+  "name": "about-screen",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 411:2 PROFILE / About SEEN / Mobile)"
+ },
+ {
+  "id": "7:405",
+  "name": "branching-choice",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 397:2 STORY / Choice Overlay / Ceremonial / Mobile)"
+ },
+ {
+  "id": "7:439",
+  "name": "branch-map",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 398:2 STORY / Branch Map / Creator / Mobile)"
+ },
+ {
+  "id": "7:499",
+  "name": "audio-player",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 323:88 STORY / Audio Player / Playing / Mobile)"
+ },
+ {
+  "id": "7:574",
+  "name": "chapter-index",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 323:63 STORY / Chapter Index / Default / Mobile)"
+ },
+ {
+  "id": "7:624",
+  "name": "community-responses",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 399:2 STORY / Community Voices / Panel / Mobile)"
+ },
+ {
+  "id": "7:662",
+  "name": "submit-response",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 399:52 STORY / Share Reflection / Modal / Mobile)"
+ },
+ {
+  "id": "7:814",
+  "name": "creator-onboarding",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Superseded (canonical: 407:2 CREATOR / Become a Creator · Intro / Mobile)"
+ },
+ {
+  "id": "7:905",
+  "name": "creator-publish",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same flow (canonical: 333:2 CREATOR / Publish · Step 1 / Mobile)"
+ },
+ {
+  "id": "7:953",
+  "name": "moderator-queue",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 343:13 TRUST / Moderation Queue / Mobile)"
+ },
+ {
+  "id": "7:1013",
+  "name": "moderation-review",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 343:72 TRUST / Content Review / Mobile)"
+ },
+ {
+  "id": "7:1053",
+  "name": "institutional-collection",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "Institutional collection detail is CollectionDetailScreen (badge, curator, stories, save); management is excluded (D-12)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "7:1099",
+  "name": "empty-states",
+  "status": "STATE",
+  "route": "-",
+  "component": "StateTemplate across screens",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "9:616",
+  "name": "collab-invite",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Needs server accounts"
+ },
+ {
+  "id": "10:65",
+  "name": "player-captions",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 324:2 STORY / Audio Player · Captions Active / Mobile)"
+ },
+ {
+  "id": "10:314",
+  "name": "offline-downloads",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 330:111 LIBRARY / Downloads · Offline / Mobile)"
+ },
+ {
+  "id": "16:33",
+  "name": "onboarding-role",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 311:37 ONBOARDING / Role / Default / Mobile)"
+ },
+ {
+  "id": "20:6",
+  "name": "creator-dashboard",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 332:2 CREATOR / Dashboard · Overview / Mobile)"
+ },
+ {
+  "id": "20:76",
+  "name": "search-screen",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 322:2 DISCOVERY / Search · Landing / Mobile)"
+ },
+ {
+  "id": "23:6",
+  "name": "opportunities-hub",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 335:2 FUNDING / Opportunities Hub / Mobile)"
+ },
+ {
+  "id": "23:139",
+  "name": "opportunity-detail",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 335:70 FUNDING / Opportunity Detail / Mobile)"
+ },
+ {
+  "id": "23:452",
+  "name": "opportunities-funding",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 335:2 FUNDING / Opportunities Hub / Mobile)"
+ },
+ {
+  "id": "29:54",
+  "name": "email-verification",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 314:2 ONBOARDING / Email Verification / OTP / Mobile)"
+ },
+ {
+  "id": "29:83",
+  "name": "logout-confirmation",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 346:154 PROFILE / Logout Confirmation / Mobile)"
+ },
+ {
+  "id": "29:117",
+  "name": "report-content",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 329:52 STORY / Report Content Sheet / Mobile)"
+ },
+ {
+  "id": "29:220",
+  "name": "loading-skeleton",
+  "status": "STATE",
+  "route": "-",
+  "component": "Skeleton / SkeletonList (ResourceView)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "29:280",
+  "name": "story-completion",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 329:16 STORY / Story Completion / Default / Mobile)"
+ },
+ {
+  "id": "29:321",
+  "name": "search-no-results",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 322:103 DISCOVERY / Search · Zero Results / Mobile)"
+ },
+ {
+  "id": "29:537",
+  "name": "creator-home-variant",
+  "status": "OUTDATED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Variant (canonical: 316:2 DISCOVERY / For You / Default / Mobile)"
+ },
+ {
+  "id": "29:719",
+  "name": "home-french",
+  "status": "RESPONSIVE_VARIANT",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "French language variant (locale), strings in i18n and per-screen COPY (canonical: 316:2 DISCOVERY / For You / Default / Mobile)"
+ },
+ {
+  "id": "32:8",
+  "name": "qr-object-entry",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Concept (object QR entry); needs physical-object content partners"
+ },
+ {
+  "id": "32:51",
+  "name": "soft-branching",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 397:20 STORY / Soft Branching / Perspective Shift / Mobile)"
+ },
+ {
+  "id": "33:8",
+  "name": "notification-settings",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 345:189 PROFILE / Notification Settings / Mobile)"
+ },
+ {
+  "id": "39:196",
+  "name": "explore-empty",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 320:103 DISCOVERY / Explore · Empty Filter / Mobile)"
+ },
+ {
+  "id": "68:250",
+  "name": "share-sheet",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "Share uses the system share sheet or copies the link; a custom sheet is intentionally not built",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "68:375",
+  "name": "creator-wizard-media",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 333:100 CREATOR / Publish · Step 3 / Mobile)"
+ },
+ {
+  "id": "68:595",
+  "name": "moderation-appeal",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "G4 gate: needs a named moderation policy owner"
+ },
+ {
+  "id": "68:715",
+  "name": "guest-signup-prompt",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same sheet (canonical: ? GUEST / Sign-in sheet / Mobile)"
+ },
+ {
+  "id": "71:204",
+  "name": "button-loading-states",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "Button loading prop",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "71:292",
+  "name": "button-loading-action",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "Button loading prop",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "71:257",
+  "name": "button-disabled-form",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "Button disabled prop",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "71:77",
+  "name": "fr-story-entry",
+  "status": "RESPONSIVE_VARIANT",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "French locale variant (canonical: 323:2 STORY / Story World / Default / Mobile)"
+ },
+ {
+  "id": "71:127",
+  "name": "fr-settings",
+  "status": "RESPONSIVE_VARIANT",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "French locale variant (canonical: 345:57 PROFILE / Settings Hub / Mobile)"
+ },
+ {
+  "id": "71:44",
+  "name": "fr-signup",
+  "status": "RESPONSIVE_VARIANT",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "French locale variant (canonical: 312:47 ONBOARDING / Sign Up / Default / Mobile)"
+ },
+ {
+  "id": "91:560",
+  "name": "es-signup",
+  "status": "RESPONSIVE_VARIANT",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Spanish locale variant (canonical: 312:47 ONBOARDING / Sign Up / Default / Mobile)"
+ },
+ {
+  "id": "91:593",
+  "name": "session-expired",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same state (canonical: 314:80 ONBOARDING / Session Expired / Default / Mobile)"
+ },
+ {
+  "id": "91:7",
+  "name": "collection-detail",
+  "status": "IMPLEMENTED",
+  "route": "-",
+  "component": "CollectionDetailScreen",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "99:7",
+  "name": "search-results",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 322:39 DISCOVERY / Search · Results / Mobile)"
+ },
+ {
+  "id": "99:227",
+  "name": "moderation-confirmed",
+  "status": "STATE",
+  "route": "-",
+  "component": "Moderation toast 'Approved/Rejected'",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "101:9",
+  "name": "media-playback-error",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same state (canonical: 324:58 STORY / Audio Player · Playback Failed / Mobile)"
+ },
+ {
+  "id": "101:40",
+  "name": "creator-upload-progress",
+  "status": "STATE",
+  "route": "-",
+  "component": "MediaChaptersStep upload state",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "101:131",
+  "name": "library-empty",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same state (canonical: 331:2 LIBRARY / Empty · New User / Mobile)"
+ },
+ {
+  "id": "101:230",
+  "name": "onboarding-welcome",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 310:2 ONBOARDING / Splash / Default / Mobile)"
+ },
+ {
+  "id": "103:7",
+  "name": "06-20 — Collaboration Management",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Needs server accounts (collaboration)"
+ },
+ {
+  "id": "103:90",
+  "name": "06-21 — Contributor Profile",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Needs collaboration accounts"
+ },
+ {
+  "id": "103:159",
+  "name": "03-11 — Context Card Modal",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same screen (canonical: 329:2 STORY / Context Card Modal / Mobile)"
+ },
+ {
+  "id": "103:214",
+  "name": "11-18 — Media Buffering State",
+  "status": "DUPLICATE",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Same state (canonical: 324:31 STORY / Audio Player · Buffering / Mobile)"
+ },
+ {
+  "id": "103:421",
+  "name": "11-19 — Form Validation State",
+  "status": "STATE",
+  "route": "-",
+  "component": "TextField error states (forms.tsx)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Legacy single-screen frame"
+ },
+ {
+  "id": "103:508",
+  "name": "11-21 — Suspended User State",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Account enforcement waits on the G4 policy owner"
+ },
+ {
+  "id": "103:532",
+  "name": "12-05 — Explorer (Français)",
+  "status": "RESPONSIVE_VARIANT",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "French locale variant (canonical: 320:27 DISCOVERY / Explore · Default / Mobile)"
+ },
+ {
+  "id": "103:698",
+  "name": "06-22 — Brock University Partnership",
+  "status": "EXCLUDED",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "Names a real organisation as a partner; not allowed without a signed agreement (D-12)"
+ },
+ {
+  "id": "103:935",
+  "name": "12-06 — Bibliothèque (Français)",
+  "status": "RESPONSIVE_VARIANT",
+  "route": "-",
+  "component": "-",
+  "functional": "-",
+  "vercel": "-",
+  "note": "French locale variant (canonical: 330:2 LIBRARY / Saved · Default / Mobile)"
+ },
+ {
+  "id": "179:2",
+  "name": "bottom-navigation",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "seen/BottomNav (duplicate of Bottom Navigation)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:82",
+  "name": "Button",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "seen/primitives Button",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:163",
+  "name": "Bottom Navigation",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "seen/BottomNav",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:164",
+  "name": "Story Card",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "StoryCard + seen/cards",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:189",
+  "name": "Input Field",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "seen/forms TextField",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:198",
+  "name": "Badge",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "seen/primitives Badge",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:199",
+  "name": "Top Nav",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "NavigationBar + seen/primitives TopBar",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:205",
+  "name": "List Item",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "seen/display ListItem",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:210",
+  "name": "Metric Card",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "seen/primitives MetricCard",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:217",
+  "name": "Toggle",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "seen/forms Toggle",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:224",
+  "name": "Avatar",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "seen/primitives Avatar",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:225",
+  "name": "Search Bar",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "seen/forms SearchBar",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "248:228",
+  "name": "Notification Item",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "NotificationsScreen item",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ },
+ {
+  "id": "424:97",
+  "name": "Status Bar",
+  "status": "COMPONENT",
+  "route": "-",
+  "component": "OS status bar (not an app component)",
+  "functional": "yes",
+  "vercel": "yes",
+  "note": "Design-system component, not a screen"
+ }
+]

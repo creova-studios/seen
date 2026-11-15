@@ -63,7 +63,7 @@ export function LanguageSelectionScreen({ onSelectLanguage }: LanguageSelectionS
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.6, duration: 1 }}
-        className="text-xs text-white/30 mt-12"
+        className="text-xs text-white/55 mt-12"
       >
         You can change this anytime in settings
       </motion.p>
@@ -94,7 +94,7 @@ function LanguageButton({
       <div className="text-base text-white/90 mb-1 group-hover:text-white transition-colors duration-500">
         {nativeName}
       </div>
-      <div className="text-sm text-white/40 group-hover:text-white/60 transition-colors duration-500">
+      <div className="text-sm text-white/55 group-hover:text-white/60 transition-colors duration-500">
         {name}
       </div>
     </motion.button>

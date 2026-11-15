@@ -41,6 +41,9 @@ export interface ChapterMedia {
     url: string;
   };
   images?: string[];
+  /** Description of the first image for people who cannot see it. Empty with imageDecorative for purely decorative art. */
+  imageAlt?: string;
+  imageDecorative?: boolean;
   video?: {
     url: string;
     duration: number;
@@ -84,6 +87,8 @@ export interface StoryWorld {
   chapterCount: number;
   chapters: Chapter[];
   visibility: 'public' | 'institutional' | 'private';
+  /** Optional content notes shown before the story begins. */
+  contentWarnings?: string[];
   featured?: boolean;
   new?: boolean;
   trending?: boolean;
@@ -305,7 +310,6 @@ export const STORY_WORLDS: StoryWorld[] = [
     trending: false,
     new: false,
     visibility: 'institutional',
-    institutionalPartner: 'Canadian Museum of Immigration',
     chapters: [
       {
         id: 'voices-ch1',
@@ -499,7 +503,6 @@ export const STORY_WORLDS: StoryWorld[] = [
     trending: true,
     new: false,
     visibility: 'public',
-    institutionalPartner: 'National Film Board',
     chapters: [
       {
         id: 'indigenous-ch1',

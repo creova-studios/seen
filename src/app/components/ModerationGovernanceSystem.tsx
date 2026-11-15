@@ -1,7 +1,12 @@
 import { motion } from "motion/react";
-import { useState, useMemo } from "react";
-import { Shield, CheckCircle, XCircle, Clock, User, AlertTriangle } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { ArrowLeft, Shield, CheckCircle, XCircle, Clock, User, AlertTriangle } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import { toast } from "sonner";
+import { api, type Report } from "../services";
+import { ReportsPanel } from "./ReportsPanel";
+import { translate } from "../i18n/strings";
+import { useStoryState } from "../contexts/StoryStateContext";
 import {
   getModerationQueue,
   getModerationActions,
@@ -169,7 +174,7 @@ export function ModerationQueue({
   return (
     <div className="space-y-6 pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl tracking-tight text-white mb-1">Moderation Queue</h2>
           <p className="text-sm text-white/60">
@@ -178,10 +183,10 @@ export function ModerationQueue({
         </div>
         <div className="flex gap-2">
           <div className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30">
-            <span className="text-sm text-amber-300">{pendingResponses.length} pending</span>
+            <span className="text-sm text-amber-300 whitespace-nowrap">{pendingResponses.length} pending</span>
           </div>
           <div className="px-3 py-1 rounded-full bg-red-500/20 border border-red-400/30">
-            <span className="text-sm text-red-300">{flaggedResponses.length} flagged</span>
+            <span className="text-sm text-red-300 whitespace-nowrap">{flaggedResponses.length} flagged</span>
           </div>
         </div>
       </div>
@@ -208,7 +213,7 @@ export function ModerationQueue({
 
       {/* Pending items */}
       <div className="space-y-3">
-        <h3 className="text-sm tracking-wider uppercase text-white/40">Pending Review</h3>
+        <h3 className="text-sm tracking-wider uppercase text-white/55">Pending Review</h3>
         {pendingResponses.length > 0 ? (
           pendingResponses.map((response) => (
             <ModerationCard
@@ -268,7 +273,7 @@ function ModerationCard({
           </div>
           <div>
             <h4 className="text-sm text-white">{response.contributorName}</h4>
-            <div className="flex items-center gap-2 text-xs text-white/40">
+            <div className="flex items-center gap-2 text-xs text-white/55">
               <Clock className="w-3 h-3" />
               <span>{formatRelativeTime(response.timestamp)}</span>
               <span>•</span>
@@ -317,7 +322,7 @@ function ModerationCard({
       <div className="flex gap-2">
         <button
           onClick={() => onApprove(response.id)}
-          className="flex-1 py-2 rounded-lg bg-green-500/20 border border-green-400/30 text-sm text-green-300 hover:bg-green-500/30 transition-colors flex items-center justify-center gap-2"
+          className="flex-1 min-h-11 py-2 rounded-lg bg-green-500/20 border border-green-400/30 text-sm text-green-300 hover:bg-green-500/30 transition-colors flex items-center justify-center gap-2"
         >
           <CheckCircle className="w-4 h-4" />
           Approve
@@ -328,7 +333,7 @@ function ModerationCard({
             const reason = prompt("Rejection reason:");
             if (reason) onReject(response.id, reason);
           }}
-          className="flex-1 py-2 rounded-lg bg-red-500/20 border border-red-400/30 text-sm text-red-300 hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2"
+          className="flex-1 min-h-11 py-2 rounded-lg bg-red-500/20 border border-red-400/30 text-sm text-red-300 hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2"
         >
           <XCircle className="w-4 h-4" />
           Reject
@@ -339,7 +344,7 @@ function ModerationCard({
             const reason = prompt("Flag reason:");
             if (reason) onFlag(response.id, reason);
           }}
-          className="px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-400/30 text-sm text-amber-300 hover:bg-amber-500/30 transition-colors"
+          className="px-4 min-h-11 py-2 rounded-lg bg-amber-500/20 border border-amber-400/30 text-sm text-amber-300 hover:bg-amber-500/30 transition-colors"
         >
           Flag
         </button>
@@ -374,6 +379,12 @@ export function AuditLogViewer({ actions, userRole }: AuditLogViewerProps) {
         <h2 className="text-2xl tracking-tight text-white mb-1">Audit Log</h2>
         <p className="text-sm text-white/60">Complete moderation history with timestamps</p>
       </div>
+
+      {actions.length === 0 && (
+        <p className="text-sm text-white/60 rounded-xl border border-white/10 bg-white/5 p-4" role="status">
+          No moderation actions yet. Approvals, rejections and flags you make appear here.
+        </p>
+      )}
 
       <div className="space-y-3">
         {actions.map((action, index) => (
@@ -411,19 +422,19 @@ export function AuditLogViewer({ actions, userRole }: AuditLogViewerProps) {
                 </p>
 
                 {action.reason && (
-                  <p className="text-xs text-white/40 mb-2">
+                  <p className="text-xs text-white/55 mb-2">
                     Reason: {action.reason}
                   </p>
                 )}
 
                 {action.notes && (
-                  <p className="text-xs text-white/50 italic">
+                  <p className="text-xs text-white/55 italic">
                     Notes: {action.notes}
                   </p>
                 )}
               </div>
 
-              <div className="text-xs text-white/30">
+              <div className="text-xs text-white/55">
                 {formatRelativeTime(action.timestamp)}
               </div>
             </div>
@@ -522,9 +533,10 @@ interface ModerationGovernanceSystemProps {
 }
 
 export function ModerationGovernanceSystem({ onBack }: ModerationGovernanceSystemProps) {
-  const [activeTab, setActiveTab] = useState<"queue" | "audit" | "guidelines">("queue");
+  const [activeTab, setActiveTab] = useState<"queue" | "reports" | "audit" | "guidelines">("queue");
   const [refreshKey, setRefreshKey] = useState(0);
   const { state: authState } = useAuth();
+  const lang = useStoryState().state.language;
 
   const moderatorId = authState.user?.id ?? "mod-demo";
   const moderatorName = authState.user?.name ?? "Moderator";
@@ -532,6 +544,20 @@ export function ModerationGovernanceSystem({ onBack }: ModerationGovernanceSyste
   // Persisted queue (localStorage-backed, seeded with sample submissions on first load)
   const queuedResponses = useMemo<QueuedResponse[]>(() => getModerationQueue(), [refreshKey]);
   const queuedActions = useMemo<ModerationActionRecord[]>(() => getModerationActions(), [refreshKey]);
+  const [reports, setReports] = useState<Report[]>([]);
+  useEffect(() => {
+    let live = true;
+    api.reports.list().then(r => live && setReports(r)).catch(() => live && toast.error("Couldn't load reports."));
+    return () => { live = false; };
+  }, [refreshKey]);
+  const handleResolveReport = async (id: string, status: "action_taken" | "dismissed") => {
+    try {
+      await api.reports.resolve(id, status);
+      setRefreshKey(k => k + 1);
+    } catch {
+      toast.error("Couldn't update the report. Try again.");
+    }
+  };
 
   // Adapt string timestamps -> Date for the presentational components below
   const responses: CommunityResponse[] = queuedResponses.map(r => ({
@@ -564,29 +590,25 @@ export function ModerationGovernanceSystem({ onBack }: ModerationGovernanceSyste
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-black"
+      className="min-h-dvh bg-black"
     >
       {/* Header */}
       <div className="sticky top-0 z-10 bg-black/95 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-[428px] mx-auto px-5 py-4">
+        <div className="max-w-(--seen-content-max) mx-auto px-5 py-4">
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+              aria-label="Back"
+              className="w-11 h-11 flex-shrink-0 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:bg-white/10 transition-colors"
             >
-              <motion.div
-                initial={{ x: 0 }}
-                whileHover={{ x: -2 }}
-              >
-                ←
-              </motion.div>
+              <ArrowLeft className="w-4 h-4" aria-hidden />
             </button>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <Shield className="w-5 h-5 text-blue-400" />
                 <h1 className="text-lg font-semibold text-white">Moderation Panel</h1>
               </div>
-              <p className="text-xs text-white/50">Review community contributions</p>
+              <p className="text-xs text-white/55">Review community contributions</p>
             </div>
           </div>
         </div>
@@ -594,34 +616,44 @@ export function ModerationGovernanceSystem({ onBack }: ModerationGovernanceSyste
 
       {/* Tab Navigation */}
       <div className="sticky top-[73px] z-10 bg-black/95 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-[428px] mx-auto px-5">
-          <div className="flex gap-1">
+        <div className="max-w-(--seen-content-max) mx-auto px-5">
+          <div className="flex gap-1 overflow-x-auto">
             <button
               onClick={() => setActiveTab("queue")}
-              className={`flex-1 py-3 text-sm transition-all ${
+              className={`flex-1 min-h-11 px-2 py-3 text-sm whitespace-nowrap transition-all ${
                 activeTab === "queue"
                   ? "text-white border-b-2 border-blue-400"
-                  : "text-white/50 hover:text-white/70"
+                  : "text-white/55 hover:text-white/70"
               }`}
             >
               Queue ({responses.length})
             </button>
             <button
+              onClick={() => setActiveTab("reports")}
+              className={`flex-1 min-h-11 px-2 py-3 text-sm whitespace-nowrap transition-all ${
+                activeTab === "reports"
+                  ? "text-white border-b-2 border-blue-400"
+                  : "text-white/55 hover:text-white/70"
+              }`}
+            >
+              {translate("reports.tab", lang)} ({reports.filter(r => r.status === "open").length})
+            </button>
+            <button
               onClick={() => setActiveTab("audit")}
-              className={`flex-1 py-3 text-sm transition-all ${
+              className={`flex-1 min-h-11 px-2 py-3 text-sm whitespace-nowrap transition-all ${
                 activeTab === "audit"
                   ? "text-white border-b-2 border-blue-400"
-                  : "text-white/50 hover:text-white/70"
+                  : "text-white/55 hover:text-white/70"
               }`}
             >
               Audit Log
             </button>
             <button
               onClick={() => setActiveTab("guidelines")}
-              className={`flex-1 py-3 text-sm transition-all ${
+              className={`flex-1 min-h-11 px-2 py-3 text-sm whitespace-nowrap transition-all ${
                 activeTab === "guidelines"
                   ? "text-white border-b-2 border-blue-400"
-                  : "text-white/50 hover:text-white/70"
+                  : "text-white/55 hover:text-white/70"
               }`}
             >
               Guidelines
@@ -631,8 +663,9 @@ export function ModerationGovernanceSystem({ onBack }: ModerationGovernanceSyste
       </div>
 
       {/* Content */}
-      <div className="max-w-[428px] mx-auto pb-20">
+      <div className="max-w-(--seen-content-max) mx-auto pb-20">
         {activeTab === "queue" && (
+          <div className="px-5 pt-5">
           <ModerationQueue
             responses={responses}
             onApprove={handleApprove}
@@ -640,12 +673,16 @@ export function ModerationGovernanceSystem({ onBack }: ModerationGovernanceSyste
             onFlag={handleFlag}
             userRole="moderator"
           />
+          </div>
         )}
+        {activeTab === "reports" && <ReportsPanel reports={reports} onResolve={handleResolveReport} />}
         {activeTab === "audit" && (
-          <AuditLogViewer
-            actions={actions}
-            userRole="moderator"
-          />
+          <div className="px-5 pt-5">
+            <AuditLogViewer
+              actions={actions}
+              userRole="moderator"
+            />
+          </div>
         )}
         {activeTab === "guidelines" && <GovernanceGuidelines />}
       </div>

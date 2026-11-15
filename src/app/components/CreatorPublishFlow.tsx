@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { AnimatePresence } from "motion/react";
 import { useAuth } from "../contexts/AuthContext";
+import { useAppNav } from "../navigation/AppNav";
+import { canAccess } from "../navigation/routes";
+import { useT } from "../i18n/useT";
 import { StoryIntentStep, type StoryIntentData } from "./creator-flow/StoryIntentStep";
 import { StoryStructureStep, type StoryStructureData } from "./creator-flow/StoryStructureStep";
 import { MediaChaptersStep, type MediaChaptersData } from "./creator-flow/MediaChaptersStep";
@@ -25,6 +28,10 @@ interface CreatorPublishFlowProps {
 
 export function CreatorPublishFlow({ onClose, onViewStory, onGoToLibrary, onViewEarnings }: CreatorPublishFlowProps) {
   const { state: authState } = useAuth();
+  const nav = useAppNav();
+  const t = useT();
+  // Creators and admins can jump to their stories from the first step (PR-2). The draft is saved per step, so nothing is lost.
+  const canSeeStories = !!authState.user && canAccess("creator-stories", authState.user.role);
   const creatorId = authState.user?.id ?? "creator_demo";
   const creatorName = authState.user?.name ?? "Creator";
 
@@ -54,6 +61,7 @@ export function CreatorPublishFlow({ onClose, onViewStory, onGoToLibrary, onView
         {step === "intent" && (
           <IntentWrapper key="intent" onClose={handleClose}>
             <StoryIntentStep
+              footerLink={canSeeStories ? { label: t("nav.yourStories"), onClick: () => nav.go("creator-stories") } : undefined}
               initialData={intentData ?? draft.intent}
               onSaveDraft={data => updateDraft(draftId, { intent: data })}
               onNext={data => {
@@ -157,7 +165,7 @@ function IntentWrapper({ children, onClose }: { children: React.ReactNode; onClo
     <div className="relative">
       <button
         onClick={onClose}
-        className="fixed top-6 right-5 z-10 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors text-white/70"
+        className="fixed top-6 right-5 z-10 w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors text-white/70"
         aria-label="Close"
       >
         ✕

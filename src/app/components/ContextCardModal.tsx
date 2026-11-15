@@ -1,3 +1,4 @@
+import { SeenImage } from "./seen/SeenImage";
 import { motion, AnimatePresence } from "motion/react";
 import { Info, X, ExternalLink } from "lucide-react";
 import { useStoryState } from "../contexts/StoryStateContext";
@@ -62,11 +63,7 @@ export function ContextCardModal({
               {/* Image if available */}
               {contextCard.imageUrl && (
                 <div className="relative w-full h-48 overflow-hidden">
-                  <img
-                    src={contextCard.imageUrl}
-                    alt={getText(contextCard.title)}
-                    className="w-full h-full object-cover"
-                  />
+                  <SeenImage src={contextCard.imageUrl} alt={getText(contextCard.title)} seed={contextCard.id} decorative className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80" />
                 </div>
               )}

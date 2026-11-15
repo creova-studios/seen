@@ -6,15 +6,22 @@
  * NO default or promotional content - empty states only
  */
 
+import { FollowingPanel, SavedCollectionsPanel, useLibraryCounts } from "./LibraryPanels";
+import { DemoModeNotice } from "./DemoModeNotice";
+import { PageTitle } from "./seen/primitives";
 import { motion } from "motion/react";
 import { useState } from "react";
-import { NavigationBar } from "./NavigationBar";
+import { ConfirmDialog } from "./seen/overlays";
+import { CircularProgress } from "./seen/display";
+import { toast } from "sonner";
 import { ContentCard } from "./ContentCard";
 import { EmptyState } from "./EmptyState";
-import { Play, Bookmark, Check, Trash2, Home, Compass, Library, User } from "lucide-react";
+import { Play, Bookmark, Check, Trash2, Users, Folder, Home, Compass, Library, User } from "lucide-react";
 import { useStoryState } from "../contexts/StoryStateContext";
 import { getLibraryStories } from "../data/storyService";
-import type { Language } from "../data/storyDatabase";
+import { getStoryWorldById, type Language } from "../data/storyDatabase";
+import { getSavedIds } from "../data/userDataService";
+import { StoryRow } from "./seen/StoryRow";
 
 interface LibraryScreenProps {
   onStoryClick: (contentId: string) => void;
@@ -22,7 +29,7 @@ interface LibraryScreenProps {
   onSearch?: () => void;
 }
 
-type LibraryTab = 'inProgress' | 'completed';
+type LibraryTab = 'inProgress' | 'completed' | 'saved' | 'following' | 'collections';
 
 /**
  * LIBRARY SECTION - USER-OWNED CONTENT ONLY
@@ -39,7 +46,11 @@ export function LibraryScreen({
   onSearch
 }: LibraryScreenProps) {
   const [activeTab, setActiveTab] = useState<LibraryTab>('inProgress');
+  const counts = useLibraryCounts();
   const { state, removeProgress } = useStoryState();
+  // Only bookmarks that resolve to a real story (older demo data used placeholder ids).
+  const savedIds = getSavedIds().filter(id => getStoryWorldById(id));
+  const [pendingRemove, setPendingRemove] = useState<{ id: string; title: string } | null>(null);
 
   const handleDelete = (contentId: string, kind: 'progress') => {
     if (kind === 'progress') {
@@ -53,20 +64,19 @@ export function LibraryScreen({
     state.language as Language
   );
   
-  console.log(`[LibraryScreen] In progress: ${libraryData.inProgress.length}, Completed: ${libraryData.completed.length}`);
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
-      className="min-h-screen bg-black"
+      transition={{ duration: 0.2 }}
+      className="min-h-dvh bg-black"
     >
-      <NavigationBar onSearch={onSearch} />
 
       {/* Main Content */}
-      <main className="pt-20 pb-24 px-5 max-w-[428px] mx-auto">
+      <main className="pt-header pb-clearance px-gutter max-w-(--seen-content-max) mx-auto">
+        <DemoModeNotice />
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -74,8 +84,8 @@ export function LibraryScreen({
           transition={{ delay: 0.1 }}
           className="mb-8"
         >
-          <h1 className="text-2xl font-bold text-white mb-2">Library</h1>
-          <p className="text-sm text-white/60">Your saved and in-progress content</p>
+          <PageTitle className="mb-2">Library</PageTitle>
+          <p className="text-sm text-white/60">Stories you've saved or started</p>
         </motion.div>
 
         {/* Presence Indicators / Tabs */}
@@ -91,8 +101,12 @@ export function LibraryScreen({
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
             onClick={() => setActiveTab('inProgress')}
-            className={`flex items-center gap-4 group cursor-pointer transition-opacity duration-300 ${
-              activeTab === 'inProgress' ? 'opacity-100' : 'opacity-40 hover:opacity-70'
+            role="button"
+            tabIndex={0}
+            aria-pressed={activeTab === 'inProgress'}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setActiveTab('inProgress'))}
+            className={`flex items-center gap-4 min-h-11 pl-3 border-l-2 group cursor-pointer transition-colors duration-300 ${
+              activeTab === 'inProgress' ? 'border-white' : 'border-transparent hover:border-white/30'
             }`}
           >
             <div className="relative">
@@ -106,7 +120,7 @@ export function LibraryScreen({
               <span className="text-2xl font-light text-white/90 tabular-nums">
                 {libraryData.inProgress.length}
               </span>
-              <span className="text-sm text-white/40 font-light tracking-wide">
+              <span className="text-sm text-white/55 font-light tracking-wide">
                 {libraryData.inProgress.length === 1 ? 'Story' : 'Stories'} in progress
               </span>
             </div>
@@ -118,8 +132,12 @@ export function LibraryScreen({
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
             onClick={() => setActiveTab('completed')}
-            className={`flex items-center gap-4 group cursor-pointer transition-opacity duration-300 ${
-              activeTab === 'completed' ? 'opacity-100' : 'opacity-40 hover:opacity-70'
+            role="button"
+            tabIndex={0}
+            aria-pressed={activeTab === 'completed'}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setActiveTab('completed'))}
+            className={`flex items-center gap-4 min-h-11 pl-3 border-l-2 group cursor-pointer transition-colors duration-300 ${
+              activeTab === 'completed' ? 'border-white' : 'border-transparent hover:border-white/30'
             }`}
           >
             <div className="relative">
@@ -133,12 +151,91 @@ export function LibraryScreen({
               <span className="text-2xl font-light text-white/90 tabular-nums">
                 {libraryData.completed.length}
               </span>
-              <span className="text-sm text-white/40 font-light tracking-wide">
-                {libraryData.completed.length === 1 ? 'Journey' : 'Journeys'} complete
+              <span className="text-sm text-white/55 font-light tracking-wide">
+                {libraryData.completed.length === 1 ? 'Story' : 'Stories'} finished
               </span>
             </div>
           </motion.div>
+
+          {/* Saved */}
+          <div
+            onClick={() => setActiveTab('saved')}
+            role="button"
+            tabIndex={0}
+            aria-pressed={activeTab === 'saved'}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setActiveTab('saved'))}
+            className={`flex items-center gap-4 min-h-11 pl-3 border-l-2 cursor-pointer transition-colors duration-300 ${
+              activeTab === 'saved' ? 'border-white' : 'border-transparent hover:border-white/30'
+            }`}
+          >
+            <Bookmark className="w-5 h-5 text-violet-200/70" aria-hidden />
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-light text-white/90 tabular-nums">{savedIds.length}</span>
+              <span className="text-sm text-white/55 font-light tracking-wide">Saved {savedIds.length === 1 ? 'story' : 'stories'}</span>
+            </div>
+          </div>
+          {/* Following */}
+          <div
+            onClick={() => setActiveTab('following')}
+            role="button"
+            tabIndex={0}
+            aria-pressed={activeTab === 'following'}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setActiveTab('following'))}
+            className={`flex items-center gap-4 min-h-11 pl-3 border-l-2 cursor-pointer transition-colors duration-300 ${
+              activeTab === 'following' ? 'border-white' : 'border-transparent hover:border-white/30'
+            }`}
+          >
+            <Users className="w-5 h-5 text-sky-200/70" aria-hidden />
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-light text-white/90 tabular-nums">{counts.data?.following ?? '–'}</span>
+              <span className="text-sm text-white/55 font-light tracking-wide">Following</span>
+            </div>
+          </div>
+
+          {/* Collections */}
+          <div
+            onClick={() => setActiveTab('collections')}
+            role="button"
+            tabIndex={0}
+            aria-pressed={activeTab === 'collections'}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setActiveTab('collections'))}
+            className={`flex items-center gap-4 min-h-11 pl-3 border-l-2 cursor-pointer transition-colors duration-300 ${
+              activeTab === 'collections' ? 'border-white' : 'border-transparent hover:border-white/30'
+            }`}
+          >
+            <Folder className="w-5 h-5 text-orange-200/70" aria-hidden />
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-light text-white/90 tabular-nums">{counts.data?.collections ?? '–'}</span>
+              <span className="text-sm text-white/55 font-light tracking-wide">Saved {counts.data?.collections === 1 ? 'collection' : 'collections'}</span>
+            </div>
+          </div>
         </motion.div>
+
+        {activeTab === 'following' && <FollowingPanel onChanged={counts.retry} />}
+        {activeTab === 'collections' && <SavedCollectionsPanel />}
+
+        {/* Saved Tab */}
+        {activeTab === 'saved' && (
+          <div>
+            {savedIds.length > 0 ? (
+              <ul className="space-y-3" aria-label="Saved stories">
+                {savedIds.map(id => (
+                  <li key={id}>
+                    <StoryRow storyId={id} language={state.language as Language} onOpen={onStoryClick} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <EmptyState
+                icon="Bookmark"
+                title="Nothing saved yet"
+                message="Tap the bookmark while reading to keep a story here."
+                actionLabel="Explore stories"
+                onAction={() => onNavigate('explore')}
+              />
+            )}
+          </div>
+        )}
 
         {/* In Progress Tab */}
         {activeTab === 'inProgress' && (
@@ -153,44 +250,35 @@ export function LibraryScreen({
               <div className="space-y-4">
                 {libraryData.inProgress.map(({ content, progress }) => (
                   <div key={content.id} className="relative group">
-                    <div onClick={() => onStoryClick(content.id)} className="cursor-pointer">
-                      <ContentCard
-                        id={content.id}
-                        title={content.title}
-                        creator={content.description}
-                        imageUrl={content.mediaSource}
-                        category={content.creator}
-                        onSelect={onStoryClick}
-                      />
-                      {/* Progress badge */}
-                      <div className="absolute top-3 right-3 px-2 py-1 bg-purple-600/80 backdrop-blur-sm rounded text-xs text-white font-medium">
-                        {progress.progressPercentage}%
-                      </div>
-                      {/* Type badge */}
-                      <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs text-white/90 uppercase tracking-wider border border-white/20">
-                        {content.type}
-                      </div>
-                    </div>
-                    {/* Delete button */}
+                    <ContentCard
+                      id={content.id}
+                      title={content.title}
+                      creator={content.creator}
+                      duration={content.duration}
+                      imageUrl={content.mediaSource}
+                      typeLabel={content.type}
+                      badge={<CircularProgress value={progress.progressPercentage} size={30} label={`${progress.progressPercentage}% read`} />}
+                      aspect="landscape"
+                      onSelect={onStoryClick}
+                    />
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(content.id, 'progress');
-                      }}
-                      className="absolute bottom-3 right-3 p-2 bg-red-600/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Remove from in-progress"
+                      type="button"
+                      onClick={() => setPendingRemove({ id: content.id, title: content.title })}
+                      className="absolute bottom-3 right-3 z-20 w-11 h-11 rounded-full backdrop-blur-sm flex items-center justify-center bg-black/60 text-white/80 border border-white/15 hover:bg-black/80"
+                      aria-label={`Remove ${content.title} from in progress`}
                     >
-                      <Trash2 className="w-4 h-4 text-white" />
+                      <Trash2 className="w-4 h-4" aria-hidden />
                     </button>
+                  
                   </div>
                 ))}
               </div>
             ) : (
               <EmptyState
                 icon="Play"
-                title="No stories in progress"
-                message="Start exploring to see your in-progress content here."
-                actionLabel="Explore Stories"
+                title="Nothing in progress"
+                message="Open a story and it will wait for you here."
+                actionLabel="Explore stories"
                 onAction={() => onNavigate('explore')}
               />
             )}
@@ -210,33 +298,26 @@ export function LibraryScreen({
               <div className="space-y-4">
                 {libraryData.completed.map(({ content, progress }) => (
                   <div key={content.id} className="relative group">
-                    <div onClick={() => onStoryClick(content.id)} className="cursor-pointer">
-                      <ContentCard
-                        id={content.id}
-                        title={content.title}
-                        creator={content.description}
-                        imageUrl={content.mediaSource}
-                        category={content.creator}
-                        onSelect={onStoryClick}
-                      />
-                      {/* Completed badge */}
-                      <div className="absolute top-3 right-3 px-2 py-1 bg-green-600/80 backdrop-blur-sm rounded text-xs text-white font-medium">
-                        ✓ Completed
-                      </div>
-                      {/* Type badge */}
-                      <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs text-white/90 uppercase tracking-wider border border-white/20">
-                        {content.type}
-                      </div>
-                    </div>
+                    <ContentCard
+                      id={content.id}
+                      title={content.title}
+                      creator={content.creator}
+                      duration={content.duration}
+                      imageUrl={content.mediaSource}
+                      typeLabel={content.type}
+                      badge="✓ Completed"
+                      aspect="landscape"
+                      onSelect={onStoryClick}
+                    />
                   </div>
                 ))}
               </div>
             ) : (
               <EmptyState
                 icon="Check"
-                title="No completed content"
-                message="Content you finish will appear here."
-                actionLabel="Start Exploring"
+                title="Nothing finished yet"
+                message="Stories you finish are kept here."
+                actionLabel="Find a story"
                 onAction={() => onNavigate('explore')}
               />
             )}
@@ -245,107 +326,19 @@ export function LibraryScreen({
       </main>
 
       {/* Bottom Navigation */}
-      <BottomNav onNavigate={onNavigate} activeTab="library" />
-    </motion.div>
-  );
-}
+      <ConfirmDialog
+        open={pendingRemove !== null}
+        onOpenChange={open => !open && setPendingRemove(null)}
+        title="Remove from In progress?"
+        description={pendingRemove ? `“${pendingRemove.title}” will leave your library and your reading position will be forgotten. The story itself stays on SEEN.` : ""}
+        confirmLabel="Remove"
+        onConfirm={() => {
+          if (!pendingRemove) return;
+          handleDelete(pendingRemove.id, 'progress');
+          toast.success("Removed from your library");
+        }}
+      />
 
-// Bottom Navigation Component
-function BottomNav({ 
-  onNavigate, 
-  activeTab 
-}: { 
-  onNavigate: (screen: string) => void;
-  activeTab: string;
-}) {
-  return (
-    <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl bg-black/60 border-t border-white/5 z-50 pointer-events-auto">
-      <div className="max-w-[428px] mx-auto px-5 py-4 flex justify-around">
-        <button
-          type="button"
-          onClick={() => onNavigate("for-you")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'for-you' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <Home 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'for-you' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'for-you' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'for-you' ? 'font-medium' : 'font-light'
-          }`}>
-            For You
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onNavigate("explore")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'explore' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <Compass 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'explore' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'explore' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'explore' ? 'font-medium' : 'font-light'
-          }`}>
-            Explore
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onNavigate("library")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'library' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <Library 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'library' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'library' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'library' ? 'font-medium' : 'font-light'
-          }`}>
-            Library
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onNavigate("profile")}
-          className={`flex flex-col items-center gap-1.5 transition-all duration-300 pointer-events-auto group ${
-            activeTab === 'profile' ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`}
-        >
-          <User 
-            className={`w-5 h-5 transition-all duration-300 ${
-              activeTab === 'profile' 
-                ? 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' 
-                : 'group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
-            }`}
-            strokeWidth={activeTab === 'profile' ? 2 : 1.5}
-          />
-          <span className={`text-[10px] tracking-widest uppercase transition-all duration-300 ${
-            activeTab === 'profile' ? 'font-medium' : 'font-light'
-          }`}>
-            Profile
-          </span>
-        </button>
-      </div>
-    </nav>
+    </motion.div>
   );
 }
