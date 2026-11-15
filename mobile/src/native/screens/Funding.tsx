@@ -7,6 +7,9 @@ import { useApp } from '../storage';
 import { c, font, gutter, radius, space } from '../theme';
 import { Button, Chip } from '../ui';
 
+/** Opens a funder page; a phone with no browser handler just does nothing instead of crashing. */
+const openLink = (url: string) => Linking.openURL(url).catch(() => {});
+
 type View_ = 'open' | 'soon' | 'mine';
 
 const checkedOn = () => {
@@ -74,7 +77,7 @@ export function FundingDetail() {
       <Text style={styles.body}>{o.summary}</Text>
       <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.lg, flexWrap: 'wrap' }}>
         <Button label={tracked ? t('native.funding.tracked', lang) : t('native.funding.track', lang)} variant={tracked ? 'secondary' : 'primary'} onPress={() => toggleFundingTracked(o.id)} />
-        <Button label={t('native.funding.apply', lang)} variant="secondary" onPress={() => void Linking.openURL(o.applyUrl)} />
+        <Button label={t('native.funding.apply', lang)} variant="secondary" onPress={() => openLink(o.applyUrl)} />
       </View>
       <Text style={styles.h2}>{t('native.funding.eligibility', lang)}</Text>
       {o.eligibility.map((e, i) => <Text key={i} style={styles.body}>• {e}</Text>)}
@@ -86,7 +89,7 @@ export function FundingDetail() {
         </Pressable>
       ))}
       <Text style={styles.h2}>{t('native.funding.sources', lang)}</Text>
-      {o.sourceUrls.map(u => <Text key={u} accessibilityRole="link" style={[styles.body, { color: c.accent }]} onPress={() => void Linking.openURL(u)}>{u.replace(/^https?:\/\//, '')}</Text>)}
+      {o.sourceUrls.map(u => <Text key={u} accessibilityRole="link" style={[styles.body, { color: c.accent }]} onPress={() => openLink(u)}>{u.replace(/^https?:\/\//, '')}</Text>)}
       <View style={{ marginTop: space.xl, alignSelf: 'flex-start' }}><Button label={t('native.create.back', lang)} variant="secondary" onPress={() => nav.goBack()} /></View>
     </ScrollView>
   );
