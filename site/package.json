@@ -1,0 +1,14 @@
+{
+  "name": "seen-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "The SEEN website (https://seen.verse.one): where visitors learn about SEEN and reach the app.",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node --test check/site.check.mjs",
+    "serve": "SITE_URL= node build.mjs && npx --yes serve dist",
+    "publish": "bash publish.sh"
+  }
+}

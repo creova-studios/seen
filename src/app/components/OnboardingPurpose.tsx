@@ -29,51 +29,7 @@ export function OnboardingPurpose({ onNext }: OnboardingPurposeProps) {
       </div>
 
       {/* Content */}
-<div className="relative z-10 min-h-full flex flex-col justify-between p-8 pt-16 pb-12 max-w-[428px] mx-auto">
-        {/* Top: Logo }}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs tracking-[0.3em] uppercase text-white/55">
-              SEEN
-            </p>
-          </div>
-        </div>
-
-        {/* Center: Main content */}
-        <motion.div
-          initial={{ opacity: 0, y: reduce ? 0 : 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: reduce ? 0 : 0.3, duration: reduce ? 0 : 0.8 }}
-          className="space-y-6"
-        >
-          <h1 className="text-4xl leading-tight tracking-tight text-white max-w-[320px]">
-            {t("onboard.notSocial1")}
-            <br />
-            {t("onboard.notSocial2")}
-          </h1>
-          <p className="text-base leading-relaxed text-white/80 max-w-[300px]">
-            {t("onboard.manifesto")}
-          </p>
-          <p className="text-sm leading-relaxed text-white/75 max-w-[300px]">
-            {t("onboard.noMetrics")}
-          </p>
-        </motion.div>
-
-        {/* Bottom: CTA */}
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: reduce ? 0 : 0.6 }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onNext}
-          className="w-full py-4 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/90 transition-colors"
-        >
-          <span className="text-sm tracking-wider uppercase">
-            {t("onboard.continue")}
-          </span>
-        </motion.button>
-      </div>
+      <div className="relative z-10 min-h-full flex flex-col justify-between p-8 pt-16 pb-12 max-w-(--seen-content-max) mx-auto">
         {/* Top: Logo */}
         <div className="flex items-center justify-between">
           <div>

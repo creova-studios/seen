@@ -8,7 +8,7 @@ Flow: `feature/*` or `fix/*` → `dev` → `staging` → `main`.
 
 | Branch | Purpose | Deploys to | Who uses it |
 |---|---|---|---|
-| `main` | Production and the testers' build. Always releasable. | https://seen-sigma-eight.vercel.app (Vercel production) | **Testers and the public** |
+| `main` | Canonical releasable build and testers' channel. Always releasable. | https://seen-sigma-eight.vercel.app (Vercel app testing host; website at https://seen.verse.one) | **Testers and the public** |
 | `staging` | Release candidate. Receives merges from `dev` when a drop is ready; only bug fixes land here until it ships. | Vercel preview alias `seen-git-staging-creovas-projects.vercel.app` (Vercel login required) | Internal pre-release checks, the team's final smoke test |
 | `dev` | Integration branch for ongoing work. May contain merged but unfinished features. | Vercel preview alias `seen-git-dev-creovas-projects.vercel.app` (Vercel login required) | **Developers** |
 | `feature/<name>` | One feature, branched from `dev`. | Per-push Vercel preview | Author and reviewers |

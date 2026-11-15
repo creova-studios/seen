@@ -1,6 +1,6 @@
 # Repository map: what is canonical
 
-**Source of truth: `github.com/creova-gif/SEEN`, branch `main`**, deployed by the Vercel project `seen` (team CREOVA's projects) at https://seen-sigma-eight.vercel.app. Ongoing work happens on `dev`, pre-release checks on `staging`. See `BRANCHING.md`.
+**Source of truth: `github.com/creova-studios/seen` (`creova-gif/SEEN`), branch `main`**. The customer-facing website lives in `site/` and publishes to https://seen.verse.one (`seen.verse.one`). The app is hosted for testing by the Vercel project `seen` (team CREOVA's projects) at https://seen-sigma-eight.vercel.app. Ongoing work happens on `dev`, pre-release checks on `staging`. See `BRANCHING.md`.
 
 ## Other SEEN branches in this repository (audited 2026-10-06)
 

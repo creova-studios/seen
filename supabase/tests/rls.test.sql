@@ -1,4 +1,5 @@
--- RLS / limits / deletion tests. Run by supabase/tests/run.sh against local Postgres.
+-- RLS / limits / deletion / artist intake & adversarial authorization tests.
+-- Run by supabase/tests/run.sh against local Postgres.
 \set ON_ERROR_STOP on
 create schema t;
 create function t.expect_fail(sql text, label text) returns void language plpgsql as $$
@@ -12,35 +13,139 @@ grant usage on schema t to anon, authenticated;
 grant execute on all functions in schema t to anon, authenticated;
 
 -- The signup trigger creates each profile from the user's metadata.
-insert into auth.users (id, raw_user_meta_data) values
- ('00000000-0000-0000-0000-00000000000a','{"name":"Author"}'),('00000000-0000-0000-0000-00000000000b','{"name":"Reader"}'),
- ('00000000-0000-0000-0000-00000000000c','{"name":"Mod"}'),('00000000-0000-0000-0000-00000000000d','{"name":"Blocked"}');
+insert into auth.users (id, email, raw_user_meta_data) values
+ ('00000000-0000-0000-0000-00000000000a','author@seen.test','{"name":"Author"}'),
+ ('00000000-0000-0000-0000-00000000000b','reader@seen.test','{"name":"Reader"}'),
+ ('00000000-0000-0000-0000-00000000000c','mod@seen.test','{"name":"Mod"}'),
+ ('00000000-0000-0000-0000-00000000000d','blocked@seen.test','{"name":"Blocked"}');
 -- profiles are created as each user (a=creator author, b=reader, c=moderator (set by service), d=blocked reader)
 create function t.as_user(u text) returns void language plpgsql as $$
 begin perform set_config('request.jwt.claim.sub', u, false); end $$;
 
 set role authenticated;
--- forged identity and role writes
+-- Adversarial Case 3: Creator/Reader attempts to grant themselves moderator/admin privileges
 select t.as_user('00000000-0000-0000-0000-00000000000d');
 select t.expect_fail($$insert into profiles(id) values ('00000000-0000-0000-0000-0000000000f9')$$, 'forged profile id');
 select t.expect_fail($$update profiles set role='admin' where id='00000000-0000-0000-0000-00000000000d'$$, 'client role write');
+select t.expect_fail($$update profiles set role='moderator' where id='00000000-0000-0000-0000-00000000000d'$$, 'client moderator escalation');
 select t.expect_fail($$insert into profiles(id, role) values (gen_random_uuid(),'admin')$$, 'insert with role');
 reset role;
 update profiles set role = 'moderator' where id = '00000000-0000-0000-0000-00000000000c'; -- service path
 
--- stories: client cannot supply ids; drafts are private; removed are hidden
-set role authenticated; select t.as_user('00000000-0000-0000-0000-00000000000a');
+-- Artist Invitation Redemption & Adversarial Case 6: Expired / Reused / Wrong-Email Invitations
+set role authenticated;
+select t.as_user('00000000-0000-0000-0000-00000000000a');
+select t.expect_fail($$select create_artist_invitation('invite-secret-token-1', 'author@seen.test', 'creator', 7)$$, 'non-staff cannot create invitation');
+select t.as_user('00000000-0000-0000-0000-00000000000c');
+select create_artist_invitation('invite-secret-token-1', 'author@seen.test', 'creator', 7);
+-- Wrong user (reader@seen.test) cannot redeem author@seen.test's invite
+select t.as_user('00000000-0000-0000-0000-00000000000b');
+select t.expect_fail($$select redeem_artist_invitation('invite-secret-token-1')$$, 'wrong email cannot redeem invite');
+-- Author redeems their invitation and becomes 'creator'
+select t.as_user('00000000-0000-0000-0000-00000000000a');
+select t.eq(redeem_artist_invitation('invite-secret-token-1'), 'creator', 'invite grants creator role');
+select t.eq((select role from profiles where id='00000000-0000-0000-0000-00000000000a'), 'creator', 'profile updated to creator');
+-- Reusing the same invitation fails
+select t.expect_fail($$select redeem_artist_invitation('invite-secret-token-1')$$, 'reused invitation rejected');
+reset role;
+-- Expired invitation fails
+insert into invitations (token_hash, invited_email, granted_role, expires_at)
+values (encode(digest('expired-invite-token-99', 'sha256'), 'hex'), 'reader@seen.test', 'creator', now() - interval '1 hour');
+set role authenticated;
+select t.as_user('00000000-0000-0000-0000-00000000000b');
+select t.expect_fail($$select redeem_artist_invitation('expired-invite-token-99')$$, 'expired invitation rejected');
+
+-- Adversarial Case 8: Unapproved content published through direct API call is blocked
+select t.as_user('00000000-0000-0000-0000-00000000000a');
 select t.expect_fail($$insert into stories(id,author_id,title) values ('curated-1','00000000-0000-0000-0000-00000000000a','x')$$, 'client story id');
 select t.expect_fail($$insert into stories(author_id,title) values ('00000000-0000-0000-0000-00000000000b','x')$$, 'forged author');
-insert into stories(author_id,title,status,published_at,languages) values ('00000000-0000-0000-0000-00000000000a','Pub','published',now(),'{en}');
+select t.expect_fail($$insert into stories(author_id,title,status) values ('00000000-0000-0000-0000-00000000000a','Bypass','published')$$, 'direct insert with status blocked');
+
+-- Create two drafts as Author ('Pub' and 'Draft')
+insert into stories(author_id,title,languages) values ('00000000-0000-0000-0000-00000000000a','Pub','{en}');
 insert into stories(author_id,title) values ('00000000-0000-0000-0000-00000000000a','Draft');
+select t.expect_fail($$update stories set status='published' where title='Pub'$$, 'direct update to published blocked');
+
+-- Adversarial Case 1 & 2: Reader cannot read private drafts; another user cannot edit Author's story
+select t.as_user('00000000-0000-0000-0000-00000000000b');
+select t.eq((select count(*) from stories)::int, 0, 'reader sees zero unapproved drafts');
+select t.expect_fail($$select submit_story_for_review((select id from stories where title='Pub'))$$, 'other user cannot submit story');
+
+-- Adversarial Case 7: Uploaded media on a draft story cannot be accessed by readers or anon
+select t.as_user('00000000-0000-0000-0000-00000000000a');
+insert into media_assets(owner_id, story_id, kind, object_path, mime_type, byte_size, alt_or_caption)
+select '00000000-0000-0000-0000-00000000000a', id, 'cover', 'covers/pub-cover.webp', 'image/webp', 120000, 'Cover art'
+from stories where title = 'Pub';
+select t.as_user('00000000-0000-0000-0000-00000000000b');
+select t.eq((select count(*) from media_assets)::int, 0, 'reader cannot access unpublished story media');
+
+-- Full Editorial Intake Flow: Draft -> Chapter + Rights Grant -> Submitted -> Changes Requested -> Resubmitted -> Published
+select t.as_user('00000000-0000-0000-0000-00000000000a');
+-- Submitting without chapter or rights grant fails
+select t.expect_fail($$select submit_story_for_review((select id from stories where title='Pub'))$$, 'submit without chapter fails');
+insert into chapters(story_id, position, title, body)
+select id, 1, 'Chapter One', 'The river remembers every crossing.' from stories where title='Pub';
+select t.expect_fail($$select submit_story_for_review((select id from stories where title='Pub'))$$, 'submit without rights grant fails');
+insert into rights_grants(
+  story_id, author_id, confirms_original_work, grants_non_exclusive_license, confirms_third_party_consents, allow_translation, allow_audio_narration, attribution_name
+)
+select id, '00000000-0000-0000-0000-00000000000a', true, true, true, true, true, 'Author'
+from stories where title='Pub';
+select submit_story_for_review((select id from stories where title='Pub'));
+select t.eq((select status from stories where title='Pub'), 'submitted', 'story status is submitted');
+
+-- Reader STILL cannot see a 'submitted' story
+select t.as_user('00000000-0000-0000-0000-00000000000b');
+select t.eq((select count(*) from stories)::int, 0, 'reader cannot see submitted story');
+
+-- Moderator reviews: In Review -> Changes Requested -> Author Revises -> Moderator Approves & Publishes
+select t.as_user('00000000-0000-0000-0000-00000000000c');
+select review_story_submission((select id from stories where title='Pub'), 'in_review', 'Starting editorial check');
+select t.expect_fail($$select review_story_submission((select id from stories where title='Pub'), 'changes_requested', '')$$, 'changes_requested requires notes');
+select review_story_submission((select id from stories where title='Pub'), 'changes_requested', 'Please expand Chapter 1.');
+
+-- Author sees editorial notes, updates title/chapter, and resubmits (version increments to 2)
+select t.as_user('00000000-0000-0000-0000-00000000000a');
+select t.eq((select count(*) from story_reviews)::int, 2, 'author reads story reviews');
+select submit_story_for_review((select id from stories where title='Pub'));
+select t.eq((select version from stories where title='Pub'), 2, 'resubmission increments version');
+
+-- Moderator approves and publishes 'Pub'
+select t.as_user('00000000-0000-0000-0000-00000000000c');
+select review_story_submission((select id from stories where title='Pub'), 'approved', 'Ready for release');
+select review_story_submission((select id from stories where title='Pub'), 'published', 'Published to SEEN');
+
+-- Now Author sees 2 stories ('Pub' and 'Draft'), while Reader and Anon see 1 ('Pub') and its media
+select t.as_user('00000000-0000-0000-0000-00000000000a');
 select t.eq((select count(*) from stories)::int, 2, 'author sees own');
 select t.eq((select id like 'db\_%' from stories where title='Pub'), true, 'db_ prefix');
 select t.as_user('00000000-0000-0000-0000-00000000000b');
 select t.eq((select count(*) from stories)::int, 1, 'reader sees published only');
-reset role; set role anon; select t.eq((select count(*) from public_stories)::int, 1, 'anon preview view');
+select t.eq((select count(*) from media_assets)::int, 1, 'reader sees published media');
+reset role; set role anon;
+select t.eq((select count(*) from public_stories)::int, 1, 'anon preview view');
 select t.expect_fail($$insert into stories(author_id,title) values ('00000000-0000-0000-0000-00000000000a','x')$$, 'anon write');
 reset role;
+
+-- Adversarial Case 4 & 5: Rejected submission & Withdrawn story are hidden from public queries and public_stories
+set role authenticated;
+select t.as_user('00000000-0000-0000-0000-00000000000a');
+insert into stories(author_id,title) values ('00000000-0000-0000-0000-00000000000a','RejectedStory');
+insert into chapters(story_id, position, title, body)
+select id, 1, 'Ch 1', 'Body' from stories where title='RejectedStory';
+insert into rights_grants(story_id, author_id, confirms_original_work, grants_non_exclusive_license, confirms_third_party_consents, attribution_name)
+select id, '00000000-0000-0000-0000-00000000000a', true, true, true, 'Author' from stories where title='RejectedStory';
+select submit_story_for_review((select id from stories where title='RejectedStory'));
+select t.as_user('00000000-0000-0000-0000-00000000000c');
+select review_story_submission((select id from stories where title='RejectedStory'), 'rejected', 'Does not meet editorial guidelines.');
+select t.as_user('00000000-0000-0000-0000-00000000000b');
+select t.eq((select count(*) from stories where title='RejectedStory')::int, 0, 'rejected story hidden from reader');
+-- Author withdraws a story and confirms it disappears from public feeds
+select t.as_user('00000000-0000-0000-0000-00000000000a');
+select withdraw_story((select id from stories where title='RejectedStory'));
+select t.eq((select status from stories where title='RejectedStory'), 'withdrawn', 'story withdrawn by author');
+reset role;
+delete from stories where title='RejectedStory';
 
 -- notes
 create temp table ctx as select id as sid from stories where title='Pub';
@@ -74,8 +179,8 @@ select t.as_user('00000000-0000-0000-0000-00000000000a'); delete from notes; sel
 reset role;
 
 -- a sender can choose to include their name; it is a snapshot taken at send time
-set role authenticated; select t.as_user('00000000-0000-0000-0000-00000000000a');
 insert into stories(author_id,title,status,published_at) values ('00000000-0000-0000-0000-00000000000a','Second','published',now());
+set role authenticated;
 select t.as_user('00000000-0000-0000-0000-00000000000c');
 insert into notes(story_id, sender_id, body, sender_named) select id, '00000000-0000-0000-0000-00000000000c', 'Named note', true from stories where title='Second';
 select t.as_user('00000000-0000-0000-0000-00000000000a');
@@ -92,7 +197,7 @@ select t.as_user('00000000-0000-0000-0000-00000000000b'); select t.expect_fail($
 select t.as_user('00000000-0000-0000-0000-00000000000c');
 select resolve_report((select id from reports limit 1),'action_taken');
 select t.eq((select status from reports limit 1), 'action_taken', 'moderator resolved');
-select t.eq((select count(*) from audit_log)::int, 1, 'audit row written');
+select t.eq((select count(*) >= 1 from audit_log), true, 'audit row written');
 select t.expect_fail($$update reports set status='open'$$, 'direct report update');
 select t.as_user('00000000-0000-0000-0000-00000000000b'); select t.eq((select count(*) from audit_log)::int, 0, 'audit hidden from non-staff');
 reset role;

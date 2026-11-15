@@ -1,0 +1,624 @@
+#!/usr/bin/env bash
+# control-seen — Isolated verification harness for SEEN by CREOVA (seen-v1)
+#
+# Surfaces (--surface):
+#   app            Vite web app (src/app, default)
+#   website        Public marketing & legal website for https://seen.verse.one (site/)
+#   vercel-export  Installable Expo web export built exactly like Vercel testing (mobile/ + scripts/pwa-postbuild.mjs)
+#
+# Subcommands:
+#   start [--run-id <id>] [--surface app|website|vercel-export] [--port <port>] [--proof-dir <dir>]
+#   doctor [--run-id <id>]
+#   url [--run-id <id>]
+#   reset | clear-state [--run-id <id>]
+#   seed-session | seed-user [--run-id <id>] [--role viewer|reader|creator|moderator|admin] [--name <name>] [--lang en|fr|es] [--intent explore|create|contribute]
+#   state [--run-id <id>]
+#   screenshot [--run-id <id>] <label>
+#   snapshot [--run-id <id>] <label>
+#   browse [--run-id <id>] <browse-subcommand> [args...]
+#   stop [--run-id <id>]
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+
+resolve_browse_bin() {
+  if [[ -n "${SEEN_BROWSE_BIN:-}" && -x "${SEEN_BROWSE_BIN}" ]]; then
+    printf '%s\n' "$SEEN_BROWSE_BIN"
+    return 0
+  fi
+  local candidates=(
+    "$HOME/.claude/skills/gstack/browse/dist/browse"
+    "$HOME/.gemini/antigravity/skills/gstack/browse/dist/browse"
+    "$HOME/.agents/skills/gstack/browse/dist/browse"
+  )
+  for c in "${candidates[@]}"; do
+    if [[ -x "$c" ]]; then
+      printf '%s\n' "$c"
+      return 0
+    fi
+  done
+  if command -v browse >/dev/null 2>&1; then
+    command -v browse
+    return 0
+  fi
+  echo "ERROR: Could not locate gstack 'browse' binary. Set SEEN_BROWSE_BIN or install gstack." >&2
+  return 1
+}
+
+SUBCMD="${1:-}"
+if [[ -z "$SUBCMD" ]]; then
+  echo "Usage: control-seen <start|doctor|url|reset|clear-state|seed-session|seed-user|state|screenshot|snapshot|browse|stop> [--run-id <id>] [options]" >&2
+  exit 1
+fi
+shift
+
+RUN_ID="${SEEN_RUN_ID:-default}"
+SURFACE="app"
+PORT=""
+PROOF_DIR=""
+ROLE="viewer"
+USER_NAME=""
+LANG_CODE="en"
+INTENT="explore"
+LABEL=""
+BROWSE_ARGS=()
+
+if [[ "$SUBCMD" == "browse" ]]; then
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --run-id)
+        RUN_ID="$2"
+        shift 2
+        ;;
+      *)
+        BROWSE_ARGS=("$@")
+        break
+        ;;
+    esac
+  done
+else
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --run-id)
+        RUN_ID="$2"
+        shift 2
+        ;;
+      --surface)
+        SURFACE="$2"
+        shift 2
+        ;;
+      --port)
+        PORT="$2"
+        shift 2
+        ;;
+      --proof-dir)
+        PROOF_DIR="$2"
+        shift 2
+        ;;
+      --role)
+        ROLE="$2"
+        shift 2
+        ;;
+      --name)
+        USER_NAME="$2"
+        shift 2
+        ;;
+      --lang)
+        LANG_CODE="$2"
+        shift 2
+        ;;
+      --intent)
+        INTENT="$2"
+        shift 2
+        ;;
+      *)
+        if [[ ("$SUBCMD" == "screenshot" || "$SUBCMD" == "snapshot") && -z "$LABEL" && "$1" != --* ]]; then
+          LABEL="$1"
+          shift
+        else
+          echo "ERROR: Unknown option '$1' for subcommand '$SUBCMD'" >&2
+          exit 1
+        fi
+        ;;
+    esac
+  done
+fi
+
+RUN_DIR="/tmp/seen-verify-${RUN_ID}"
+INSTANCE_JSON="${RUN_DIR}/instance.json"
+BROWSE_STATE_FILE="${RUN_DIR}/.gstack/browse.json"
+DEFAULT_PROOF_DIR="/tmp/seen-proof-${RUN_ID}"
+
+run_browse() {
+  BROWSE_STATE_FILE="$BROWSE_STATE_FILE" BROWSE_SESSION="" "$BROWSE_BIN" "$@"
+}
+
+pick_free_port() {
+  node -e '
+    const net = require("net");
+    const srv = net.createServer();
+    srv.listen(0, "127.0.0.1", () => {
+      const port = srv.address().port;
+      srv.close(() => console.log(port));
+    });
+  '
+}
+
+read_instance_field() {
+  local field="$1"
+  node -e '
+    const fs = require("fs");
+    const data = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+    const val = data[process.argv[2]];
+    if (val === undefined || val === null) process.exit(1);
+    process.stdout.write(String(val));
+  ' "$INSTANCE_JSON" "$field"
+}
+
+is_tracked_pid() {
+  local pid="$1"
+  if [[ -z "$pid" ]] || ! kill -0 "$pid" 2>/dev/null; then
+    return 1
+  fi
+  local cmd
+  cmd="$(ps -p "$pid" -o command= 2>/dev/null || true)"
+  [[ "$cmd" == *"vite"* || "$cmd" == *"serve-static.mjs"* || "$cmd" == *"seen-v1"* ]]
+}
+
+pause_ms() {
+  node -e 'setTimeout(() => {}, Number(process.argv[1]))' "$1"
+}
+
+case "$SUBCMD" in
+  start)
+    BROWSE_BIN="$(resolve_browse_bin)"
+    case "$SURFACE" in
+      app|website|vercel-export) ;;
+      *)
+        echo "ERROR: Invalid --surface '$SURFACE' (expected app|website|vercel-export)." >&2
+        exit 1
+        ;;
+    esac
+
+    if [[ -f "$INSTANCE_JSON" ]]; then
+      EXISTING_PID="$(read_instance_field pid 2>/dev/null || true)"
+      if is_tracked_pid "$EXISTING_PID"; then
+        echo "ERROR: Run '$RUN_ID' is already active (pid=$EXISTING_PID). Run 'control-seen stop --run-id $RUN_ID' or choose another --run-id." >&2
+        exit 1
+      fi
+    fi
+
+    if [[ -z "$PORT" ]]; then
+      PORT="$(pick_free_port)"
+    fi
+    if [[ -z "$PROOF_DIR" ]]; then
+      PROOF_DIR="$DEFAULT_PROOF_DIR"
+    fi
+
+    mkdir -p "$RUN_DIR/.gstack" "$PROOF_DIR"
+    SERVER_LOG="${RUN_DIR}/server.log"
+    URL="http://127.0.0.1:${PORT}"
+    GIT_SHA="$(git -C "$REPO_ROOT" rev-parse --short HEAD 2>/dev/null || echo "unknown")"
+
+    if [[ "$SURFACE" == "app" ]]; then
+      if [[ ! -d "$REPO_ROOT/node_modules" ]]; then
+        echo "ERROR: node_modules missing in $REPO_ROOT. Run 'npm install' first." >&2
+        exit 1
+      fi
+      SERVER_PID="$(node -e '
+        const fs = require("fs");
+        const { spawn } = require("child_process");
+        const [repoRoot, port, logPath] = process.argv.slice(1);
+        const out = fs.openSync(logPath, "a");
+        const child = spawn(
+          process.execPath,
+          ["./node_modules/vite/bin/vite.js", "--host", "127.0.0.1", "--port", port, "--strictPort"],
+          { cwd: repoRoot, detached: true, stdio: ["ignore", out, out] }
+        );
+        child.unref();
+        process.stdout.write(String(child.pid));
+      ' "$REPO_ROOT" "$PORT" "$SERVER_LOG")"
+      EXPECTED_MARKER='<div id="root">'
+    elif [[ "$SURFACE" == "website" ]]; then
+      SITE_OUT="${RUN_DIR}/site-dist"
+      (
+        cd "$REPO_ROOT/site"
+        node -e '
+          import("./build.mjs").then(m => {
+            m.build({ ...m.config, siteUrl: "https://seen.verse.one", appUrl: "https://seen-sigma-eight.vercel.app" }, process.argv[1]);
+          });
+        ' "$SITE_OUT" >/dev/null
+      )
+      SERVER_PID="$(node -e '
+        const fs = require("fs");
+        const { spawn } = require("child_process");
+        const [repoRoot, siteOut, port, logPath] = process.argv.slice(1);
+        const out = fs.openSync(logPath, "a");
+        const child = spawn(
+          process.execPath,
+          ["./scripts/serve-static.mjs", siteOut, port],
+          { cwd: repoRoot, detached: true, stdio: ["ignore", out, out] }
+        );
+        child.unref();
+        process.stdout.write(String(child.pid));
+      ' "$REPO_ROOT" "$SITE_OUT" "$PORT" "$SERVER_LOG")"
+      EXPECTED_MARKER='SEEN'
+    elif [[ "$SURFACE" == "vercel-export" ]]; then
+      if [[ ! -d "$REPO_ROOT/mobile/node_modules" ]]; then
+        echo "ERROR: mobile/node_modules missing. Run 'npm install --legacy-peer-deps --prefix mobile' first." >&2
+        exit 1
+      fi
+      VERCEL_OUT="${RUN_DIR}/vercel-dist"
+      (
+        cd "$REPO_ROOT/mobile"
+        npx expo export --platform web --output-dir "$VERCEL_OUT" >/dev/null
+        cd "$REPO_ROOT"
+        node scripts/pwa-postbuild.mjs "$VERCEL_OUT" >/dev/null
+      )
+      SERVER_PID="$(node -e '
+        const fs = require("fs");
+        const { spawn } = require("child_process");
+        const [repoRoot, vercelOut, port, logPath] = process.argv.slice(1);
+        const out = fs.openSync(logPath, "a");
+        const child = spawn(
+          process.execPath,
+          ["./scripts/serve-static.mjs", vercelOut, port],
+          { cwd: repoRoot, detached: true, stdio: ["ignore", out, out] }
+        );
+        child.unref();
+        process.stdout.write(String(child.pid));
+      ' "$REPO_ROOT" "$VERCEL_OUT" "$PORT" "$SERVER_LOG")"
+      EXPECTED_MARKER='<div id="root">'
+    fi
+
+    node -e '
+      const fs = require("fs");
+      const payload = {
+        runId: process.argv[2],
+        surface: process.argv[3],
+        pid: Number(process.argv[4]),
+        port: Number(process.argv[5]),
+        url: process.argv[6],
+        gitSha: process.argv[7],
+        repoRoot: process.argv[8],
+        runDir: process.argv[9],
+        browseStateFile: process.argv[10],
+        proofDir: process.argv[11],
+        startedAt: new Date().toISOString(),
+      };
+      fs.writeFileSync(process.argv[1], JSON.stringify(payload, null, 2) + "\n");
+    ' "$INSTANCE_JSON" "$RUN_ID" "$SURFACE" "$SERVER_PID" "$PORT" "$URL" "$GIT_SHA" "$REPO_ROOT" "$RUN_DIR" "$BROWSE_STATE_FILE" "$PROOF_DIR"
+
+    READY=0
+    for _ in $(seq 1 50); do
+      if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+        echo "ERROR: Server exited prematurely. Log:" >&2
+        cat "$SERVER_LOG" >&2 || true
+        rm -f "$INSTANCE_JSON"
+        exit 1
+      fi
+      if curl -fsS "$URL" 2>/dev/null | grep -q "$EXPECTED_MARKER"; then
+        READY=1
+        break
+      fi
+      pause_ms 200
+    done
+
+    if [[ "$READY" -ne 1 ]]; then
+      echo "ERROR: Server ($SURFACE) did not become ready at $URL within 10s." >&2
+      kill "$SERVER_PID" 2>/dev/null || true
+      rm -f "$INSTANCE_JSON"
+      exit 1
+    fi
+
+    if ! run_browse goto "$URL" >/dev/null; then
+      echo "ERROR: Failed to launch isolated browse session at $URL." >&2
+      kill "$SERVER_PID" 2>/dev/null || true
+      rm -f "$INSTANCE_JSON"
+      exit 1
+    fi
+    if [[ "$SURFACE" == "website" ]]; then
+      run_browse viewport 1280x840 >/dev/null
+    else
+      run_browse viewport 428x926 >/dev/null
+    fi
+
+    echo "READY run_id=${RUN_ID} surface=${SURFACE} url=${URL} pid=${SERVER_PID} git_sha=${GIT_SHA} proof_dir=${PROOF_DIR}"
+    ;;
+
+  url)
+    if [[ ! -f "$INSTANCE_JSON" ]]; then
+      echo "ERROR: No active run '$RUN_ID' ($INSTANCE_JSON missing)." >&2
+      exit 1
+    fi
+    printf '%s\n' "$(read_instance_field url)"
+    ;;
+
+  doctor)
+    BROWSE_BIN="$(resolve_browse_bin)"
+    if [[ ! -f "$INSTANCE_JSON" ]]; then
+      echo "UNHEALTHY: Missing instance metadata at $INSTANCE_JSON" >&2
+      exit 1
+    fi
+
+    SURFACE_VAL="$(read_instance_field surface)"
+    SERVER_PID="$(read_instance_field pid)"
+    URL="$(read_instance_field url)"
+    RECORDED_SHA="$(read_instance_field gitSha)"
+    PROOF_DIR_VAL="$(read_instance_field proofDir)"
+    CURRENT_SHA="$(git -C "$REPO_ROOT" rev-parse --short HEAD 2>/dev/null || echo "unknown")"
+
+    if ! is_tracked_pid "$SERVER_PID"; then
+      echo "UNHEALTHY: Server PID $SERVER_PID is not running or no longer matches SEEN." >&2
+      exit 1
+    fi
+
+    HTML="$(curl -fsS "$URL" 2>/dev/null || true)"
+    if [[ -z "$HTML" ]]; then
+      echo "UNHEALTHY: $URL did not respond over HTTP." >&2
+      exit 1
+    fi
+
+    if [[ "$RECORDED_SHA" != "$CURRENT_SHA" ]]; then
+      echo "UNHEALTHY: Git SHA drift detected (running=$RECORDED_SHA, current=$CURRENT_SHA). Restart harness." >&2
+      exit 1
+    fi
+
+    BROWSE_STATUS="$(run_browse status 2>&1)" || {
+      echo "UNHEALTHY: Isolated browse daemon failed status check: $BROWSE_STATUS" >&2
+      exit 1
+    }
+
+    STORAGE_SUMMARY="$(run_browse js 'JSON.stringify({
+      href: location.href,
+      title: document.title,
+      onboardingCompleted: localStorage.getItem("onboarding_completed"),
+      hasAuthSession: Boolean(localStorage.getItem("seenos_auth_session")),
+      guestMode: localStorage.getItem("seenos_guest_mode")
+    })')"
+
+    CONSOLE_ERRORS="$(run_browse console --errors 2>/dev/null || true)"
+
+    echo "HEALTHY run_id=${RUN_ID} surface=${SURFACE_VAL} url=${URL} pid=${SERVER_PID} git_sha=${CURRENT_SHA} proof_dir=${PROOF_DIR_VAL}"
+    echo "APP_STATE ${STORAGE_SUMMARY}"
+    if [[ -n "$CONSOLE_ERRORS" && "$CONSOLE_ERRORS" != *"(no console errors)"* && "$CONSOLE_ERRORS" != *"No console"* ]]; then
+      echo "CONSOLE_ERRORS ${CONSOLE_ERRORS}"
+    else
+      echo "CONSOLE_ERRORS none"
+    fi
+    ;;
+
+  reset|clear-state)
+    BROWSE_BIN="$(resolve_browse_bin)"
+    if [[ ! -f "$INSTANCE_JSON" ]]; then
+      echo "ERROR: No active run '$RUN_ID' ($INSTANCE_JSON missing)." >&2
+      exit 1
+    fi
+    URL="$(read_instance_field url)"
+    run_browse goto "$URL" >/dev/null
+    run_browse js 'localStorage.clear(); sessionStorage.clear(); "cleared"' >/dev/null
+    run_browse goto "$URL" >/dev/null
+    echo "RESET run_id=${RUN_ID} url=${URL} (fresh first-visit state)"
+    ;;
+
+  seed-session|seed-user)
+    BROWSE_BIN="$(resolve_browse_bin)"
+    if [[ ! -f "$INSTANCE_JSON" ]]; then
+      echo "ERROR: No active run '$RUN_ID' ($INSTANCE_JSON missing)." >&2
+      exit 1
+    fi
+    if [[ "$ROLE" == "reader" ]]; then
+      ROLE="viewer"
+    fi
+    case "$ROLE" in
+      viewer|creator|moderator|admin) ;;
+      *) echo "ERROR: Invalid --role '$ROLE' (expected viewer|reader|creator|moderator|admin)" >&2; exit 1 ;;
+    esac
+    case "$LANG_CODE" in
+      en|fr|es) ;;
+      *) echo "ERROR: Invalid --lang '$LANG_CODE' (expected en|fr|es)" >&2; exit 1 ;;
+    esac
+    case "$INTENT" in
+      explore|create|contribute) ;;
+      *) echo "ERROR: Invalid --intent '$INTENT' (expected explore|create|contribute)" >&2; exit 1 ;;
+    esac
+    URL="$(read_instance_field url)"
+
+    SEED_JS="$(node -e '
+      const crypto = require("crypto");
+      const [role, lang, intent, customName] = process.argv.slice(1);
+      const email = `verify.${role}@seen.local`;
+      const userId = `usr_verify_${role}`;
+      const displayName = customName || `Verify ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+      const passwordHash = crypto.createHash("sha256").update("SeenPass123seen_salt_v1").digest("hex");
+      const now = new Date().toISOString();
+      const usersDb = {
+        [userId]: {
+          id: userId,
+          email,
+          name: displayName,
+          role,
+          language: lang,
+          intent,
+          createdAt: now,
+          passwordHash
+        }
+      };
+      const session = { accessToken: `tok_verify_${Date.now()}`, userId };
+      const storyState = {
+        language: lang,
+        intent,
+        userRole: role,
+        accessibilityPreferences: {
+          captionsEnabled: false,
+          highContrast: false,
+          reducedMotion: false
+        },
+        personalizationPreferences: {
+          immersiveNarratives: false,
+          richAudio: false,
+          dynamicMotion: false
+        },
+        audioState: {
+          isPlaying: false,
+          isMuted: false,
+          volume: 0.7,
+          playbackPosition: 0
+        },
+        progressSnapshots: [],
+        branchChoices: []
+      };
+      const script = `(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+        localStorage.setItem("seenos_users_db", ${JSON.stringify(JSON.stringify(usersDb))});
+        localStorage.setItem("seenos_auth_session", ${JSON.stringify(JSON.stringify(session))});
+        localStorage.setItem("seenos_story_state", ${JSON.stringify(JSON.stringify(storyState))});
+        localStorage.setItem("seenos_user_role", ${JSON.stringify(role)});
+        localStorage.setItem("hasEnteredSEEN", "true");
+        localStorage.setItem("onboarding_step", "2");
+        localStorage.setItem("onboarding_completed", "true");
+        return "seeded";
+      })()`;
+      process.stdout.write(script);
+    ' "$ROLE" "$LANG_CODE" "$INTENT" "$USER_NAME")"
+
+    run_browse goto "$URL" >/dev/null
+    run_browse js "$SEED_JS" >/dev/null
+    run_browse goto "${URL}/#/for-you" >/dev/null
+    echo "SEEDED run_id=${RUN_ID} role=${ROLE} lang=${LANG_CODE} intent=${INTENT} email=verify.${ROLE}@seen.local"
+    ;;
+
+  screenshot)
+    BROWSE_BIN="$(resolve_browse_bin)"
+    if [[ ! -f "$INSTANCE_JSON" ]]; then
+      echo "ERROR: No active run '$RUN_ID' ($INSTANCE_JSON missing)." >&2
+      exit 1
+    fi
+    if [[ -z "$LABEL" ]]; then
+      echo "ERROR: Missing screenshot label. Usage: control-seen screenshot --run-id $RUN_ID <label>" >&2
+      exit 1
+    fi
+    PROOF_DIR_VAL="$(read_instance_field proofDir)"
+    mkdir -p "$PROOF_DIR_VAL"
+    OUT_PATH="${PROOF_DIR_VAL}/${LABEL}.png"
+    run_browse screenshot "$OUT_PATH"
+    ;;
+
+  snapshot)
+    BROWSE_BIN="$(resolve_browse_bin)"
+    if [[ ! -f "$INSTANCE_JSON" ]]; then
+      echo "ERROR: No active run '$RUN_ID' ($INSTANCE_JSON missing)." >&2
+      exit 1
+    fi
+    if [[ -z "$LABEL" ]]; then
+      echo "ERROR: Missing snapshot label. Usage: control-seen snapshot --run-id $RUN_ID <label>" >&2
+      exit 1
+    fi
+    PROOF_DIR_VAL="$(read_instance_field proofDir)"
+    mkdir -p "$PROOF_DIR_VAL"
+    OUT_PATH="${PROOF_DIR_VAL}/${LABEL}.txt"
+    run_browse snapshot -i > "$OUT_PATH"
+    echo "Snapshot saved: $OUT_PATH"
+    ;;
+
+  state)
+    BROWSE_BIN="$(resolve_browse_bin)"
+    if [[ ! -f "$INSTANCE_JSON" ]]; then
+      echo "ERROR: No active run '$RUN_ID' ($INSTANCE_JSON missing)." >&2
+      exit 1
+    fi
+    run_browse js '(() => {
+      const parse = (k) => {
+        const raw = localStorage.getItem(k);
+        if (raw === null) return null;
+        try { return JSON.parse(raw); } catch { return raw; }
+      };
+      const usersDb = parse("seenos_users_db") || {};
+      const session = parse("seenos_auth_session");
+      const storyState = parse("seenos_story_state");
+      const userStories = parse("seenos_user_stories") || [];
+      const drafts = parse("seenos_creator_drafts") || [];
+      return JSON.stringify({
+        href: location.href,
+        hash: location.hash,
+        onboarding_completed: localStorage.getItem("onboarding_completed"),
+        onboarding_step: localStorage.getItem("onboarding_step"),
+        hasEnteredSEEN: localStorage.getItem("hasEnteredSEEN"),
+        guestMode: localStorage.getItem("seenos_guest_mode"),
+        session,
+        registeredEmails: Object.values(usersDb).map(u => u?.email || u?.id),
+        storyState: storyState ? {
+          language: storyState.language,
+          userRole: storyState.userRole,
+          intent: storyState.intent,
+          currentStoryWorldId: storyState.currentStoryWorldId || null,
+          currentChapterId: storyState.currentChapterId || null,
+          progressSnapshotStoryIds: Array.isArray(storyState.progressSnapshots)
+            ? storyState.progressSnapshots.map(p => p?.storyWorldId)
+            : [],
+          progressSnapshots: storyState.progressSnapshots || [],
+          branchChoices: storyState.branchChoices || []
+        } : null,
+        publishedUserStoriesCount: Array.isArray(userStories) ? userStories.length : 0,
+        publishedUserStoryTitles: Array.isArray(userStories) ? userStories.map(s => s?.title?.en || s?.id) : [],
+        creatorDraftsCount: Array.isArray(drafts) ? drafts.length : 0
+      }, null, 2);
+    })()'
+    ;;
+
+  browse)
+    BROWSE_BIN="$(resolve_browse_bin)"
+    if [[ ! -f "$INSTANCE_JSON" ]]; then
+      echo "ERROR: No active run '$RUN_ID' ($INSTANCE_JSON missing). Run 'control-seen start --run-id $RUN_ID' first." >&2
+      exit 1
+    fi
+    if [[ ${#BROWSE_ARGS[@]} -eq 0 ]]; then
+      echo "ERROR: Missing browse arguments. Example: control-seen browse --run-id $RUN_ID snapshot -i" >&2
+      exit 1
+    fi
+    if [[ "${BROWSE_ARGS[0]}" == "wait" && ${#BROWSE_ARGS[@]} -eq 2 && "${BROWSE_ARGS[1]}" =~ ^[0-9]+$ ]]; then
+      pause_ms "${BROWSE_ARGS[1]}"
+      exit 0
+    fi
+    BROWSE_STATE_FILE="$BROWSE_STATE_FILE" BROWSE_SESSION="" exec "$BROWSE_BIN" "${BROWSE_ARGS[@]}"
+    ;;
+
+  stop)
+    BROWSE_BIN="$(resolve_browse_bin || true)"
+    PROOF_SURVIVED="$DEFAULT_PROOF_DIR"
+    if [[ -f "$INSTANCE_JSON" ]]; then
+      SERVER_PID="$(read_instance_field pid 2>/dev/null || true)"
+      PROOF_SURVIVED="$(read_instance_field proofDir 2>/dev/null || echo "$DEFAULT_PROOF_DIR")"
+    else
+      SERVER_PID=""
+    fi
+
+    if [[ -n "$BROWSE_BIN" && -f "$BROWSE_STATE_FILE" ]]; then
+      BROWSE_STATE_FILE="$BROWSE_STATE_FILE" BROWSE_SESSION="" "$BROWSE_BIN" stop >/dev/null 2>&1 || true
+    fi
+
+    if [[ -n "$SERVER_PID" ]] && is_tracked_pid "$SERVER_PID"; then
+      kill "$SERVER_PID" 2>/dev/null || true
+      for _ in $(seq 1 25); do
+        if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+          break
+        fi
+        pause_ms 100
+      done
+      if kill -0 "$SERVER_PID" 2>/dev/null; then
+        kill -9 "$SERVER_PID" 2>/dev/null || true
+      fi
+    fi
+
+    rm -rf "$RUN_DIR"
+    echo "STOPPED run_id=${RUN_ID} proof_preserved=${PROOF_SURVIVED}"
+    ;;
+
+  *)
+    echo "ERROR: Unknown subcommand '$SUBCMD'. Expected start|doctor|url|reset|clear-state|seed-session|seed-user|state|screenshot|snapshot|browse|stop." >&2
+    exit 1
+    ;;
+esac

@@ -1,7 +1,5 @@
 # Information architecture
 
-> Superseded by [`docs/audit/06_SEEN_INFORMATION_ARCHITECTURE.md`](../audit/06_SEEN_INFORMATION_ARCHITECTURE.md) (2026-10-05). Kept for history.
-
 ```
 SEEN
 ├── For You            personalised entry: presence counts → featured → trending → new

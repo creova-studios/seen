@@ -16,7 +16,7 @@ verification:
   install: "npm install"
   lint: null
   typecheck: "npm run typecheck"
-  test: null
+  test: "npm test"
   build: "npm run build"
 
 integrations:

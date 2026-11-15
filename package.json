@@ -1,7 +1,8 @@
 {
-  "name": "@figma/my-make-file",
+  "name": "seen",
+  "description": "SEEN by CREOVA — Multilingual (EN/FR/ES) community story worlds",
   "private": true,
-  "version": "0.0.1",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "build": "vite build",

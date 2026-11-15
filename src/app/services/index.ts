@@ -6,15 +6,19 @@
 import { demoAdapter } from "./demo/adapter";
 import type { SeenApi } from "./contracts";
 import { backend } from "./backend";
+import { createSupabaseIntake } from "./supabase/intake";
 import { createSupabaseSafety } from "./supabase/safety";
 import { lazySafetyDb } from "./supabase/client";
 
 /**
- * Demo by default. With a configured Supabase project, reports, blocks, notes and preferences
- * go to the database; creators, collections, funding and notifications stay derived from the
- * static catalogue until their tables exist.
+ * Demo by default. With a configured Supabase project, artist intake, editorial review,
+ * reports, blocks, notes and preferences go to the database; static curated catalogue items
+ * remain available alongside database stories.
  */
-export const api: SeenApi = backend.mode === "supabase" ? { ...demoAdapter, ...createSupabaseSafety(lazySafetyDb()) } : demoAdapter;
+export const api: SeenApi =
+  backend.mode === "supabase"
+    ? { ...demoAdapter, ...createSupabaseIntake(), ...createSupabaseSafety(lazySafetyDb()) }
+    : demoAdapter;
 
 export * from "./contracts";
 export { ServiceError, getSimulation, setSimulation } from "./runtime";

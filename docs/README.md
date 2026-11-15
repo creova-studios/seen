@@ -1,26 +1,37 @@
-# SEEN documentation
+# SEEN Documentation Index
 
-**SEEN — a Creova product.** Start here: **[Current State + Reconciliation Report](planning/SEEN_CURRENT_STATE_RECONCILIATION_REPORT.md)**.
+Canonical documentation for **SEEN by CREOVA** across the public website ([`https://seen.verse.one`](https://seen.verse.one)), the Vercel app testing channel ([`https://seen-sigma-eight.vercel.app`](https://seen-sigma-eight.vercel.app)), and the native mobile app (`mobile/`, bundle ID `com.creova.seen`).
 
-## audit/ — what exists (2026-10-05)
-| File | Contents |
-|---|---|
-| [00 Environment & Git baseline](audit/00_SEEN_ENVIRONMENT_AND_GIT_BASELINE.md) | Branches, deployment, commands, risks |
-| [01 Repository forensic audit](audit/01_SEEN_REPOSITORY_FORENSIC_AUDIT.md) | The four implementations and dead code |
-| [02 Version reconciliation matrix](audit/02_SEEN_VERSION_RECONCILIATION_MATRIX.md) | Every capability × source × decision |
-| [03 Figma → product gaps](audit/03_FIGMA_TO_PRODUCT_GAP_ANALYSIS.md) | Figma vs code, four gap categories |
-| [04 Feedback traceability](audit/04_SEEN_FEEDBACK_TRACEABILITY_MATRIX.md) | Stakeholder feedback FB-01…17 |
-| [05 User journeys](audit/05_SEEN_USER_JOURNEY_AUDIT.md) · [06 IA](audit/06_SEEN_INFORMATION_ARCHITECTURE.md) · [07 Design system](audit/07_SEEN_DESIGN_SYSTEM_AUDIT.md) · [08 Accessibility](audit/08_SEEN_ACCESSIBILITY_AUDIT.md) · [09 Security & privacy](audit/09_SEEN_SECURITY_PRIVACY_AUDIT.md) · [10 Tech debt](audit/10_SEEN_TECHNICAL_DEBT_AUDIT.md) · [11 Responsive & states](audit/11_SEEN_RESPONSIVE_AND_STATE_AUDIT.md) | |
+## Product & Roadmap (`docs/product/`)
 
-Earlier audits (`BASELINE.md`, `CODEBASE_AUDIT.md`, `FIGMA_AUDIT.md`, `LIVE_APP_AUDIT.md`) are kept for history.
+| Document | Purpose |
+| --- | --- |
+| [SEEN_PRODUCT_REQUIREMENTS.md](product/SEEN_PRODUCT_REQUIREMENTS.md) | Approved product requirements (`PR-1`–`PR-12`), mobile-first direction, and delivery order |
+| [MASTER_FEATURE_MATRIX.md](product/MASTER_FEATURE_MATRIX.md) | Screen and capability matrix across Web, Native, and Figma |
+| [STANDALONE_BETA_ROADMAP.md](product/STANDALONE_BETA_ROADMAP.md) | Two-surface architecture (`seen.verse.one` website + app) and standalone beta roadmap |
+| [ONBOARDING_DECISION_MATRIX.md](product/ONBOARDING_DECISION_MATRIX.md) | 6-screen onboarding flow and protected entry screens |
+| [FUNDING_LISTINGS.md](product/FUNDING_LISTINGS.md) | Verification rules and source requirements for creator funding programs |
+| [PHOTO_RELEASES.md](product/PHOTO_RELEASES.md) | Release-form policy and `PHOTOS=off` build switch for `site/` |
+| [PRODUCT_DECISIONS_PENDING.md](product/PRODUCT_DECISIONS_PENDING.md) | Open product decisions awaiting owner sign-off |
 
-## product/ — what SEEN is
-[Definition](product/SEEN_PRODUCT_DEFINITION.md) · [Principles](product/SEEN_PRODUCT_PRINCIPLES.md) · [Creova brand relationship](product/SEEN_CREOVA_BRAND_RELATIONSHIP.md) · [Feature inventory](product/SEEN_CANONICAL_FEATURE_INVENTORY.md) · [User roles](product/SEEN_USER_ROLES.md) · [User stories](product/SEEN_USER_STORIES.md) · [Acceptance criteria](product/SEEN_ACCEPTANCE_CRITERIA.md) · [Definition of done](product/SEEN_DEFINITION_OF_DONE.md) · [Measurement](product/SEEN_MEASUREMENT_FRAMEWORK.md) · [Funding listings process](product/FUNDING_LISTINGS.md)
+## Operations & Deployment (`docs/operations/`)
 
-## architecture/ — how it's built
-[Architecture](architecture/SEEN_ARCHITECTURE.md) · [Branching strategy](architecture/SEEN_BRANCHING_STRATEGY.md) · [Deployment](architecture/SEEN_DEPLOYMENT_ARCHITECTURE.md) · [Test strategy](architecture/SEEN_TEST_STRATEGY.md) · ADRs in `architecture/ADR/`. `SEEN_CANONICAL_BASELINE.md` is written after consolidation is approved and performed.
+| Document | Purpose |
+| --- | --- |
+| [REPOSITORY_MAP.md](operations/REPOSITORY_MAP.md) | Canonical repository, branch audit, and deployment topology |
+| [BRANCHING.md](operations/BRANCHING.md) | Git flow (`feature/*` → `dev` → `staging` → `main`) and Vercel preview/testing rules |
+| [MOBILE.md](operations/MOBILE.md) | Home-screen installability (PWA manifest/icons) and Expo/EAS store app builds |
+| [ENVIRONMENT_STRATEGY.md](operations/ENVIRONMENT_STRATEGY.md) | Environment variables across local, Vercel testing, `seen.verse.one`, and Supabase |
+| [CI_CD.md](operations/CI_CD.md) | GitHub Actions quality gates (`typecheck`, `vitest`, `playwright`, RLS, and native checks) |
+| [OBSERVABILITY.md](operations/OBSERVABILITY.md) | PII-scrubbed telemetry and `scripts/check-live-telemetry.mjs` |
 
-## planning/ — what happens next
-[Canonical decision](planning/SEEN_CANONICAL_IMPLEMENTATION_DECISION.md) · [Consolidation plan + migration ledger](planning/SEEN_CONSOLIDATION_PLAN.md) · [Backlog](planning/SEEN_P0_P1_P2_P3_BACKLOG.md) · [Roadmap](planning/SEEN_IMPLEMENTATION_ROADMAP.md) · [Release checklist](planning/SEEN_RELEASE_CHECKLIST.md) · [Decisions required](planning/SEEN_DECISIONS_REQUIRED.md)
+## Release, Security & Architecture
 
-Also: `design/` (tokens, Figma component inventory), `security/`, `testing/`, `operations/`, `release/`, `ux/`, `research/`. `archive/` is historical, and its "complete/ready" claims are not current.
+- **Release:** [RELEASE_READINESS.md](release/RELEASE_READINESS.md) · [BACKEND_CUTOVER.md](release/BACKEND_CUTOVER.md) · [RESTORE_SUPABASE.md](release/RESTORE_SUPABASE.md) · [ROLLBACK.md](release/ROLLBACK.md)
+- **Security:** [DEMO_INVITE_GATE.md](security/DEMO_INVITE_GATE.md) · [AUTH_MATRIX.md](security/AUTH_MATRIX.md) · [DATA_RETENTION_MATRIX.md](security/DATA_RETENTION_MATRIX.md) · [SECURITY_AUDIT.md](security/SECURITY_AUDIT.md)
+- **Architecture & ADRs:** [SYSTEM_ARCHITECTURE.md](architecture/SYSTEM_ARCHITECTURE.md) · [DATA_MODEL.md](architecture/DATA_MODEL.md) · [ADR/](architecture/ADR/) · [ADR-003: Cloud Architecture (Supabase vs. GCP)](adr/ADR-003-cloud-architecture-supabase-gcp.md)
+- **Master Audit & Beta Execution (`docs/master-audit/`):** [CURRENT_STATE_AUDIT.md](master-audit/CURRENT_STATE_AUDIT.md) · [REPOSITORY_AND_BRANCH_INVENTORY.md](master-audit/REPOSITORY_AND_BRANCH_INVENTORY.md) · [ARCHITECTURE_AS_IS.md](master-audit/ARCHITECTURE_AS_IS.md) · [FEATURE_IMPLEMENTATION_MATRIX.md](master-audit/FEATURE_IMPLEMENTATION_MATRIX.md) · [SECURITY_AND_PRIVACY_AUDIT.md](master-audit/SECURITY_AND_PRIVACY_AUDIT.md) · [TECHNICAL_DEBT_REGISTER.md](master-audit/TECHNICAL_DEBT_REGISTER.md) · [TEST_AND_CI_BASELINE.md](master-audit/TEST_AND_CI_BASELINE.md) · [DEPLOYMENT_AND_INFRASTRUCTURE_AUDIT.md](master-audit/DEPLOYMENT_AND_INFRASTRUCTURE_AUDIT.md) · [PRODUCT_DECISION_REGISTER.md](master-audit/PRODUCT_DECISION_REGISTER.md) · [BETA_GAP_ANALYSIS.md](master-audit/BETA_GAP_ANALYSIS.md)
+- **Design & Accessibility:** [FIGMA_COVERAGE_REPORT.md](design/FIGMA_COVERAGE_REPORT.md) · [COPY_DECK.md](design/COPY_DECK.md) · [MANUAL_VERIFICATION_REPORT.md](accessibility/MANUAL_VERIFICATION_REPORT.md)
+- **Testing:** [TEST_STRATEGY.md](testing/TEST_STRATEGY.md) · [USER_TESTING_RC_CHECKLIST.md](testing/USER_TESTING_RC_CHECKLIST.md)
+
+> **Historical archive:** Earlier reconciliation and forensic audits (`2026-10-05`) are preserved in [`docs/archive/clever-gates-audit/`](archive/clever-gates-audit/ARCHIVE_NOTE.md) for historical reference only.

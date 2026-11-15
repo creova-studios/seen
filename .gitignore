@@ -10,6 +10,11 @@ build/
 .next/
 out/
 .vercel/
+.codex/
 *.log
 test-results/
 playwright-report/
+site/dist/
+mobile/node_modules/
+mobile/dist/
+mobile/.expo/

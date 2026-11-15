@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # Runs migrations and RLS tests against a throwaway local Postgres (no Docker, no Supabase project).
 set -euo pipefail
+if [ -z "${PGBIN:-}" ]; then
+  for candidate in /usr/lib/postgresql/16/bin /opt/homebrew/opt/postgresql@16/bin /usr/local/opt/postgresql@16/bin; do
+    if [ -x "$candidate/initdb" ]; then
+      PGBIN="$candidate"
+      break
+    fi
+  done
+fi
 PGBIN=${PGBIN:-/usr/lib/postgresql/16/bin}
 DIR=$(cd "$(dirname "$0")/.." && pwd)
 TMP=$(mktemp -d); chmod 755 "$TMP"

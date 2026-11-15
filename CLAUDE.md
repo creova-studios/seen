@@ -1,6 +1,6 @@
 # SEEN — development guide
 
-SEEN by CREOVA: a mobile-first web app for multilingual (EN/FR/ES) community story worlds — stories, creators, collections, funding for storytellers. Production: https://seen-sigma-eight.vercel.app (Vercel, deploys `main`).
+SEEN by CREOVA: a mobile-first cultural storytelling platform (`EN`/`FR`/`ES`) — stories, creators, collections, and funding for storytellers. Public website: https://seen.verse.one (`site/`). App testing deployment: https://seen-sigma-eight.vercel.app (hosted on Vercel, deploys `main`).
 
 **Source of truth:** this repository (`creova-gif/SEEN`), branch `main`. See `docs/operations/REPOSITORY_MAP.md`. Every other SEEN branch or project is an archive.
 

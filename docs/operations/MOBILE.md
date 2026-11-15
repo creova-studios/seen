@@ -7,7 +7,7 @@ SEEN is a mobile-first web app. It can be installed from the browser to the home
 - **iPhone / iPad (Safari):** open the SEEN link, tap Share, then "Add to Home Screen".
 - **Android (Chrome):** open the SEEN link, tap the menu (three dots), then "Install app" or "Add to Home screen".
 
-Use the production link (`https://seen-sigma-eight.vercel.app`). Preview links on `*.vercel.app` are protected by Vercel sign-in and are for the team only.
+Use the Vercel app testing link (`https://seen-sigma-eight.vercel.app`; customer-facing website is `https://seen.verse.one`). Preview links on `*.vercel.app` are protected by Vercel sign-in and are for the team only.
 
 ## What is in place
 
