@@ -1,6 +1,6 @@
 # SEEN on phones
 
-SEEN is a mobile-first web app. It can be installed from the browser to the home screen and then opens full screen like an app, with no app store.
+SEEN is a mobile-first web app. It can be installed from the browser to the home screen and then opens full screen like an app.
 
 ## Install (for customers)
 
