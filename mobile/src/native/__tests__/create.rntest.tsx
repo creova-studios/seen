@@ -4,8 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { blankForm, publish, publishBlocker, saveDraft, myDrafts, myStories } from '../create';
-import { getPublicStories } from '../data';
+import { blankForm, publish, publishBlocker, saveDraft, submitStoryForReview, myDrafts, myStories } from '../create';
+import { getChaptersForStory, getPublicStories, getStoryWorldById, syncPublishedStoriesFromBackend } from '../data';
+import { api } from '@seen/services';
+import { setLatency } from '@seen/services/runtime';
 import { navRef } from '../navRef';
 import { AppStateProvider, useApp } from '../storage';
 import { CreateFlow, CreateHub } from '../screens/Create';
@@ -38,6 +40,7 @@ const mount = async () =>
 beforeEach(async () => {
   await AsyncStorage.clear();
   localStorage.clear();
+  setLatency(0);
 });
 
 describe('create logic', () => {
@@ -70,6 +73,51 @@ describe('create logic', () => {
 
   it('refuses to publish when something is missing', () => {
     expect(() => publish('u1', 'Ada', 'd3', blankForm('en'))).toThrow();
+  });
+
+  it('submits a mobile story for editorial review, syncs into the mobile catalogue on approval, and removes on withdrawal', async () => {
+    const f = {
+      ...blankForm('en'),
+      title: 'Mobile Maritime Echoes',
+      description: 'Submitted from the native iOS/Android app.',
+      themes: ['Heritage & Memory'],
+      chapters: [{ title: 'Chapter 1: Low Tide', text: 'Fog rolled across the wharf at dawn.' }],
+      rights: true,
+      guidelines: true,
+    };
+    saveDraft('u1', 'd_review', f);
+    const submitted = await submitStoryForReview('u1', 'Ada', 'd_review', f);
+    expect(submitted.status).toBe('submitted');
+    expect(myDrafts('u1')).toHaveLength(0);
+
+    // Unreviewed story must NOT appear in mobile public stories
+    await syncPublishedStoriesFromBackend();
+    expect(getPublicStories().some(s => s.id === submitted.id)).toBe(false);
+
+    // Moderator approves and publishes
+    const rawDb = localStorage.getItem('seenos_users_db');
+    const db = rawDb ? (JSON.parse(rawDb) as Record<string, unknown>) : {};
+    db['mod_1'] = { id: 'mod_1', email: 'mod@seen.demo', name: 'Moderator', role: 'moderator' };
+    localStorage.setItem('seenos_users_db', JSON.stringify(db));
+    localStorage.setItem('seenos_auth_session', JSON.stringify({ userId: 'mod_1', accessToken: 'tok_mod' }));
+
+    await api.intake.reviewSubmission({
+      storyId: submitted.id,
+      nextStatus: 'published',
+      editorialNotes: 'Approved for mobile catalogue.',
+    });
+
+    const syncedCount = await syncPublishedStoriesFromBackend();
+    expect(syncedCount).toBe(1);
+    expect(getPublicStories().some(s => s.id === submitted.id)).toBe(true);
+    expect(getStoryWorldById(submitted.id)?.title.en).toBe('Mobile Maritime Echoes');
+    expect(getChaptersForStory(submitted.id)).toHaveLength(1);
+
+    // Creator withdraws -> removed from mobile catalogue on next sync
+    localStorage.setItem('seenos_auth_session', JSON.stringify({ userId: 'u1', accessToken: 'tok_u1' }));
+    await api.intake.withdrawStory(submitted.id);
+    await syncPublishedStoriesFromBackend();
+    expect(getPublicStories().some(s => s.id === submitted.id)).toBe(false);
   });
 });
 

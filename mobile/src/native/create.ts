@@ -7,6 +7,8 @@ import {
   updateDraft,
   type CreatorDraft,
 } from '@seen/data/userStoriesService';
+import { api } from '@seen/services';
+import type { IntakeStoryRecord } from '@seen/services/contracts';
 import type { Language, StoryWorld } from './data';
 
 /** What the person types into the four steps. One flat shape, mapped onto the shared draft and publish calls. */
@@ -99,6 +101,60 @@ export function publish(userId: string, name: string, draftId: string, form: Cre
   deleteDraft(draftId);
   bumpCatalog();
   return story;
+}
+
+/**
+ * Submits a mobile creator's story into the Phase 3/5 editorial review queue (`api.intake`):
+ * records the draft, attaches the copyright/rights attestation, transitions to `submitted`,
+ * removes the local wizard draft, and notifies catalogue listeners.
+ */
+export async function submitStoryForReview(
+  userId: string,
+  name: string,
+  draftId: string,
+  form: CreateForm,
+): Promise<IntakeStoryRecord> {
+  if (publishBlocker(form)) throw new Error('not ready to submit for review');
+  const rawDb = localStorage.getItem('seenos_users_db');
+  const db = rawDb ? (JSON.parse(rawDb) as Record<string, unknown>) : {};
+  if (!db[userId]) {
+    db[userId] = { id: userId, email: `${userId}@seen.local`, name, role: 'creator' };
+    localStorage.setItem('seenos_users_db', JSON.stringify(db));
+  }
+  if (!localStorage.getItem('seenos_auth_session')) {
+    localStorage.setItem('seenos_auth_session', JSON.stringify({ userId, accessToken: `tok_mobile_${userId}` }));
+  }
+
+  const chapters = filled(form).map((ch, idx) => ({
+    position: idx + 1,
+    title: ch.title.trim(),
+    body: ch.text.trim(),
+  }));
+
+  const saved = await api.intake.saveDraft({
+    title: form.title.trim(),
+    summary: form.description.trim() || form.title.trim(),
+    languages: form.languages.length ? form.languages : ['en'],
+    themes: form.themes,
+    intendedAudience: form.audience || 'General public',
+    contentWarnings: form.warnings,
+    chapters,
+  });
+
+  await api.intake.recordRightsGrant({
+    storyId: saved.id,
+    confirmsOriginalWork: form.rights,
+    grantsNonExclusiveLicense: form.rights,
+    confirmsThirdPartyConsents: form.guidelines,
+    allowTranslation: true,
+    allowAudioNarration: false,
+    attributionName: name,
+  });
+
+  const submitted = await api.intake.submitForReview(saved.id);
+  deleteDraft(draftId);
+  bumpCatalog();
+  return submitted;
 }
 
 export const myStories = (userId: string) => listStoriesForCreator(userId);

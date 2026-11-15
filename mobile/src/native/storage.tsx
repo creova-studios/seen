@@ -3,8 +3,25 @@ import * as Crypto from 'expo-crypto';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import './polyfill';
 import { hydrateLocalStorage } from './polyfill';
-import type { Language } from './data';
+import { syncPublishedStoriesFromBackend, type Language } from './data';
 import { findAccount, signIn as signInLocal, signUp as signUpLocal, type Account, type AccountStore, type Me } from './auth';
+
+function syncSharedAuthSession(me: Me | null, role: 'viewer' | 'creator' = 'creator') {
+  try {
+    if (!me) {
+      localStorage.removeItem('seenos_auth_session');
+      return;
+    }
+    const rawDb = localStorage.getItem('seenos_users_db');
+    const db = rawDb ? (JSON.parse(rawDb) as Record<string, unknown>) : {};
+    const existing = db[me.id] as { role?: string } | undefined;
+    db[me.id] = { id: me.id, email: me.email, name: me.name, role: existing?.role ?? role };
+    localStorage.setItem('seenos_users_db', JSON.stringify(db));
+    localStorage.setItem('seenos_auth_session', JSON.stringify({ userId: me.id, accessToken: `tok_mobile_${me.id}` }));
+  } catch {
+    /* ignore storage errors */
+  }
+}
 
 /** What the phone remembers: language, saved stories, and where you were in each story. */
 interface Persisted {
@@ -71,7 +88,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       .then(async raw => {
         const saved = raw ? { ...DEFAULT, ...(JSON.parse(raw) as Partial<Persisted>) } : DEFAULT;
         setData(saved);
-        if (saved.userId) setUser(await findAccount(accountStore, saved.userId));
+        if (saved.userId) {
+          const found = await findAccount(accountStore, saved.userId);
+          setUser(found);
+          syncSharedAuthSession(found);
+        }
+        void syncPublishedStoriesFromBackend();
       })
       .catch(() => {})
       .finally(() => setReady(true));
@@ -93,15 +115,18 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       signUp: async input => {
         const me = await signUpLocal(accountStore, sha, input, () => Crypto.randomUUID());
         setUser(me);
+        syncSharedAuthSession(me);
         update(p => ({ ...p, userId: me.id, onboarded: true, guest: false }));
       },
       signIn: async (email, password) => {
         const me = await signInLocal(accountStore, sha, email, password);
         setUser(me);
+        syncSharedAuthSession(me);
         update(p => ({ ...p, userId: me.id, onboarded: true, guest: false }));
       },
       signOut: () => {
         setUser(null);
+        syncSharedAuthSession(null);
         update(p => ({ ...p, userId: null, guest: true }));
       },
       enterGuest: () => update(p => ({ ...p, onboarded: true, guest: true })),

@@ -78,8 +78,14 @@ export function writeStore<T>(key: string, value: T) {
   } catch {
     /* quota / private mode: state stays in memory for this session */
   }
-  // Same-tab subscribers (e.g. the unread badge) listen for this.
-  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("seen:store", { detail: key }));
+  // Same-tab subscribers (e.g. the unread badge) listen for this on web.
+  if (
+    typeof window !== "undefined" &&
+    typeof window.dispatchEvent === "function" &&
+    typeof CustomEvent === "function"
+  ) {
+    window.dispatchEvent(new CustomEvent("seen:store", { detail: key }));
+  }
 }
 
 export function slugify(s: string): string {
