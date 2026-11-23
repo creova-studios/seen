@@ -5,6 +5,9 @@ on:
   push:
     branches: [main, staging, dev]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -18,7 +21,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      # No lockfile is committed yet (see docs/operations/CI_CD.md), so this is npm install, not npm ci.
       - run: npm install --no-audit --no-fund
       - run: npm run typecheck
       - run: npm test
@@ -53,10 +55,31 @@ jobs:
   database:
     name: Database RLS tests · secret scan
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get install -y --no-install-recommends postgresql-16 >/dev/null
+      - name: Ensure PostgreSQL client is installed
+        run: command -v psql >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends postgresql-client >/dev/null)
       - run: npm run test:db
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: "5432"
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: postgres
       - run: bash scripts/secret-scan.sh
 
   e2e:

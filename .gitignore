@@ -18,3 +18,5 @@ site/dist/
 mobile/node_modules/
 mobile/dist/
 mobile/.expo/
+__pycache__/
+*.pyc

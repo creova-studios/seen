@@ -28,7 +28,6 @@ npm run check        # typecheck + test + build
 - `src/app/services/` — feature data behind typed contracts (`contracts/`); `api` currently uses the demo adapter (`services/demo/`), Supabase adapter behind `backend.ts`. Never import an adapter directly.
 - `src/app/components/seen/` — design-system primitives and Figma organisms; tokens in `src/styles/seen-tokens.css`.
 - `src/app/data/storyDatabase.ts` — the story catalogue (single source of truth; chapters via `CHAPTERS_REGISTRY`).
-- `archive/` — unreachable code kept for history/content. Not built, not type-checked; don't import from it.
 - Phones: the app is installable (manifest, icons, iOS tags; see `docs/operations/MOBILE.md`). Never disable zoom in the viewport meta, and keep the manifest icons and tests in sync.
 - Docs: `docs/` (start with `docs/release/RELEASE_READINESS.md`, `docs/product/MASTER_FEATURE_MATRIX.md`, `docs/design/FIGMA_COVERAGE_REPORT.md`). `docs/archive/` is historical and its "complete/ready" claims are not current.
 
