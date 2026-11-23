@@ -1,6 +1,7 @@
 {
   "name": "seen",
   "description": "SEEN by CREOVA — Multilingual (EN/FR/ES) community story worlds",
+  "license": "UNLICENSED",
   "private": true,
   "version": "1.0.0",
   "type": "module",

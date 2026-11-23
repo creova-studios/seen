@@ -1,6 +1,7 @@
 {
   "name": "seen-site",
   "private": true,
+  "license": "UNLICENSED",
   "version": "1.0.0",
   "description": "The SEEN website (https://seen.verse.one): where visitors learn about SEEN and reach the app.",
   "type": "module",

@@ -13,18 +13,19 @@ See [`docs/operations/BRANCHING.md`](docs/operations/BRANCHING.md) for full deta
 Before opening or merging a Pull Request, run the verification suite locally:
 
 ```bash
-# 1. Web & Shared Core (TypeScript + Vitest 240 tests + Vite production build)
+# 1. Web & Shared Core (deterministic install + TypeScript + Vitest 240 tests + Vite production build)
+npm ci
 npm run check
 
 # 2. PostgreSQL 16 migrations + adversarial RLS test suite + secret scan
 npm run test:db
 bash scripts/secret-scan.sh
 
-# 3. Native Mobile App (Expo SDK / React Native typecheck + Jest suite)
-cd mobile && npm run typecheck && npx jest && cd ..
+# 3. Native Mobile App (deterministic install + Expo / React Native typecheck + Jest suite)
+cd mobile && npm ci --legacy-peer-deps && npm run typecheck && npx jest && cd ..
 
-# 4. Static Public Website (seen.verse.one — 28 node:test checks)
-cd site && npm run check && cd ..
+# 4. Static Public Website (28 node:test checks)
+npm --prefix site run check
 ```
 
 ## 3. Security & Privacy Standards
