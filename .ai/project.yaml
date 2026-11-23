@@ -1,5 +1,5 @@
 name: SEEN
-owner: creova-gif
+owner: creova-studios
 
 stack:
   language: ["typescript"]
@@ -13,7 +13,7 @@ skill_groups:
 
 # null = no command detected -> agents must report NOT VERIFIED for that gate
 verification:
-  install: "npm install"
+  install: "npm ci"
   lint: null
   typecheck: "npm run typecheck"
   test: "npm test"

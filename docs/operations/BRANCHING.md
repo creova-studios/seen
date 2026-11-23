@@ -1,6 +1,6 @@
 # Branching and release workflow
 
-One repository is the source of truth: `creova-gif/SEEN`. See `REPOSITORY_MAP.md`.
+One repository is the source of truth: `creova-studios/seen`. See `REPOSITORY_MAP.md`.
 
 Flow: `feature/*` or `fix/*` → `dev` → `staging` → `main`.
 

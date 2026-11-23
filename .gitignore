@@ -1,16 +1,22 @@
 node_modules/
-package-lock.json
 .DS_Store
+
+# Environment & secrets
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.sqlite3
+
+# Build & test artifacts
 dist/
 build/
 .vite/
 .next/
 out/
 .vercel/
-.codex/
 *.log
 test-results/
 playwright-report/
@@ -20,3 +26,10 @@ mobile/dist/
 mobile/.expo/
 __pycache__/
 *.pyc
+
+# Legacy & platform export clutter
+archive/
+gstack/
+attached_assets/
+mockup-sandbox/
+.codex/

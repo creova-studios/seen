@@ -29,10 +29,10 @@ Same pattern as www.creova.one (GitHub Pages, DNS in Cloudflare). The SEEN sourc
 
 One-time setup (owner actions; not done yet):
 
-1. Create an empty public repo, for example `creova-gif/seen-site`.
-2. Publish: `cd site && npm run check && npm run publish -- https://github.com/creova-gif/seen-site.git` (builds, copies `dist/` into the repo, commits, pushes; never force-pushes).
-3. In that repo: Settings, Pages, deploy from branch `main`, folder `/`. Set the custom domain to `seen.verse.one` and tick Enforce HTTPS once it is available.
-4. In Cloudflare DNS for `verse.one`: add `CNAME` `seen` pointing to `creova-gif.github.io`, **DNS only (grey cloud)** until GitHub has issued the certificate.
+1. Create an empty public repo, for example `creova-studios/seen-site`.
+2. Publish: `cd site && npm run check && npm run publish -- https://github.com/creova-studios/seen-site.git` (builds, copies `dist/` into the repo while preserving governance files, commits, pushes; never force-pushes).
+3. In that repo: Settings, Pages, deploy from branch `main`, folder `/`. Set the custom domain to `seen.verse.one` (or `seen.creova.one` with `SITE_URL=https://seen.creova.one`) and tick Enforce HTTPS once it is available.
+4. In Cloudflare DNS: add `CNAME` `seen` pointing to `creova-studios.github.io`, **DNS only (grey cloud)** until GitHub has issued the certificate.
 5. Security: verify `verse.one` under the GitHub account's Pages settings (domain verification), so nobody else can claim `seen.verse.one` if the record is ever left dangling.
 
 To update the site later, run step 2 again. A workflow in the private repo can automate this with a deploy key; it is not set up.

@@ -2,7 +2,7 @@
 
 SEEN by CREOVA: a mobile-first cultural storytelling platform (`EN`/`FR`/`ES`) â€” stories, creators, collections, and funding for storytellers. Public website: https://seen.verse.one (`site/`). App testing deployment: https://seen-sigma-eight.vercel.app (hosted on Vercel, deploys `main`).
 
-**Source of truth:** this repository (`creova-gif/SEEN`), branch `main`. See `docs/operations/REPOSITORY_MAP.md`. Every other SEEN branch or project is an archive.
+**Source of truth:** this repository (`creova-studios/seen`), branch `main`. See `docs/operations/REPOSITORY_MAP.md` and `AGENTS.md`. Every other SEEN branch or project is an archive.
 
 ## Git workflow (read before touching anything)
 
@@ -14,7 +14,7 @@ SEEN by CREOVA: a mobile-first cultural storytelling platform (`EN`/`FR`/`ES`) â
 ## Commands
 
 ```bash
-npm install
+npm ci
 npm run dev          # Vite dev server
 npm run typecheck    # must be 0 errors
 npm test             # Vitest unit + component tests
